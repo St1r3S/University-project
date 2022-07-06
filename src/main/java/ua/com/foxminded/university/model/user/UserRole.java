@@ -1,6 +1,6 @@
 package ua.com.foxminded.university.model.user;
 
-public enum Role {
+public enum UserRole {
     STUFF,
     STUDENT,
     EDUCATOR,

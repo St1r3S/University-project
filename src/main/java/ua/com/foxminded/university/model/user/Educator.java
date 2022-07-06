@@ -2,7 +2,7 @@ package ua.com.foxminded.university.model.user;
 
 import ua.com.foxminded.university.model.schedule.WeeklySchedule;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Educator extends UniversityStaffMember {
     public static final String EDUCATOR_ID = "id";
@@ -14,14 +14,14 @@ public class Educator extends UniversityStaffMember {
     public static final String EDUCATOR_ROLE = "role";
     public static final String EDUCATOR_POSITION = "position";
     public static final String EDUCATOR_SPECIALISM = "specialism";
-    private String specialism;
+    private final String specialism;
 
-    public Educator(Long id, String firstName, String lastName, LocalDateTime birthday, WeeklySchedule schedule, String email, Role role, String position, String specialism) {
-        super(id, firstName, lastName, birthday, schedule, email, role, position);
+    public Educator(Long id, String firstName, String lastName, LocalDate birthday, WeeklySchedule schedule, String email, UserRole userRole, String position, String specialism) {
+        super(id, firstName, lastName, birthday, schedule, email, userRole, position);
         this.specialism = specialism;
     }
 
-    public Educator(String firstName, String lastName, LocalDateTime birthday, WeeklySchedule schedule, String email, Role role, String position, String specialism) {
-        this(null, firstName, lastName, birthday, schedule, email, role, position, specialism);
+    public Educator(String firstName, String lastName, LocalDate birthday, WeeklySchedule schedule, String email, UserRole userRole, String position, String specialism) {
+        this(null, firstName, lastName, birthday, schedule, email, userRole, position, specialism);
     }
 }
