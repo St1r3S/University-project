@@ -1,22 +1,27 @@
 package ua.com.foxminded.university.model.lecture;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
-import ua.com.foxminded.university.model.user.Educator;
 
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class Discipline extends LongEntity {
-    public static final String DISCIPLINE_ID = "id";
-    public static final String DISCIPLINE_NAME = "discipline_name";
-    public static final String DISCIPLINE_EDUCATOR_ID = "educator_id";
-    private String name;
-    private Educator educator;
 
-    public Discipline(Long id, String name, Educator educator) {
+    private String disciplineName;
+    private Long educatorId;
+
+    public Discipline(Long id, String disciplineName, Long educatorId) {
         super(id);
-        this.name = name;
-        this.educator = educator;
+        this.disciplineName = disciplineName;
+        this.educatorId = educatorId;
     }
 
-    public Discipline(String name, Educator educator) {
-        this(null, name, educator);
+    public Discipline(String disciplineName, Long educatorId) {
+        this(null, disciplineName, educatorId);
     }
 }

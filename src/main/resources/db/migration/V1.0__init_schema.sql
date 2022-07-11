@@ -1,6 +1,7 @@
 create table weekly_schedule
 (
-    id bigserial primary key
+    id          bigserial primary key,
+    week_number int not null
 );
 
 create table educator
@@ -19,7 +20,8 @@ create table discipline
 (
     id              bigserial primary key,
     discipline_name text                            not null,
-    educator_id     bigint references educator (id) not null
+    educator_id     bigint references educator (id) not null,
+    unique (discipline_name, educator_id)
 );
 
 create table room
@@ -30,22 +32,24 @@ create table room
 
 create table lecture_number
 (
-    id             bigserial primary key,
-    lecture_number int  not null,
-    time_start     time not null,
-    time_end       time not null
+    id         bigserial primary key,
+    number     int  not null,
+    time_start time not null,
+    time_end   time not null
 );
 
 create table specialism
 (
-    id         bigserial primary key,
-    specialism text not null
+    id              bigserial primary key,
+    specialism_name text unique not null
 );
 
 create table daily_schedule
 (
     id                 bigserial primary key,
-    weekly_schedule_id bigint references weekly_schedule (id) not null
+    day_of_week        text                                   not null,
+    weekly_schedule_id bigint references weekly_schedule (id) not null,
+    unique (day_of_week, weekly_schedule_id)
 );
 
 create table educator_specialism
@@ -66,8 +70,6 @@ create table lecture
 (
     id                bigserial primary key,
     discipline_id     bigint references weekly_schedule (id) not null,
-    week_number       int                                    not null,
-    day_of_week       text                                   not null,
     lecture_number_id bigint references lecture_number (id)  not null,
     room_id           bigint references room (id)            not null,
     daily_schedule_id bigint references daily_schedule (id)  not null

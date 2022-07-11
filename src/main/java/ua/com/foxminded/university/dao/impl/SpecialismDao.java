@@ -1,0 +1,79 @@
+package ua.com.foxminded.university.dao.impl;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import ua.com.foxminded.university.dao.DAO;
+import ua.com.foxminded.university.dao.mappers.SpecialismRowMapper;
+import ua.com.foxminded.university.model.misc.Specialism;
+
+import java.util.List;
+import java.util.Optional;
+
+public class SpecialismDao implements DAO<Long, Specialism> {
+    public static final String SPECIALISM_ID = "id";
+    public static final String SPECIALISM_SPECIALISM = "specialism_name";
+    public static final String CREATE = "INSERT INTO specialism(specialism_name) VALUES (?)";
+    public static final String RETRIEVE = "SELECT id, specialism_name FROM specialism WHERE id = ?";
+    public static final String UPDATE = "UPDATE specialism SET specialism_name = ? WHERE id = ?";
+    public static final String DELETE = "DELETE FROM specialism WHERE id = ?";
+    public static final String FIND_ALL = "SELECT id, specialism_name FROM specialism LIMIT 100";
+    public static final String SPECIALISMS_BY_DISCIPLINE_ID = "SELECT s.id, s.specialism_name FROM specialism AS s " +
+            "INNER JOIN discipline_specialism AS ds ON s.id = ds.specialism_id " +
+            "INNER JOIN discipline AS d ON ds.discipline_id = d.id where d.id = ?";
+    private static final String SPECIALISMS_BY_EDUCATOR_ID = "SELECT s.id, s.specialism_name FROM specialism AS s " +
+            "INNER JOIN educator_specialism AS es ON s.id = es.specialism_id " +
+            "INNER JOIN educator AS e ON es.educator_id = e.id where e.id = ?";
+    private static final String SPECIALISM_BY_SPECIALISM_NAME = "SELECT id, specialism_name " +
+            "FROM specialism WHERE specialism_name = ?";
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public SpecialismDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public void create(Specialism entity) {
+        jdbcTemplate.update(CREATE, entity.getSpecialismName());
+    }
+
+    @Override
+    public Optional<Specialism> retrieve(Long id) {
+        return jdbcTemplate.query(RETRIEVE, new SpecialismRowMapper(), id)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public void update(Specialism entity) {
+        jdbcTemplate.update(UPDATE, entity.getSpecialismName(), entity.getId());
+    }
+
+    @Override
+    public void delete(Long id) {
+        jdbcTemplate.update(DELETE, id);
+    }
+
+    @Override
+    public void delete(Specialism entity) {
+        jdbcTemplate.update(DELETE, entity.getId());
+    }
+
+    @Override
+    public List<Specialism> findAll() {
+        return jdbcTemplate.query(FIND_ALL, new SpecialismRowMapper());
+    }
+
+    public List<Specialism> getSpecialismsByDisciplineId(Long disciplineId) {
+        return jdbcTemplate.query(SPECIALISMS_BY_DISCIPLINE_ID, new SpecialismRowMapper(), disciplineId);
+    }
+
+    public List<Specialism> getSpecialismsByEducatorId(Long educatorId) {
+        return jdbcTemplate.query(SPECIALISMS_BY_EDUCATOR_ID, new SpecialismRowMapper(), educatorId);
+    }
+
+    public Optional<Specialism> getSpecialismBySpecialismName(String specialismName) {
+        return jdbcTemplate.query(SPECIALISM_BY_SPECIALISM_NAME, new SpecialismRowMapper(), specialismName)
+                .stream()
+                .findFirst();
+    }
+}

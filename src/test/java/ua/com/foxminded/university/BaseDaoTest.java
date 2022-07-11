@@ -8,7 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class BaseDaoTest {
 
-    static PostgreSQLContainer postgreSQLContainer = PostgresDatabaseContainer.getInstance();
+    static PostgreSQLContainer<PostgresDatabaseContainer> postgreSQLContainer = PostgresDatabaseContainer.getInstance();
 
     // update spring connection properties 
     @DynamicPropertySource
