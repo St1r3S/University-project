@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.WeeklyScheduleRowMapper;
 import ua.com.foxminded.university.model.schedule.WeeklySchedule;
@@ -8,6 +9,7 @@ import ua.com.foxminded.university.model.schedule.WeeklySchedule;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class WeeklyScheduleDao implements DAO<Long, WeeklySchedule> {
     public static final String WEEKLY_SCHEDULE_ID = "id";
     public static final String WEEKLY_SCHEDULE_WEEK_NUMBER = "week_number";

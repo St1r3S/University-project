@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.StudentRowMapper;
 import ua.com.foxminded.university.model.user.Student;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class StudentDao implements DAO<Long, Student> {
     public static final String STUDENT_ID = "id";
     public static final String STUDENT_FIRST_NAME = "first_name";
@@ -48,7 +50,7 @@ public class StudentDao implements DAO<Long, Student> {
     @Override
     public void create(Student entity) {
         jdbcTemplate.update(CRETE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole(), entity.getGroupName(),
+                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getGroupName(),
                 entity.getSpecialismId());
     }
 
@@ -60,7 +62,7 @@ public class StudentDao implements DAO<Long, Student> {
     @Override
     public void update(Student entity) {
         jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole(), entity.getGroupName(),
+                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getGroupName(),
                 entity.getSpecialismId(), entity.getId());
     }
 

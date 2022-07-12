@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.DisciplineRowMapper;
 import ua.com.foxminded.university.model.lecture.Discipline;
@@ -8,6 +9,7 @@ import ua.com.foxminded.university.model.lecture.Discipline;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class DisciplineDao implements DAO<Long, Discipline> {
     public static final String DISCIPLINE_ID = "id";
     public static final String DISCIPLINE_NAME = "discipline_name";
@@ -20,7 +22,7 @@ public class DisciplineDao implements DAO<Long, Discipline> {
     private static final String DISCIPLINES_BY_SPECIALISM_ID = "SELECT d.id, d.discipline_name, d.educator_id " +
             "FROM discipline AS d " +
             "INNER JOIN discipline_specialism AS ds ON d.id = ds.discipline_id " +
-            "INNER JOIN specialism AS s ON ds.specialism_id = s.id where d.id = ?";
+            "INNER JOIN specialism AS s ON ds.specialism_id = s.id where s.id = ?";
     private static final String DISCIPLINE_BY_DISCIPLINE_NAME = "SELECT id, discipline_name, educator_id " +
             "FROM discipline WHERE discipline_name = ?";
 

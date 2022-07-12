@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.RoomRowMapper;
 import ua.com.foxminded.university.model.lecture.Room;
@@ -8,10 +9,11 @@ import ua.com.foxminded.university.model.lecture.Room;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class RoomDao implements DAO<Long, Room> {
     public static final String ROOM_ID = "id";
     public static final String ROOM_NUMBER = "room_number";
-    public static final String CREATE = "INSERT INTO room(room_number) VALUES (?)";
+    public static final String CREATE = "INSERT INTO room(id,room_number) VALUES (DEFAULT,?)";
     public static final String RETRIEVE = "SELECT id, room_number FROM room WHERE id = ?";
     public static final String UPDATE = "UPDATE room SET room_number = ? WHERE id = ?";
     public static final String DELETE = "DELETE FROM room WHERE id = ?";

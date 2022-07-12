@@ -1,14 +1,17 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.LectureRowMapper;
 import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class LectureDao implements DAO<Long, Lecture> {
     public static final String LECTURE_ID = "id";
     public static final String LECTURE_DISCIPLINE_ID = "discipline_id";
@@ -36,6 +39,10 @@ public class LectureDao implements DAO<Long, Lecture> {
             "l.room_id, l.daily_schedule_id FROM lecture AS l " +
             "INNER JOIN daily_schedule AS ds ON l.daily_schedule_id = ds.id " +
             "INNER JOIN weekly_schedule AS ws ON ds.weekly_schedule_id = ws.id where ds.day_of_week = ? AND ws.week_number = ?";
+    private static final String LECTURES_BY_DATE = "SELECT l.id, l.discipline_id, l.lecture_number_id, " +
+            "l.room_id, l.daily_schedule_id FROM lecture AS l " +
+            "INNER JOIN daily_schedule AS ds ON l.daily_schedule_id = ds.id " +
+            "where ds.date_of_schedule_cell = ?";
     private static final String LECTURES_BY_ROOM_NUMBER = "SELECT l.id, l.discipline_id, l.lecture_number_id, " +
             "l.room_id, l.daily_schedule_id FROM lecture AS l " +
             "INNER JOIN room AS r ON l.room_id = r.id " +
@@ -88,7 +95,11 @@ public class LectureDao implements DAO<Long, Lecture> {
     }
 
     public List<Lecture> getLecturesByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber) {
-        return jdbcTemplate.query(LECTURES_BY_DAY_OF_WEEK_AND_WEEK_NUMBER, new LectureRowMapper(), dayOfWeek, weekNumber);
+        return jdbcTemplate.query(LECTURES_BY_DAY_OF_WEEK_AND_WEEK_NUMBER, new LectureRowMapper(), dayOfWeek.toString(), weekNumber);
+    }
+
+    public List<Lecture> getLecturesByDate(LocalDate date) {
+        return jdbcTemplate.query(LECTURES_BY_DATE, new LectureRowMapper(), date);
     }
 
     public List<Lecture> getLecturesByRoomNumber(String roomNumber) {

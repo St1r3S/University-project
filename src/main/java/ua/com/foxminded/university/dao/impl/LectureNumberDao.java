@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.LectureNumberRowMapper;
 import ua.com.foxminded.university.model.lecture.LectureNumber;
@@ -8,6 +9,7 @@ import ua.com.foxminded.university.model.lecture.LectureNumber;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class LectureNumberDao implements DAO<Long, LectureNumber> {
     public static final String LECTURE_NUMBER_ID = "id";
     public static final String LECTURE_NUMBER = "number";

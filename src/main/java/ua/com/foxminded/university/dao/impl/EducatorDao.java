@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.EducatorRowMapper;
 import ua.com.foxminded.university.model.user.Educator;
@@ -8,6 +9,7 @@ import ua.com.foxminded.university.model.user.Educator;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class EducatorDao implements DAO<Long, Educator> {
     public static final String EDUCATOR_ID = "id";
     public static final String EDUCATOR_FIRST_NAME = "first_name";
@@ -41,7 +43,7 @@ public class EducatorDao implements DAO<Long, Educator> {
     @Override
     public void create(Educator entity) {
         jdbcTemplate.update(CREATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole(), entity.getPosition());
+                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition());
     }
 
     @Override
@@ -54,7 +56,7 @@ public class EducatorDao implements DAO<Long, Educator> {
     @Override
     public void update(Educator entity) {
         jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole(), entity.getPosition(), entity.getId());
+                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition(), entity.getId());
     }
 
     @Override

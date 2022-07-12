@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.DAO;
 import ua.com.foxminded.university.dao.mappers.SpecialismRowMapper;
 import ua.com.foxminded.university.model.misc.Specialism;
@@ -8,6 +9,7 @@ import ua.com.foxminded.university.model.misc.Specialism;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class SpecialismDao implements DAO<Long, Specialism> {
     public static final String SPECIALISM_ID = "id";
     public static final String SPECIALISM_SPECIALISM = "specialism_name";
