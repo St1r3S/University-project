@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static ua.com.foxminded.university.dao.impl.StudentDao.*;
+import static ua.com.foxminded.university.dao.implementation.StudentDaoImpl.*;
 
 
 public class StudentRowMapper implements RowMapper<Student> {

@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static ua.com.foxminded.university.dao.impl.EducatorDao.*;
+import static ua.com.foxminded.university.dao.implementation.EducatorDaoImpl.*;
 
 public class EducatorRowMapper implements RowMapper<Educator> {
     @Override

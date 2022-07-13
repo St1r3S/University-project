@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class SpecialismDaoTest extends BaseDaoTest {
+class SpecialismDaoImplTest extends BaseDaoTest {
     public static final String SELECT_SPECIALISM_BY_ID = "SELECT id, specialism_name FROM specialism WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    SpecialismDao dao;
+    SpecialismDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new SpecialismDao(jdbcTemplate);
+        dao = new SpecialismDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -37,8 +37,8 @@ class SpecialismDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Specialism expected = new Specialism(2L, "Data analytics");
-        dao.create(expected);
+        Specialism expected = new Specialism("Data analytics");
+        dao.save(expected);
         Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2);
         assertEquals(expected, actual);
     }
@@ -55,7 +55,7 @@ class SpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
         Specialism expected = new Specialism(1L, "Cybersecurity");
-        dao.update(expected);
+        dao.save(expected);
         Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1);
         assertEquals(expected, actual);
     }

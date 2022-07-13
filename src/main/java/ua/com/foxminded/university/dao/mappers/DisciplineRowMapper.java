@@ -6,7 +6,7 @@ import ua.com.foxminded.university.model.lecture.Discipline;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ua.com.foxminded.university.dao.impl.DisciplineDao.*;
+import static ua.com.foxminded.university.dao.implementation.DisciplineDaoImpl.*;
 
 public class DisciplineRowMapper implements RowMapper<Discipline> {
     @Override

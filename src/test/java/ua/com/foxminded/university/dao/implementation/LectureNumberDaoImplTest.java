@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,28 +7,27 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ua.com.foxminded.university.BaseDaoTest;
-import ua.com.foxminded.university.dao.mappers.DailyScheduleRowMapper;
-import ua.com.foxminded.university.model.lecture.DayOfWeek;
-import ua.com.foxminded.university.model.schedule.DailySchedule;
+import ua.com.foxminded.university.dao.mappers.LectureNumberRowMapper;
+import ua.com.foxminded.university.model.lecture.LectureNumber;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class DailyScheduleDaoTest extends BaseDaoTest {
-    public static final String SELECT_DAILY_SCHEDULE_BY_ID = "SELECT id, date_of_schedule_cell, day_of_week, weekly_schedule_id FROM daily_schedule WHERE id = ?";
+class LectureNumberDaoImplTest extends BaseDaoTest {
+    public static final String SELECT_LECTURE_NUMBER_BY_ID = "SELECT id, number, time_start, time_end FROM lecture_number WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    DailyScheduleDao dao;
+    LectureNumberDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new DailyScheduleDao(jdbcTemplate);
+        dao = new LectureNumberDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -39,26 +38,26 @@ class DailyScheduleDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        DailySchedule expected = new DailySchedule(2L, LocalDate.of(2022, 9, 2), DayOfWeek.FRIDAY, 1L);
-        dao.create(expected);
-        DailySchedule actual = jdbcTemplate.queryForObject(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 2);
+        LectureNumber expected = new LectureNumber(2, LocalTime.parse("09:50:00"), LocalTime.parse("11:25:00"));
+        dao.save(expected);
+        LectureNumber actual = jdbcTemplate.queryForObject(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 2);
         assertEquals(expected, actual);
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
-        DailySchedule expected = new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L);
-        DailySchedule actual = dao.retrieve(1L).get();
+        LectureNumber expected = new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00"));
+        LectureNumber actual = dao.retrieve(1L).get();
         assertEquals(expected, actual);
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
-        DailySchedule expected = new DailySchedule(1L, LocalDate.of(2022, 9, 2), DayOfWeek.FRIDAY, 1L);
-        dao.update(expected);
-        DailySchedule actual = jdbcTemplate.queryForObject(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1);
+        LectureNumber expected = new LectureNumber(1L, 1, LocalTime.parse("08:10:00"), LocalTime.parse("09:35:00"));
+        dao.save(expected);
+        LectureNumber actual = jdbcTemplate.queryForObject(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1);
         assertEquals(expected, actual);
     }
 
@@ -66,22 +65,22 @@ class DailyScheduleDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
         dao.delete(1L);
-        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
-        DailySchedule expected = new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L);
+        LectureNumber expected = new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00"));
         dao.delete(expected);
-        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<DailySchedule> expected = List.of(new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L));
-        List<DailySchedule> actual = dao.findAll();
+        List<LectureNumber> expected = List.of(new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00")));
+        List<LectureNumber> actual = dao.findAll();
         assertEquals(expected, actual);
     }
 }

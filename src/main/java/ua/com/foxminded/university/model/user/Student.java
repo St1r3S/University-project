@@ -14,8 +14,8 @@ import java.time.LocalDate;
 public class Student extends User {
 
 
-    private final String groupName;
-    private final Long specialismId;
+    private String groupName;
+    private Long specialismId;
 
     public Student(Long id, String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole, String groupName, Long specialismId) {
         super(id, firstName, lastName, birthday, email, weeklyScheduleId, userRole);

@@ -1,19 +1,23 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ua.com.foxminded.university.dao.DAO;
+import ua.com.foxminded.university.dao.AbstractCrudDao;
+import ua.com.foxminded.university.dao.interfaces.SpecialismDao;
 import ua.com.foxminded.university.dao.mappers.SpecialismRowMapper;
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.misc.Specialism;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class SpecialismDao implements DAO<Long, Specialism> {
+public class SpecialismDaoImpl extends AbstractCrudDao<Specialism, Long> implements SpecialismDao {
     public static final String SPECIALISM_ID = "id";
-    public static final String SPECIALISM_SPECIALISM = "specialism_name";
-    public static final String CREATE = "INSERT INTO specialism(specialism_name) VALUES (?)";
+    public static final String SPECIALISM_NAME = "specialism_name";
+    //    public static final String CREATE = "INSERT INTO specialism(specialism_name) VALUES (?)";
     public static final String RETRIEVE = "SELECT id, specialism_name FROM specialism WHERE id = ?";
     public static final String UPDATE = "UPDATE specialism SET specialism_name = ? WHERE id = ?";
     public static final String DELETE = "DELETE FROM specialism WHERE id = ?";
@@ -28,14 +32,22 @@ public class SpecialismDao implements DAO<Long, Specialism> {
             "FROM specialism WHERE specialism_name = ?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public SpecialismDao(JdbcTemplate jdbcTemplate) {
+    public SpecialismDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("specialism").usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public void create(Specialism entity) {
-        jdbcTemplate.update(CREATE, entity.getSpecialismName());
+    public Specialism create(Specialism entity) {
+        Number id = jdbcInsert.executeAndReturnKey(
+                new MapSqlParameterSource()
+                        .addValue(SPECIALISM_NAME, entity.getSpecialismName())
+        );
+        entity.setId(id.longValue());
+        return entity;
+
     }
 
     @Override
@@ -46,8 +58,11 @@ public class SpecialismDao implements DAO<Long, Specialism> {
     }
 
     @Override
-    public void update(Specialism entity) {
-        jdbcTemplate.update(UPDATE, entity.getSpecialismName(), entity.getId());
+    public Specialism update(Specialism entity) throws NotFoundException {
+        if (1 == jdbcTemplate.update(UPDATE, entity.getSpecialismName(), entity.getId())) {
+            return entity;
+        }
+        throw new NotFoundException("Unable to update entity " + entity);
     }
 
     @Override
@@ -65,14 +80,17 @@ public class SpecialismDao implements DAO<Long, Specialism> {
         return jdbcTemplate.query(FIND_ALL, new SpecialismRowMapper());
     }
 
+    @Override
     public List<Specialism> getSpecialismsByDisciplineId(Long disciplineId) {
         return jdbcTemplate.query(SPECIALISMS_BY_DISCIPLINE_ID, new SpecialismRowMapper(), disciplineId);
     }
 
+    @Override
     public List<Specialism> getSpecialismsByEducatorId(Long educatorId) {
         return jdbcTemplate.query(SPECIALISMS_BY_EDUCATOR_ID, new SpecialismRowMapper(), educatorId);
     }
 
+    @Override
     public Optional<Specialism> getSpecialismBySpecialismName(String specialismName) {
         return jdbcTemplate.query(SPECIALISM_BY_SPECIALISM_NAME, new SpecialismRowMapper(), specialismName)
                 .stream()

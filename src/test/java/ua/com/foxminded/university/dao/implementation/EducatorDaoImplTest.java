@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class EducatorDaoTest extends BaseDaoTest {
+class EducatorDaoImplTest extends BaseDaoTest {
     public static final String SELECT_EDUCATOR_BY_ID = "SELECT id, first_name, last_name, birthday, email, " +
             "weekly_schedule_id, user_role, educator_position " +
             "FROM educator WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    EducatorDao dao;
+    EducatorDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new EducatorDao(jdbcTemplate);
+        dao = new EducatorDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -41,8 +41,8 @@ class EducatorDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Educator expected = new Educator(2L, "Jack", "Black", LocalDate.parse("1965-08-22"), "blackJack@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer");
-        dao.create(expected);
+        Educator expected = new Educator("Jack", "Black", LocalDate.parse("1965-08-22"), "blackJack@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer");
+        dao.save(expected);
         Educator actual = jdbcTemplate.queryForObject(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 2);
         assertEquals(expected, actual);
     }
@@ -59,7 +59,7 @@ class EducatorDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
         Educator expected = new Educator(1L, "Jack", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer");
-        dao.update(expected);
+        dao.save(expected);
         Educator actual = jdbcTemplate.queryForObject(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 1);
         assertEquals(expected, actual);
     }
@@ -93,5 +93,14 @@ class EducatorDaoTest extends BaseDaoTest {
         List<Educator> expected = List.of(new Educator(1L, "John", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer"));
         List<Educator> actual = dao.getEducatorsBySpecialismId(1L);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyExpelAndEnroll() {
+        dao.expel(1L, 1L);
+        assertFalse(dao.getEducatorsBySpecialismId(1L).stream().findFirst().isPresent());
+        dao.enroll(1L, 1L);
+        assertTrue(dao.getEducatorsBySpecialismId(1L).stream().findFirst().isPresent());
     }
 }

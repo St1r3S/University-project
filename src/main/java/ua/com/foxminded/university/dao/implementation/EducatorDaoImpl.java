@@ -1,16 +1,20 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ua.com.foxminded.university.dao.DAO;
+import ua.com.foxminded.university.dao.AbstractCrudDao;
+import ua.com.foxminded.university.dao.interfaces.EducatorDao;
 import ua.com.foxminded.university.dao.mappers.EducatorRowMapper;
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.user.Educator;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class EducatorDao implements DAO<Long, Educator> {
+public class EducatorDaoImpl extends AbstractCrudDao<Educator, Long> implements EducatorDao {
     public static final String EDUCATOR_ID = "id";
     public static final String EDUCATOR_FIRST_NAME = "first_name";
     public static final String EDUCATOR_LAST_NAME = "last_name";
@@ -19,8 +23,8 @@ public class EducatorDao implements DAO<Long, Educator> {
     public static final String EDUCATOR_WEEKLY_SCHEDULE_ID = "weekly_schedule_id";
     public static final String EDUCATOR_ROLE = "user_role";
     public static final String EDUCATOR_POSITION = "educator_position";
-    public static final String CREATE = "INSERT INTO educator(first_name, last_name, birthday, email, " +
-            "weekly_schedule_id, user_role, educator_position) VALUES (?,?,?,?,?,?,?)";
+    //    public static final String CREATE = "INSERT INTO educator(first_name, last_name, birthday, email, " +
+//            "weekly_schedule_id, user_role, educator_position) VALUES (?,?,?,?,?,?,?)";
     public static final String RETRIEVE = "SELECT id, first_name, last_name, birthday, email, " +
             "weekly_schedule_id, user_role, educator_position " +
             "FROM educator WHERE id = ?";
@@ -33,17 +37,32 @@ public class EducatorDao implements DAO<Long, Educator> {
             "e.weekly_schedule_id, e.user_role, e.educator_position FROM educator AS e " +
             "INNER JOIN educator_specialism AS es ON e.id = es.educator_id " +
             "INNER JOIN specialism AS s ON es.specialism_id = s.id where s.id = ?";
+    private static final String INSERT_EDUCATOR_SPECIALISM = "INSERT INTO educator_specialism(educator_id, specialism_id) VALUES (?, ?)";
+    private static final String DELETE_EDUCATOR_SPECIALISM = "DELETE FROM educator_specialism WHERE educator_id = ? AND specialism_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
 
-    public EducatorDao(JdbcTemplate jdbcTemplate) {
+    private final SimpleJdbcInsert jdbcInsert;
+
+    public EducatorDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("educator").usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public void create(Educator entity) {
-        jdbcTemplate.update(CREATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition());
+    public Educator create(Educator entity) {
+        Number id = jdbcInsert.executeAndReturnKey(
+                new MapSqlParameterSource()
+                        .addValue(EDUCATOR_FIRST_NAME, entity.getFirstName())
+                        .addValue(EDUCATOR_LAST_NAME, entity.getLastName())
+                        .addValue(EDUCATOR_BIRTHDAY, entity.getBirthday())
+                        .addValue(EDUCATOR_EMAIL, entity.getEmail())
+                        .addValue(EDUCATOR_WEEKLY_SCHEDULE_ID, entity.getWeeklyScheduleId())
+                        .addValue(EDUCATOR_ROLE, entity.getUserRole().toString())
+                        .addValue(EDUCATOR_POSITION, entity.getPosition())
+        );
+        entity.setId(id.longValue());
+        return entity;
     }
 
     @Override
@@ -54,9 +73,13 @@ public class EducatorDao implements DAO<Long, Educator> {
     }
 
     @Override
-    public void update(Educator entity) {
-        jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition(), entity.getId());
+    public Educator update(Educator entity) throws NotFoundException {
+        if (1 == jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
+                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition(), entity.getId())) {
+            return entity;
+        }
+        throw new NotFoundException("Unable to update entity " + entity);
+
     }
 
     @Override
@@ -74,7 +97,18 @@ public class EducatorDao implements DAO<Long, Educator> {
         return jdbcTemplate.query(FIND_ALL, new EducatorRowMapper());
     }
 
+    @Override
     public List<Educator> getEducatorsBySpecialismId(Long specialismId) {
         return jdbcTemplate.query(EDUCATORS_BY_SPECIALISM_ID, new EducatorRowMapper(), specialismId);
+    }
+
+    @Override
+    public void enroll(Long educatorId, Long specialismId) {
+        jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    }
+
+    @Override
+    public void expel(Long educatorId, Long specialismId) {
+        jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId);
     }
 }

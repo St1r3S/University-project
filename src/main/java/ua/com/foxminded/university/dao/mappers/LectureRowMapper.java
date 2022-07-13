@@ -6,7 +6,7 @@ import ua.com.foxminded.university.model.lecture.Lecture;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ua.com.foxminded.university.dao.impl.LectureDao.*;
+import static ua.com.foxminded.university.dao.implementation.LectureDaoImpl.*;
 
 public class LectureRowMapper implements RowMapper<Lecture> {
     @Override

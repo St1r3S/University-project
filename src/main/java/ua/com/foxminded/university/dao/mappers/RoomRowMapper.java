@@ -6,8 +6,8 @@ import ua.com.foxminded.university.model.lecture.Room;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ua.com.foxminded.university.dao.impl.RoomDao.ROOM_ID;
-import static ua.com.foxminded.university.dao.impl.RoomDao.ROOM_NUMBER;
+import static ua.com.foxminded.university.dao.implementation.RoomDaoImpl.ROOM_ID;
+import static ua.com.foxminded.university.dao.implementation.RoomDaoImpl.ROOM_NUMBER;
 
 public class RoomRowMapper implements RowMapper<Room> {
     @Override

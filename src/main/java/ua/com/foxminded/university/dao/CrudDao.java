@@ -1,14 +1,15 @@
 package ua.com.foxminded.university.dao;
 
+import ua.com.foxminded.university.model.Entity;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface DAO<K extends Number, T> {
-    void create(T entity);
+public interface CrudDao<T extends Entity<K>, K extends Number> {
 
     Optional<T> retrieve(K id);
 
-    void update(T entity);
+    T save(T entity);
 
     void delete(K id);
 

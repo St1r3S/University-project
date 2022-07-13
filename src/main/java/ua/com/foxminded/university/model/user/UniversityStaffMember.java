@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @ToString
 public class UniversityStaffMember extends User {
 
-    private final String position;
+    private String position;
 
     public UniversityStaffMember(Long id, String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole, String position) {
         super(id, firstName, lastName, birthday, email, weeklyScheduleId, userRole);

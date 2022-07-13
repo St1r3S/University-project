@@ -6,8 +6,8 @@ import ua.com.foxminded.university.model.schedule.WeeklySchedule;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ua.com.foxminded.university.dao.impl.WeeklyScheduleDao.WEEKLY_SCHEDULE_ID;
-import static ua.com.foxminded.university.dao.impl.WeeklyScheduleDao.WEEKLY_SCHEDULE_WEEK_NUMBER;
+import static ua.com.foxminded.university.dao.implementation.WeeklyScheduleDaoImpl.WEEKLY_SCHEDULE_ID;
+import static ua.com.foxminded.university.dao.implementation.WeeklyScheduleDaoImpl.WEEKLY_SCHEDULE_WEEK_NUMBER;
 
 public class WeeklyScheduleRowMapper implements RowMapper<WeeklySchedule> {
     @Override

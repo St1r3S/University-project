@@ -14,12 +14,13 @@ import java.time.LocalDate;
 @ToString
 public class User extends LongEntity {
 
-    private final String firstName;
-    private final String lastName;
-    private final LocalDate birthday;
-    private final String email;
-    private final Long weeklyScheduleId;
-    private final UserRole userRole;
+    private String firstName;
+    private String lastName;
+    private LocalDate birthday;
+    private String email;
+    private Long weeklyScheduleId;
+    private UserRole userRole;
+
 
     public User(Long id, String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole) {
         super(id);

@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +19,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class LectureDaoTest extends BaseDaoTest {
+class LectureDaoImplTest extends BaseDaoTest {
     public static final String SELECT_LECTURE_BY_ID = "SELECT id, discipline_id, lecture_number_id, room_id, daily_schedule_id " +
             "FROM lecture WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    LectureDao dao;
+    LectureDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new LectureDao(jdbcTemplate);
+        dao = new LectureDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -40,8 +40,8 @@ class LectureDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Lecture expected = new Lecture(2L, 2L, 1L, 1L, 1L);
-        dao.create(expected);
+        Lecture expected = new Lecture(2L, 1L, 1L, 1L);
+        dao.save(expected);
         Lecture actual = jdbcTemplate.queryForObject(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 2);
         assertEquals(expected, actual);
     }
@@ -58,7 +58,7 @@ class LectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
         Lecture expected = new Lecture(1L, 2L, 1L, 1L, 1L);
-        dao.update(expected);
+        dao.save(expected);
         Lecture actual = jdbcTemplate.queryForObject(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1);
         assertEquals(expected, actual);
     }

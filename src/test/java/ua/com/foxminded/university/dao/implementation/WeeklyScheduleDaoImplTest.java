@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +7,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ua.com.foxminded.university.BaseDaoTest;
-import ua.com.foxminded.university.dao.mappers.RoomRowMapper;
-import ua.com.foxminded.university.model.lecture.Room;
+import ua.com.foxminded.university.dao.mappers.WeeklyScheduleRowMapper;
+import ua.com.foxminded.university.model.schedule.WeeklySchedule;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -17,17 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class RoomDaoTest extends BaseDaoTest {
-
-    public static final String SELECT_ROOM_BY_ID = "SELECT id, room_number FROM room WHERE id = ?";
+class WeeklyScheduleDaoImplTest extends BaseDaoTest {
+    public static final String SELECT_WEEKLY_SCHEDULE_BY_ID = "SELECT id, week_number FROM weekly_schedule WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    RoomDao dao;
+    WeeklyScheduleDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new RoomDao(jdbcTemplate);
+        dao = new WeeklyScheduleDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -38,26 +37,26 @@ class RoomDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Room expected = new Room(2L, "55");
-        dao.create(expected);
-        Room actual = jdbcTemplate.queryForObject(SELECT_ROOM_BY_ID, new RoomRowMapper(), 2);
+        WeeklySchedule expected = new WeeklySchedule(2);
+        dao.save(expected);
+        WeeklySchedule actual = jdbcTemplate.queryForObject(SELECT_WEEKLY_SCHEDULE_BY_ID, new WeeklyScheduleRowMapper(), 2);
         assertEquals(expected, actual);
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
-        Room expected = new Room(1L, "404");
-        Room actual = dao.retrieve(1L).get();
+        WeeklySchedule expected = new WeeklySchedule(1L, 1);
+        WeeklySchedule actual = dao.retrieve(1L).get();
         assertEquals(expected, actual);
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
-        Room expected = new Room(1L, "505");
-        dao.update(expected);
-        Room actual = jdbcTemplate.queryForObject(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1);
+        WeeklySchedule expected = new WeeklySchedule(1L, 2);
+        dao.save(expected);
+        WeeklySchedule actual = jdbcTemplate.queryForObject(SELECT_WEEKLY_SCHEDULE_BY_ID, new WeeklyScheduleRowMapper(), 1);
         assertEquals(expected, actual);
     }
 
@@ -65,22 +64,22 @@ class RoomDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
         dao.delete(1L);
-        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_WEEKLY_SCHEDULE_BY_ID, new WeeklyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
-        Room expected = new Room(1L, "404");
+        WeeklySchedule expected = new WeeklySchedule(1L, 1);
         dao.delete(expected);
-        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_WEEKLY_SCHEDULE_BY_ID, new WeeklyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<Room> expected = List.of(new Room(1L, "404"));
-        List<Room> actual = dao.findAll();
+        List<WeeklySchedule> expected = List.of(new WeeklySchedule(1L, 1));
+        List<WeeklySchedule> actual = dao.findAll();
         assertEquals(expected, actual);
     }
 }

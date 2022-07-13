@@ -1,9 +1,13 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ua.com.foxminded.university.dao.DAO;
+import ua.com.foxminded.university.dao.AbstractCrudDao;
+import ua.com.foxminded.university.dao.interfaces.StudentDao;
 import ua.com.foxminded.university.dao.mappers.StudentRowMapper;
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.user.Student;
 
 import java.time.LocalDate;
@@ -11,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class StudentDao implements DAO<Long, Student> {
+public class StudentDaoImpl extends AbstractCrudDao<Student, Long> implements StudentDao {
     public static final String STUDENT_ID = "id";
     public static final String STUDENT_FIRST_NAME = "first_name";
     public static final String STUDENT_LAST_NAME = "last_name";
@@ -21,8 +25,8 @@ public class StudentDao implements DAO<Long, Student> {
     public static final String STUDENT_ROLE = "user_role";
     public static final String STUDENT_GROUP_NAME = "group_name";
     public static final String STUDENT_SPECIALISM = "specialism_id";
-    public static final String CRETE = "INSERT INTO student(first_name, last_name, birthday, email, weekly_schedule_id, " +
-            "user_role, group_name, specialism_id) VALUES (?,?,?,?,?,?,?,?)";
+    //    public static final String CRETE = "INSERT INTO student(first_name, last_name, birthday, email, weekly_schedule_id, " +
+//            "user_role, group_name, specialism_id) VALUES (?,?,?,?,?,?,?,?)";
     public static final String RETRIEVE = "SELECT id, first_name, last_name, birthday, email, weekly_schedule_id, " +
             "user_role, group_name, specialism_id FROM student WHERE id = ?";
     public static final String UPDATE = "UPDATE student SET first_name = ?, last_name = ?, birthday = ?, email = ?, " +
@@ -40,18 +44,33 @@ public class StudentDao implements DAO<Long, Student> {
             "weekly_schedule_id, user_role, group_name, specialism_id FROM student WHERE group_name = ?";
     private static final String STUDENTS_BY_BIRTHDAY = "SELECT id, first_name, last_name, birthday, email, " +
             "weekly_schedule_id, user_role, group_name, specialism_id FROM student WHERE birthday = ?";
+    private static final String INSERT_LECTURE_STUDENT = "INSERT INTO lecture_student(lecture_id, student_id) VALUES (?, ?)";
+
+    private static final String DELETE_LECTURE_STUDENT = "DELETE FROM lecture_student WHERE lecture_id = ? AND student_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public StudentDao(JdbcTemplate jdbcTemplate) {
+    public StudentDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("student").usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public void create(Student entity) {
-        jdbcTemplate.update(CRETE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
-                entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getGroupName(),
-                entity.getSpecialismId());
+    public Student create(Student entity) {
+        Number id = jdbcInsert.executeAndReturnKey(
+                new MapSqlParameterSource()
+                        .addValue(STUDENT_FIRST_NAME, entity.getFirstName())
+                        .addValue(STUDENT_LAST_NAME, entity.getLastName())
+                        .addValue(STUDENT_BIRTHDAY, entity.getBirthday())
+                        .addValue(STUDENT_EMAIL, entity.getEmail())
+                        .addValue(STUDENT_WEEKLY_SCHEDULE_ID, entity.getWeeklyScheduleId())
+                        .addValue(STUDENT_ROLE, entity.getUserRole().toString())
+                        .addValue(STUDENT_GROUP_NAME, entity.getGroupName())
+                        .addValue(STUDENT_SPECIALISM, entity.getSpecialismId())
+        );
+        entity.setId(id.longValue());
+        return entity;
     }
 
     @Override
@@ -60,10 +79,13 @@ public class StudentDao implements DAO<Long, Student> {
     }
 
     @Override
-    public void update(Student entity) {
-        jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
+    public Student update(Student entity) throws NotFoundException {
+        if (1 == jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
                 entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getGroupName(),
-                entity.getSpecialismId(), entity.getId());
+                entity.getSpecialismId(), entity.getId())) {
+            return entity;
+        }
+        throw new NotFoundException("Unable to update entity " + entity);
     }
 
     @Override
@@ -81,19 +103,33 @@ public class StudentDao implements DAO<Long, Student> {
         return jdbcTemplate.query(FIND_ALL, new StudentRowMapper());
     }
 
+    @Override
     public List<Student> getStudentsByLectureId(Long lectureId) {
         return jdbcTemplate.query(STUDENTS_BY_LECTURE_ID, new StudentRowMapper(), lectureId);
     }
 
+    @Override
     public List<Student> getStudentsBySpecialismId(Long specialismId) {
         return jdbcTemplate.query(STUDENTS_BY_SPECIALISM_ID, new StudentRowMapper(), specialismId);
     }
 
+    @Override
     public List<Student> getStudentsByGroupName(String groupName) {
         return jdbcTemplate.query(STUDENTS_BY_GROUP_NAME, new StudentRowMapper(), groupName);
     }
 
+    @Override
     public List<Student> getStudentsByBirthday(LocalDate birthday) {
         return jdbcTemplate.query(STUDENTS_BY_BIRTHDAY, new StudentRowMapper(), birthday);
+    }
+
+    @Override
+    public void enroll(Long lectureId, Long studentId) {
+        jdbcTemplate.update(INSERT_LECTURE_STUDENT, lectureId, studentId);
+    }
+
+    @Override
+    public void expel(Long lectureId, Long studentId) {
+        jdbcTemplate.update(DELETE_LECTURE_STUDENT, lectureId, studentId);
     }
 }

@@ -1,9 +1,13 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ua.com.foxminded.university.dao.DAO;
+import ua.com.foxminded.university.dao.AbstractCrudDao;
+import ua.com.foxminded.university.dao.interfaces.LectureDao;
 import ua.com.foxminded.university.dao.mappers.LectureRowMapper;
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
@@ -12,14 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class LectureDao implements DAO<Long, Lecture> {
+public class LectureDaoImpl extends AbstractCrudDao<Lecture, Long> implements LectureDao {
     public static final String LECTURE_ID = "id";
     public static final String LECTURE_DISCIPLINE_ID = "discipline_id";
     public static final String LECTURE_LECTURE_NUMBER_ID = "lecture_number_id";
     public static final String LECTURE_ROOM_ID = "room_id";
     public static final String LECTURE_DAILY_SCHEDULE_ID = "daily_schedule_id";
-    public static final String CREATE = "INSERT INTO lecture(discipline_id, lecture_number_id, room_id, " +
-            "daily_schedule_id) VALUES (?,?,?,?)";
+    //    public static final String CREATE = "INSERT INTO lecture(discipline_id, lecture_number_id, room_id, " +
+//            "daily_schedule_id) VALUES (?,?,?,?)";
     public static final String RETRIEVE = "SELECT id, discipline_id, lecture_number_id, room_id, daily_schedule_id " +
             "FROM lecture WHERE id = ?";
     public static final String UPDATE = "UPDATE lecture SET discipline_id = ?, lecture_number_id = ?, room_id = ?, " +
@@ -49,15 +53,24 @@ public class LectureDao implements DAO<Long, Lecture> {
             "where r.room_number = ?";
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
-    public LectureDao(JdbcTemplate jdbcTemplate) {
+    public LectureDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("lecture").usingGeneratedKeyColumns("id");
     }
 
     @Override
-    public void create(Lecture entity) {
-        jdbcTemplate.update(CREATE, entity.getDisciplineId(), entity.getLectureNumberId(),
-                entity.getRoomId(), entity.getDailyScheduleId());
+    public Lecture create(Lecture entity) {
+        Number id = jdbcInsert.executeAndReturnKey(
+                new MapSqlParameterSource()
+                        .addValue(LECTURE_DISCIPLINE_ID, entity.getDisciplineId())
+                        .addValue(LECTURE_LECTURE_NUMBER_ID, entity.getLectureNumberId())
+                        .addValue(LECTURE_ROOM_ID, entity.getRoomId())
+                        .addValue(LECTURE_DAILY_SCHEDULE_ID, entity.getDailyScheduleId())
+        );
+        entity.setId(id.longValue());
+        return entity;
     }
 
     @Override
@@ -66,9 +79,12 @@ public class LectureDao implements DAO<Long, Lecture> {
     }
 
     @Override
-    public void update(Lecture entity) {
-        jdbcTemplate.update(UPDATE, entity.getDisciplineId(), entity.getLectureNumberId(),
-                entity.getRoomId(), entity.getDailyScheduleId(), entity.getId());
+    public Lecture update(Lecture entity) throws NotFoundException {
+        if (1 == jdbcTemplate.update(UPDATE, entity.getDisciplineId(), entity.getLectureNumberId(),
+                entity.getRoomId(), entity.getDailyScheduleId(), entity.getId())) {
+            return entity;
+        }
+        throw new NotFoundException("Unable to update entity " + entity);
     }
 
     @Override
@@ -86,22 +102,27 @@ public class LectureDao implements DAO<Long, Lecture> {
         return jdbcTemplate.query(FIND_ALL, new LectureRowMapper());
     }
 
+    @Override
     public List<Lecture> getLecturesByStudentId(Long studentId) {
         return jdbcTemplate.query(LECTURES_BY_STUDENT_ID, new LectureRowMapper(), studentId);
     }
 
+    @Override
     public List<Lecture> getLecturesByWeekNumber(Integer weekNumber) {
         return jdbcTemplate.query(LECTURES_BY_WEEK_NUMBER, new LectureRowMapper(), weekNumber);
     }
 
+    @Override
     public List<Lecture> getLecturesByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber) {
         return jdbcTemplate.query(LECTURES_BY_DAY_OF_WEEK_AND_WEEK_NUMBER, new LectureRowMapper(), dayOfWeek.toString(), weekNumber);
     }
 
+    @Override
     public List<Lecture> getLecturesByDate(LocalDate date) {
         return jdbcTemplate.query(LECTURES_BY_DATE, new LectureRowMapper(), date);
     }
 
+    @Override
     public List<Lecture> getLecturesByRoomNumber(String roomNumber) {
         return jdbcTemplate.query(LECTURES_BY_ROOM_NUMBER, new LectureRowMapper(), roomNumber);
     }

@@ -14,9 +14,9 @@ import java.time.LocalTime;
 @ToString
 public class LectureNumber extends LongEntity {
 
-    private final Integer number;
-    private final LocalTime timeStart;
-    private final LocalTime timeEnd;
+    private Integer number;
+    private LocalTime timeStart;
+    private LocalTime timeEnd;
 
     public LectureNumber(Long id, Integer number, LocalTime timeStart, LocalTime timeEnd) {
         super(id);

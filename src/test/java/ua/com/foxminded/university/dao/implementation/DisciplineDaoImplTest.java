@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao.impl;
+package ua.com.foxminded.university.dao.implementation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class DisciplineDaoTest extends BaseDaoTest {
+class DisciplineDaoImplTest extends BaseDaoTest {
     public static final String SELECT_DISCIPLINE_BY_ID = "SELECT id, discipline_name, educator_id FROM discipline WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    DisciplineDao dao;
+    DisciplineDaoImpl dao;
 
     @PostConstruct
     void init() {
-        dao = new DisciplineDao(jdbcTemplate);
+        dao = new DisciplineDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -38,8 +38,8 @@ class DisciplineDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Discipline expected = new Discipline(3L, "Math", 1L);
-        dao.create(expected);
+        Discipline expected = new Discipline("Math", 1L);
+        dao.save(expected);
         Discipline actual = jdbcTemplate.queryForObject(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 3);
         assertEquals(expected, actual);
     }
@@ -56,7 +56,7 @@ class DisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
         Discipline expected = new Discipline(1L, "Math", 1L);
-        dao.update(expected);
+        dao.save(expected);
         Discipline actual = jdbcTemplate.queryForObject(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1);
         assertEquals(expected, actual);
     }
@@ -100,5 +100,14 @@ class DisciplineDaoTest extends BaseDaoTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyExpelAndEnroll() {
+        dao.expel(1L, 1L);
+        dao.expel(2L, 1L);
+        assertFalse(dao.getDisciplinesBySpecialismId(1L).stream().findFirst().isPresent());
+        dao.enroll(1L, 1L);
+        assertTrue(dao.getDisciplinesBySpecialismId(1L).stream().findFirst().isPresent());
+    }
 
 }

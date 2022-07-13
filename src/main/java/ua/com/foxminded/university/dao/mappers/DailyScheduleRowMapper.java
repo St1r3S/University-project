@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static ua.com.foxminded.university.dao.impl.DailyScheduleDao.*;
+import static ua.com.foxminded.university.dao.implementation.DailyScheduleDaoImpl.*;
 
 public class DailyScheduleRowMapper implements RowMapper<DailySchedule> {
     @Override

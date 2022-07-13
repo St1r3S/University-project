@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 
-import static ua.com.foxminded.university.dao.impl.LectureNumberDao.*;
+import static ua.com.foxminded.university.dao.implementation.LectureNumberDaoImpl.*;
 
 public class LectureNumberRowMapper implements RowMapper<LectureNumber> {
     @Override
