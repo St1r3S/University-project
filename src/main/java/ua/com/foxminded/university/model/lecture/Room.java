@@ -1,18 +1,25 @@
 package ua.com.foxminded.university.model.lecture;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
 
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class Room extends LongEntity {
-    public static final String ROOM_ID = "id";
-    public static final String ROOM_NUMBER = "number";
-    private String number;
 
-    public Room(Long id, String number) {
+    private String roomNumber;
+
+    public Room(Long id, String roomNumber) {
         super(id);
-        this.number = number;
+        this.roomNumber = roomNumber;
     }
 
-    public Room(String number) {
-        this(null, number);
+    public Room(String roomNumber) {
+        this(null, roomNumber);
     }
 }

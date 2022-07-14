@@ -1,31 +1,29 @@
 package ua.com.foxminded.university.model.user;
 
-import ua.com.foxminded.university.model.schedule.WeeklySchedule;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class Student extends User {
 
-    public static final String STUDENT_ID = "id";
-    public static final String STUDENT_FIRST_NAME = "first_name";
-    public static final String STUDENT_LAST_NAME = "last_name";
-    public static final String STUDENT_BIRTHDAY = "birthday";
-    public static final String STUDENT_EMAIL = "email";
-    public static final String STUDENT_WEEKLY_SCHEDULE_ID = "weekly_schedule_id";
-    public static final String STUDENT_ROLE = "role";
-    public static final String STUDENT_GROUP_NAME = "group_name";
-    public static final String STUDENT_SPECIALISM = "specialism";
 
-    private final String groupName;
-    private final String specialism;
+    private String groupName;
+    private Long specialismId;
 
-    public Student(Long id, String firstName, String lastName, LocalDate birthday, WeeklySchedule schedule, String email, UserRole userRole, String groupName, String specialism) {
-        super(id, firstName, lastName, birthday, schedule, email, userRole);
+    public Student(Long id, String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole, String groupName, Long specialismId) {
+        super(id, firstName, lastName, birthday, email, weeklyScheduleId, userRole);
         this.groupName = groupName;
-        this.specialism = specialism;
+        this.specialismId = specialismId;
     }
 
-    public Student(String firstName, String lastName, LocalDate birthday, WeeklySchedule schedule, String email, UserRole userRole, String groupName, String specialism) {
-        this(null, firstName, lastName, birthday, schedule, email, userRole, groupName, specialism);
+    public Student(String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole, String groupName, Long specialismId) {
+        this(null, firstName, lastName, birthday, email, weeklyScheduleId, userRole, groupName, specialismId);
     }
 }

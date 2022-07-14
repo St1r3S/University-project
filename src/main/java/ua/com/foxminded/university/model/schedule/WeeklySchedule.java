@@ -1,23 +1,31 @@
 package ua.com.foxminded.university.model.schedule;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class WeeklySchedule extends LongEntity implements Schedule {
-    public static final String WEEKLY_SCHEDULE_ID = "id";
 
-    private List<DailySchedule> weeklySchedule;
+    private Integer weekNumber;
 
-    public WeeklySchedule(Long id, List<DailySchedule> weeklySchedule) {
+    public WeeklySchedule(Long id, Integer weekNumber) {
         super(id);
-        this.weeklySchedule = weeklySchedule;
+        this.weekNumber = weekNumber;
     }
 
-    public WeeklySchedule(List<DailySchedule> weeklySchedule) {
-        this(null, weeklySchedule);
+    public WeeklySchedule(Integer weekNumber) {
+        this(null, weekNumber);
     }
+
 
     @Override
     public List<Lecture> getSchedule() {

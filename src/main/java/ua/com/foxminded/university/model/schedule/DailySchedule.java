@@ -1,23 +1,35 @@
 package ua.com.foxminded.university.model.schedule;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
+import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
+import java.time.LocalDate;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString
 public class DailySchedule extends LongEntity implements Schedule {
-    public static final String DAILY_SCHEDULE_ID = "id";
-    public static final String DAILY_SCHEDULE_WEEKLY_SCHEDULE_ID = "weekly_schedule_id";
 
-    private List<Lecture> lectures;
+    private LocalDate dateOfScheduleCell;
+    private DayOfWeek dayOfWeek;
+    private Long weeklyScheduleId;
 
-    public DailySchedule(Long id, List<Lecture> lectures) {
+    public DailySchedule(Long id, LocalDate dateOfScheduleCell, DayOfWeek dayOfWeek, Long weeklyScheduleId) {
         super(id);
-        this.lectures = lectures;
+        this.dateOfScheduleCell = dateOfScheduleCell;
+        this.dayOfWeek = dayOfWeek;
+        this.weeklyScheduleId = weeklyScheduleId;
     }
 
-    public DailySchedule(List<Lecture> lectures) {
-        this(null, lectures);
+    public DailySchedule(LocalDate dateOfScheduleCell, DayOfWeek dayOfWeek, Long weeklyScheduleId) {
+        this(null, dateOfScheduleCell, dayOfWeek, weeklyScheduleId);
     }
 
     @Override
