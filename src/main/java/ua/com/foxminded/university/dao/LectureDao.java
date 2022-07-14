@@ -7,13 +7,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LectureDao extends CrudDao<Lecture, Long> {
-    List<Lecture> getLecturesByStudentId(Long studentId);
+    List<Lecture> findAllByStudentId(Long studentId);
 
-    List<Lecture> getLecturesByWeekNumber(Integer weekNumber);
+    List<Lecture> findAllByWeekNumber(Integer weekNumber);
 
-    List<Lecture> getLecturesByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber);
+    List<Lecture> findAllByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber);
 
-    List<Lecture> getLecturesByDate(LocalDate date);
+    List<Lecture> findAllByDate(LocalDate date);
 
-    List<Lecture> getLecturesByRoomNumber(String roomNumber);
+    List<Lecture> findAllByRoomNumber(String roomNumber);
 }

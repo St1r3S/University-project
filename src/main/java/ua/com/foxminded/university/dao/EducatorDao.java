@@ -5,7 +5,7 @@ import ua.com.foxminded.university.model.user.Educator;
 import java.util.List;
 
 public interface EducatorDao extends CrudDao<Educator, Long> {
-    List<Educator> getEducatorsBySpecialismId(Long specialismId);
+    List<Educator> findAllBySpecialismId(Long specialismId);
 
     void enroll(Long educatorId, Long specialismId);
 

@@ -46,7 +46,7 @@ public class JdbcLectureNumberDao extends AbstractCrudDao<LectureNumber, Long> {
     }
 
     @Override
-    public Optional<LectureNumber> retrieve(Long id) {
+    public Optional<LectureNumber> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new LectureNumberRowMapper(), id).stream().findFirst();
     }
 
@@ -59,12 +59,12 @@ public class JdbcLectureNumberDao extends AbstractCrudDao<LectureNumber, Long> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(LectureNumber entity) {
+    public void deleteById(LectureNumber entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 

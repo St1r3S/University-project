@@ -74,7 +74,7 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public Optional<Lecture> retrieve(Long id) {
+    public Optional<Lecture> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new LectureRowMapper(), id).stream().findFirst();
     }
 
@@ -88,12 +88,12 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Lecture entity) {
+    public void deleteById(Lecture entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
@@ -103,27 +103,27 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public List<Lecture> getLecturesByStudentId(Long studentId) {
+    public List<Lecture> findAllByStudentId(Long studentId) {
         return jdbcTemplate.query(LECTURES_BY_STUDENT_ID, new LectureRowMapper(), studentId);
     }
 
     @Override
-    public List<Lecture> getLecturesByWeekNumber(Integer weekNumber) {
+    public List<Lecture> findAllByWeekNumber(Integer weekNumber) {
         return jdbcTemplate.query(LECTURES_BY_WEEK_NUMBER, new LectureRowMapper(), weekNumber);
     }
 
     @Override
-    public List<Lecture> getLecturesByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber) {
+    public List<Lecture> findAllByDayOfWeekAndWeekNumber(DayOfWeek dayOfWeek, Integer weekNumber) {
         return jdbcTemplate.query(LECTURES_BY_DAY_OF_WEEK_AND_WEEK_NUMBER, new LectureRowMapper(), dayOfWeek.toString(), weekNumber);
     }
 
     @Override
-    public List<Lecture> getLecturesByDate(LocalDate date) {
+    public List<Lecture> findAllByDate(LocalDate date) {
         return jdbcTemplate.query(LECTURES_BY_DATE, new LectureRowMapper(), date);
     }
 
     @Override
-    public List<Lecture> getLecturesByRoomNumber(String roomNumber) {
+    public List<Lecture> findAllByRoomNumber(String roomNumber) {
         return jdbcTemplate.query(LECTURES_BY_ROOM_NUMBER, new LectureRowMapper(), roomNumber);
     }
 }

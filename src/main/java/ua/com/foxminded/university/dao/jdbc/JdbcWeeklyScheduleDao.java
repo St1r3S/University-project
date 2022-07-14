@@ -41,7 +41,7 @@ public class JdbcWeeklyScheduleDao extends AbstractCrudDao<WeeklySchedule, Long>
     }
 
     @Override
-    public Optional<WeeklySchedule> retrieve(Long id) {
+    public Optional<WeeklySchedule> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new WeeklyScheduleRowMapper(), id).stream().findFirst();
     }
 
@@ -54,12 +54,12 @@ public class JdbcWeeklyScheduleDao extends AbstractCrudDao<WeeklySchedule, Long>
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(WeeklySchedule entity) {
+    public void deleteById(WeeklySchedule entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 

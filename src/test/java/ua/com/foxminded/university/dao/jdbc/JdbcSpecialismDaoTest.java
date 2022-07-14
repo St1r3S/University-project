@@ -47,7 +47,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
         Specialism expected = new Specialism(1L, "Computer science");
-        Specialism actual = dao.retrieve(1L).get();
+        Specialism actual = dao.findById(1L).get();
         assertEquals(expected, actual);
     }
 
@@ -63,7 +63,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.delete(1L);
+        dao.deleteById(1L);
         assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -71,7 +71,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
         Specialism expected = new Specialism(1L, "Computer science");
-        dao.delete(expected);
+        dao.deleteById(expected);
         assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -87,7 +87,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetSpecialismsByDisciplineId() {
         List<Specialism> expected = List.of(new Specialism(1L, "Computer science"));
-        List<Specialism> actual = dao.getSpecialismsByDisciplineId(2L);
+        List<Specialism> actual = dao.findAllByDisciplineId(2L);
         assertEquals(expected, actual);
     }
 
@@ -95,7 +95,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetSpecialismsByEducatorId() {
         List<Specialism> expected = List.of(new Specialism(1L, "Computer science"));
-        List<Specialism> actual = dao.getSpecialismsByEducatorId(1L);
+        List<Specialism> actual = dao.findAllByEducatorId(1L);
         assertEquals(expected, actual);
     }
 
@@ -103,7 +103,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetSpecialismBySpecialismName() {
         Specialism expected = new Specialism(1L, "Computer science");
-        Specialism actual = dao.getSpecialismBySpecialismName("Computer science").get();
+        Specialism actual = dao.findBySpecialismName("Computer science").get();
         assertEquals(expected, actual);
     }
 

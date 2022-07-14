@@ -42,7 +42,7 @@ public class JdbcRoomDao extends AbstractCrudDao<Room, Long> {
     }
 
     @Override
-    public Optional<Room> retrieve(Long id) {
+    public Optional<Room> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new RoomRowMapper(), id).stream().findFirst();
     }
 
@@ -55,12 +55,12 @@ public class JdbcRoomDao extends AbstractCrudDao<Room, Long> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Room entity) {
+    public void deleteById(Room entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
