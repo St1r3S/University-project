@@ -66,7 +66,7 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public Optional<Educator> retrieve(Long id) {
+    public Optional<Educator> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new EducatorRowMapper(), id)
                 .stream()
                 .findFirst();
@@ -83,12 +83,12 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Educator entity) {
+    public void deleteById(Educator entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
@@ -98,7 +98,7 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public List<Educator> getEducatorsBySpecialismId(Long specialismId) {
+    public List<Educator> findAllBySpecialismId(Long specialismId) {
         return jdbcTemplate.query(EDUCATORS_BY_SPECIALISM_ID, new EducatorRowMapper(), specialismId);
     }
 

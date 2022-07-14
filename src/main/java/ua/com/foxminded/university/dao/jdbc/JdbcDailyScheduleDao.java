@@ -45,7 +45,7 @@ public class JdbcDailyScheduleDao extends AbstractCrudDao<DailySchedule, Long> {
     }
 
     @Override
-    public Optional<DailySchedule> retrieve(Long id) {
+    public Optional<DailySchedule> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new DailyScheduleRowMapper(), id).stream().findFirst();
     }
 
@@ -58,12 +58,12 @@ public class JdbcDailyScheduleDao extends AbstractCrudDao<DailySchedule, Long> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(DailySchedule entity) {
+    public void deleteById(DailySchedule entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 

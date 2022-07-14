@@ -7,13 +7,13 @@ import java.util.Optional;
 
 public interface CrudDao<T extends Entity<K>, K extends Number> {
 
-    Optional<T> retrieve(K id);
+    Optional<T> findById(K id);
 
     T save(T entity);
 
-    void delete(K id);
+    void deleteById(K id);
 
-    void delete(T entity);
+    void deleteById(T entity);
 
     List<T> findAll();
 }

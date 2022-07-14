@@ -50,7 +50,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
         Student expected = new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L);
-        Student actual = dao.retrieve(1L).get();
+        Student actual = dao.findById(1L).get();
         assertEquals(expected, actual);
     }
 
@@ -66,7 +66,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.delete(1L);
+        dao.deleteById(1L);
         assertFalse(jdbcTemplate.query(SELECT_STUDENT_BY_ID, new StudentRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -74,7 +74,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
         Student expected = new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L);
-        dao.delete(expected);
+        dao.deleteById(expected);
         assertFalse(jdbcTemplate.query(SELECT_STUDENT_BY_ID, new StudentRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -90,7 +90,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetStudentsByLectureId() {
         List<Student> expected = List.of(new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L));
-        List<Student> actual = dao.getStudentsByLectureId(1L);
+        List<Student> actual = dao.findAllByLectureId(1L);
         assertEquals(expected, actual);
     }
 
@@ -98,7 +98,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetStudentsBySpecialismId() {
         List<Student> expected = List.of(new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L));
-        List<Student> actual = dao.getStudentsBySpecialismId(1L);
+        List<Student> actual = dao.findAllBySpecialismId(1L);
         assertEquals(expected, actual);
     }
 
@@ -106,7 +106,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetStudentsByGroupName() {
         List<Student> expected = List.of(new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L));
-        List<Student> actual = dao.getStudentsByGroupName("NAI-196");
+        List<Student> actual = dao.findAllByGroupName("NAI-196");
         assertEquals(expected, actual);
     }
 
@@ -114,7 +114,7 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetStudentsByBirthday() {
         List<Student> expected = List.of(new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L));
-        List<Student> actual = dao.getStudentsByBirthday(LocalDate.parse("2002-05-05"));
+        List<Student> actual = dao.findAllByBirthday(LocalDate.parse("2002-05-05"));
         assertEquals(expected, actual);
     }
 
@@ -122,9 +122,9 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyExpelAndEnroll() {
         dao.expel(1L, 1L);
-        assertFalse(dao.getStudentsByLectureId(1L).stream().findFirst().isPresent());
+        assertFalse(dao.findAllByLectureId(1L).stream().findFirst().isPresent());
         dao.enroll(1L, 1L);
-        assertTrue(dao.getStudentsByLectureId(1L).stream().findFirst().isPresent());
+        assertTrue(dao.findAllByLectureId(1L).stream().findFirst().isPresent());
     }
 
 }

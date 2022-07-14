@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DisciplineDao extends CrudDao<Discipline, Long> {
-    List<Discipline> getDisciplinesBySpecialismId(Long specialismId);
+    List<Discipline> findAllBySpecialismId(Long specialismId);
 
-    Optional<Discipline> getDisciplineByDisciplineName(String disciplineName);
+    Optional<Discipline> findByDisciplineName(String disciplineName);
 
     void enroll(Long disciplineId, Long specialismId);
 

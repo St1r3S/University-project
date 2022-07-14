@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface SpecialismDao extends CrudDao<Specialism, Long> {
 
-    List<Specialism> getSpecialismsByDisciplineId(Long disciplineId);
+    List<Specialism> findAllByDisciplineId(Long disciplineId);
 
-    List<Specialism> getSpecialismsByEducatorId(Long educatorId);
+    List<Specialism> findAllByEducatorId(Long educatorId);
 
-    Optional<Specialism> getSpecialismBySpecialismName(String specialismName);
+    Optional<Specialism> findBySpecialismName(String specialismName);
 }

@@ -53,7 +53,7 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public Optional<Discipline> retrieve(Long id) {
+    public Optional<Discipline> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new DisciplineRowMapper(), id).stream().findFirst();
     }
 
@@ -66,12 +66,12 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Discipline entity) {
+    public void deleteById(Discipline entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
@@ -81,12 +81,12 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public List<Discipline> getDisciplinesBySpecialismId(Long specialismId) {
+    public List<Discipline> findAllBySpecialismId(Long specialismId) {
         return jdbcTemplate.query(DISCIPLINES_BY_SPECIALISM_ID, new DisciplineRowMapper(), specialismId);
     }
 
     @Override
-    public Optional<Discipline> getDisciplineByDisciplineName(String disciplineName) {
+    public Optional<Discipline> findByDisciplineName(String disciplineName) {
         return jdbcTemplate.query(DISCIPLINE_BY_DISCIPLINE_NAME, new DisciplineRowMapper(), disciplineName)
                 .stream()
                 .findFirst();

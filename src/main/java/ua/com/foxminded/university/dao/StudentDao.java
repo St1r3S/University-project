@@ -6,13 +6,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentDao extends CrudDao<Student, Long> {
-    List<Student> getStudentsByLectureId(Long lectureId);
+    List<Student> findAllByLectureId(Long lectureId);
 
-    List<Student> getStudentsBySpecialismId(Long specialismId);
+    List<Student> findAllBySpecialismId(Long specialismId);
 
-    List<Student> getStudentsByGroupName(String groupName);
+    List<Student> findAllByGroupName(String groupName);
 
-    List<Student> getStudentsByBirthday(LocalDate birthday);
+    List<Student> findAllByBirthday(LocalDate birthday);
 
     void enroll(Long lectureId, Long studentId);
 

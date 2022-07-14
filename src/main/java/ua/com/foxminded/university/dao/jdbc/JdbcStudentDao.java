@@ -74,7 +74,7 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public Optional<Student> retrieve(Long id) {
+    public Optional<Student> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new StudentRowMapper(), id).stream().findFirst();
     }
 
@@ -89,12 +89,12 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Student entity) {
+    public void deleteById(Student entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
@@ -104,22 +104,22 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public List<Student> getStudentsByLectureId(Long lectureId) {
+    public List<Student> findAllByLectureId(Long lectureId) {
         return jdbcTemplate.query(STUDENTS_BY_LECTURE_ID, new StudentRowMapper(), lectureId);
     }
 
     @Override
-    public List<Student> getStudentsBySpecialismId(Long specialismId) {
+    public List<Student> findAllBySpecialismId(Long specialismId) {
         return jdbcTemplate.query(STUDENTS_BY_SPECIALISM_ID, new StudentRowMapper(), specialismId);
     }
 
     @Override
-    public List<Student> getStudentsByGroupName(String groupName) {
+    public List<Student> findAllByGroupName(String groupName) {
         return jdbcTemplate.query(STUDENTS_BY_GROUP_NAME, new StudentRowMapper(), groupName);
     }
 
     @Override
-    public List<Student> getStudentsByBirthday(LocalDate birthday) {
+    public List<Student> findAllByBirthday(LocalDate birthday) {
         return jdbcTemplate.query(STUDENTS_BY_BIRTHDAY, new StudentRowMapper(), birthday);
     }
 

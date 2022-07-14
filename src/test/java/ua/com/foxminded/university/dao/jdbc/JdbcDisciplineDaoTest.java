@@ -48,7 +48,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
         Discipline expected = new Discipline(1L, "OOP", 1L);
-        Discipline actual = dao.retrieve(1L).get();
+        Discipline actual = dao.findById(1L).get();
         assertEquals(expected, actual);
     }
 
@@ -64,7 +64,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.delete(1L);
+        dao.deleteById(1L);
         assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -72,7 +72,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
         Discipline expected = new Discipline(1L, "OOP", 1L);
-        dao.delete(expected);
+        dao.deleteById(expected);
         assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -88,7 +88,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetDisciplinesBySpecialismId() {
         List<Discipline> expected = List.of(new Discipline(1L, "OOP", 1L), new Discipline(2L, "Physics", 1L));
-        List<Discipline> actual = dao.getDisciplinesBySpecialismId(1L);
+        List<Discipline> actual = dao.findAllBySpecialismId(1L);
         assertEquals(expected, actual);
     }
 
@@ -96,7 +96,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetDisciplineByDisciplineName() {
         Discipline expected = new Discipline(1L, "OOP", 1L);
-        Discipline actual = dao.getDisciplineByDisciplineName("OOP").get();
+        Discipline actual = dao.findByDisciplineName("OOP").get();
         assertEquals(expected, actual);
     }
 
@@ -105,9 +105,9 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     void shouldVerifyExpelAndEnroll() {
         dao.expel(1L, 1L);
         dao.expel(2L, 1L);
-        assertFalse(dao.getDisciplinesBySpecialismId(1L).stream().findFirst().isPresent());
+        assertFalse(dao.findAllBySpecialismId(1L).stream().findFirst().isPresent());
         dao.enroll(1L, 1L);
-        assertTrue(dao.getDisciplinesBySpecialismId(1L).stream().findFirst().isPresent());
+        assertTrue(dao.findAllBySpecialismId(1L).stream().findFirst().isPresent());
     }
 
 }

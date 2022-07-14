@@ -50,7 +50,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
         Lecture expected = new Lecture(1L, 1L, 1L, 1L, 1L);
-        Lecture actual = dao.retrieve(1L).get();
+        Lecture actual = dao.findById(1L).get();
         assertEquals(expected, actual);
     }
 
@@ -66,7 +66,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.delete(1L);
+        dao.deleteById(1L);
         assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -74,7 +74,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteByEntity() {
         Lecture expected = new Lecture(1L, 1L, 1L, 1L, 1L);
-        dao.delete(expected);
+        dao.deleteById(expected);
         assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -90,7 +90,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetLecturesByStudentId() {
         List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
-        List<Lecture> actual = dao.getLecturesByStudentId(1L);
+        List<Lecture> actual = dao.findAllByStudentId(1L);
         assertEquals(expected, actual);
     }
 
@@ -98,7 +98,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetLecturesByWeekNumber() {
         List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
-        List<Lecture> actual = dao.getLecturesByWeekNumber(1);
+        List<Lecture> actual = dao.findAllByWeekNumber(1);
         assertEquals(expected, actual);
     }
 
@@ -106,7 +106,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetLecturesByDayOfWeekAndWeekNumber() {
         List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
-        List<Lecture> actual = dao.getLecturesByDayOfWeekAndWeekNumber(DayOfWeek.THURSDAY, 1);
+        List<Lecture> actual = dao.findAllByDayOfWeekAndWeekNumber(DayOfWeek.THURSDAY, 1);
         assertEquals(expected, actual);
     }
 
@@ -114,7 +114,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetLecturesByDate() {
         List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
-        List<Lecture> actual = dao.getLecturesByDate(LocalDate.parse("2022-09-01"));
+        List<Lecture> actual = dao.findAllByDate(LocalDate.parse("2022-09-01"));
         assertEquals(expected, actual);
     }
 
@@ -122,7 +122,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyGetLecturesByRoomNumber() {
         List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
-        List<Lecture> actual = dao.getLecturesByRoomNumber("404");
+        List<Lecture> actual = dao.findAllByRoomNumber("404");
         assertEquals(expected, actual);
     }
 

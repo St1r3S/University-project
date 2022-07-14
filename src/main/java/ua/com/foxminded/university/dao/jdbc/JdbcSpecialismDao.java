@@ -51,7 +51,7 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
-    public Optional<Specialism> retrieve(Long id) {
+    public Optional<Specialism> findById(Long id) {
         return jdbcTemplate.query(RETRIEVE, new SpecialismRowMapper(), id)
                 .stream()
                 .findFirst();
@@ -66,12 +66,12 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
 
     @Override
-    public void delete(Specialism entity) {
+    public void deleteById(Specialism entity) {
         jdbcTemplate.update(DELETE, entity.getId());
     }
 
@@ -81,17 +81,17 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
-    public List<Specialism> getSpecialismsByDisciplineId(Long disciplineId) {
+    public List<Specialism> findAllByDisciplineId(Long disciplineId) {
         return jdbcTemplate.query(SPECIALISMS_BY_DISCIPLINE_ID, new SpecialismRowMapper(), disciplineId);
     }
 
     @Override
-    public List<Specialism> getSpecialismsByEducatorId(Long educatorId) {
+    public List<Specialism> findAllByEducatorId(Long educatorId) {
         return jdbcTemplate.query(SPECIALISMS_BY_EDUCATOR_ID, new SpecialismRowMapper(), educatorId);
     }
 
     @Override
-    public Optional<Specialism> getSpecialismBySpecialismName(String specialismName) {
+    public Optional<Specialism> findBySpecialismName(String specialismName) {
         return jdbcTemplate.query(SPECIALISM_BY_SPECIALISM_NAME, new SpecialismRowMapper(), specialismName)
                 .stream()
                 .findFirst();
