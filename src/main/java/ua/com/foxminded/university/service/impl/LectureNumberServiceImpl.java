@@ -31,14 +31,14 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return lectureNumberDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        lectureNumberDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(LectureNumber entity) {
-        return lectureNumberDao.deleteById(entity.getId());
+    public void deleteById(LectureNumber entity) throws NotFoundException {
+        lectureNumberDao.deleteById(entity.getId());
     }
 
     @Override

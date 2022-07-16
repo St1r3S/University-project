@@ -34,14 +34,14 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return lectureDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        lectureDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Lecture entity) {
-        return lectureDao.deleteById(entity.getId());
+    public void deleteById(Lecture entity) throws NotFoundException {
+        lectureDao.deleteById(entity.getId());
     }
 
     @Override

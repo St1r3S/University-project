@@ -63,7 +63,7 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.deleteById(1L);
+        assertDoesNotThrow(() -> dao.deleteById(1L));
         assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
     }
 

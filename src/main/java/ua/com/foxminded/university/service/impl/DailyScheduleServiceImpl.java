@@ -31,14 +31,14 @@ public class DailyScheduleServiceImpl implements CrudService<DailySchedule, Long
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return dailyScheduleDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        dailyScheduleDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(DailySchedule entity) {
-        return dailyScheduleDao.deleteById(entity.getId());
+    public void deleteById(DailySchedule entity) throws NotFoundException {
+        dailyScheduleDao.deleteById(entity.getId());
     }
 
     @Override

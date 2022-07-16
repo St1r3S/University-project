@@ -31,14 +31,14 @@ public class RoomServiceImpl implements CrudService<Room, Long> {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return roomDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        roomDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Room entity) {
-        return roomDao.deleteById(entity.getId());
+    public void deleteById(Room entity) throws NotFoundException {
+        roomDao.deleteById(entity.getId());
     }
 
     @Override

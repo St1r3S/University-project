@@ -66,7 +66,7 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.deleteById(1L);
+        assertDoesNotThrow(() -> dao.deleteById(1L));
         assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
     }
 

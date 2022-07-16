@@ -54,8 +54,9 @@ public class JdbcWeeklyScheduleDao extends AbstractCrudDao<WeeklySchedule, Long>
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete weekly schedule entity with id" + id);
     }
 
     @Override

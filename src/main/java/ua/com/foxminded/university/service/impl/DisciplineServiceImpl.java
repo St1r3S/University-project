@@ -32,14 +32,14 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return disciplineDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        disciplineDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Discipline entity) {
-        return disciplineDao.deleteById(entity.getId());
+    public void deleteById(Discipline entity) throws NotFoundException {
+        disciplineDao.deleteById(entity.getId());
     }
 
     @Override
@@ -68,13 +68,13 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional
-    public int enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) {
-        return disciplineDao.enrollDisciplineSpecialism(discipline.getId(), specialism.getId());
+    public void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException {
+        disciplineDao.enrollDisciplineSpecialism(discipline.getId(), specialism.getId());
     }
 
     @Override
     @Transactional
-    public int expelDisciplineSpecialism(Discipline discipline, Specialism specialism) {
-        return disciplineDao.expelDisciplineSpecialism(discipline.getId(), specialism.getId());
+    public void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException {
+        disciplineDao.expelDisciplineSpecialism(discipline.getId(), specialism.getId());
     }
 }

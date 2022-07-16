@@ -33,14 +33,14 @@ public class SpecialismServiceImpl implements SpecialismService {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return specialismDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        specialismDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Specialism entity) {
-        return specialismDao.deleteById(entity.getId());
+    public void deleteById(Specialism entity) throws NotFoundException {
+        specialismDao.deleteById(entity.getId());
     }
 
     @Override

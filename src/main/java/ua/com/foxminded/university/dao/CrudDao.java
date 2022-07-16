@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.dao;
 
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.Entity;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface CrudDao<T extends Entity<K>, K extends Number> {
 
     T save(T entity);
 
-    int deleteById(K id);
+    void deleteById(K id) throws NotFoundException;
 
     List<T> findAll();
 }

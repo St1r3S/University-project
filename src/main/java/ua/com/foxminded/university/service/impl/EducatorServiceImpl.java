@@ -32,14 +32,14 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return educatorDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        educatorDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Educator entity) {
-        return educatorDao.deleteById(entity.getId());
+    public void deleteById(Educator entity) throws NotFoundException {
+        educatorDao.deleteById(entity.getId());
     }
 
     @Override
@@ -62,13 +62,13 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     @Transactional
-    public int enrollEducatorSpecialism(Educator educator, Specialism specialism) {
-        return educatorDao.enrollEducatorSpecialism(educator.getId(), specialism.getId());
+    public void enrollEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException {
+        educatorDao.enrollEducatorSpecialism(educator.getId(), specialism.getId());
     }
 
     @Override
     @Transactional
-    public int expelEducatorSpecialism(Educator educator, Specialism specialism) {
-        return educatorDao.expelEducatorSpecialism(educator.getId(), specialism.getId());
+    public void expelEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException {
+        educatorDao.expelEducatorSpecialism(educator.getId(), specialism.getId());
     }
 }

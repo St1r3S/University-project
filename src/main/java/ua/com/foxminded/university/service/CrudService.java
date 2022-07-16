@@ -10,9 +10,9 @@ public interface CrudService<T extends Entity<K>, K extends Number> {
 
     T save(T entity);
 
-    int deleteById(K id);
+    void deleteById(K id) throws NotFoundException;
 
-    int deleteById(T entity);
+    void deleteById(T entity) throws NotFoundException;
 
     List<T> findAll();
 }

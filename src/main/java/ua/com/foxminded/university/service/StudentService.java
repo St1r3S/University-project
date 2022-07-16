@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.service;
 
+import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Lecture;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Student;
@@ -20,7 +21,7 @@ public interface StudentService extends CrudService<Student, Long> {
 
     List<Student> findAllByBirthday(LocalDate birthday);
 
-    int enrollLectureStudent(Lecture lecture, Student student);
+    void enrollLectureStudent(Lecture lecture, Student student) throws NotFoundException;
 
-    int expelLectureStudent(Lecture lecture, Student student);
+    void expelLectureStudent(Lecture lecture, Student student) throws NotFoundException;
 }

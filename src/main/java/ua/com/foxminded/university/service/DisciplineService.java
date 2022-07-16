@@ -13,7 +13,7 @@ public interface DisciplineService extends CrudService<Discipline, Long> {
 
     Discipline findByDisciplineName(String disciplineName) throws NotFoundException;
 
-    int enrollDisciplineSpecialism(Discipline discipline, Specialism specialism);
+    void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException;
 
-    int expelDisciplineSpecialism(Discipline discipline, Specialism specialism);
+    void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException;
 }

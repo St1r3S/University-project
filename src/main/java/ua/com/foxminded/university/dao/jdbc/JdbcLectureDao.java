@@ -88,8 +88,9 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete lecture entity with id" + id);
     }
 
     @Override

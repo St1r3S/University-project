@@ -89,8 +89,9 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete student entity with id" + id);
     }
 
     @Override
@@ -119,12 +120,16 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public int enrollLectureStudent(Long lectureId, Long studentId) {
-        return jdbcTemplate.update(INSERT_LECTURE_STUDENT, lectureId, studentId);
+    public void enrollLectureStudent(Long lectureId, Long studentId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(INSERT_LECTURE_STUDENT, lectureId, studentId))
+            throw new NotFoundException("Unable to enroll lecture entity with id " + lectureId +
+                    "with student entity with id " + studentId);
     }
 
     @Override
-    public int expelLectureStudent(Long lectureId, Long studentId) {
-        return jdbcTemplate.update(DELETE_LECTURE_STUDENT, lectureId, studentId);
+    public void expelLectureStudent(Long lectureId, Long studentId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE_LECTURE_STUDENT, lectureId, studentId))
+            throw new NotFoundException("Unable to expel lecture entity with id " + lectureId +
+                    "with student entity with id " + studentId);
     }
 }

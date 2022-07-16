@@ -83,8 +83,9 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete educator entity with id" + id);
     }
 
     @Override
@@ -98,12 +99,16 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public int enrollEducatorSpecialism(Long educatorId, Long specialismId) {
-        return jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public void enrollEducatorSpecialism(Long educatorId, Long specialismId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId))
+            throw new NotFoundException("Unable to enroll educator entity with id " + educatorId +
+                    "with specialism entity with id " + specialismId);
     }
 
     @Override
-    public int expelEducatorSpecialism(Long educatorId, Long specialismId) {
-        return jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public void expelEducatorSpecialism(Long educatorId, Long specialismId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId))
+            throw new NotFoundException("Unable to expel educator entity with id " + educatorId +
+                    "with specialism entity with id " + specialismId);
     }
 }

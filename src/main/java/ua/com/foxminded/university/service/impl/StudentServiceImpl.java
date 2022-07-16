@@ -34,14 +34,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return studentDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        studentDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(Student entity) {
-        return studentDao.deleteById(entity.getId());
+    public void deleteById(Student entity) throws NotFoundException {
+        studentDao.deleteById(entity.getId());
     }
 
     @Override
@@ -88,13 +88,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public int enrollLectureStudent(Lecture lecture, Student student) {
-        return studentDao.enrollLectureStudent(lecture.getId(), student.getId());
+    public void enrollLectureStudent(Lecture lecture, Student student) throws NotFoundException {
+        studentDao.enrollLectureStudent(lecture.getId(), student.getId());
     }
 
     @Override
     @Transactional
-    public int expelLectureStudent(Lecture lecture, Student student) {
-        return studentDao.expelLectureStudent(lecture.getId(), student.getId());
+    public void expelLectureStudent(Lecture lecture, Student student) throws NotFoundException {
+        studentDao.expelLectureStudent(lecture.getId(), student.getId());
     }
 }

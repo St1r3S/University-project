@@ -59,8 +59,9 @@ public class JdbcLectureNumberDao extends AbstractCrudDao<LectureNumber, Long> {
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete lecture number entity with id" + id);
     }
 
     @Override

@@ -55,8 +55,9 @@ public class JdbcRoomDao extends AbstractCrudDao<Room, Long> {
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete room entity with id" + id);
     }
 
     @Override

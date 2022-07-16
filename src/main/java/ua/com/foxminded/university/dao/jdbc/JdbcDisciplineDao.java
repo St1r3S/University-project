@@ -66,8 +66,9 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public int deleteById(Long id) {
-        return jdbcTemplate.update(DELETE, id);
+    public void deleteById(Long id) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new NotFoundException("Unable to delete discipline entity with id" + id);
     }
 
     @Override
@@ -88,13 +89,17 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public int enrollDisciplineSpecialism(Long disciplineId, Long specialismId) {
-        return jdbcTemplate.update(INSERT_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
+    public void enrollDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(INSERT_DISCIPLINE_SPECIALISM, disciplineId, specialismId))
+            throw new NotFoundException("Unable to enroll discipline entity with id " + disciplineId +
+                    "with specialism entity with id " + specialismId);
     }
 
     @Override
-    public int expelDisciplineSpecialism(Long disciplineId, Long specialismId) {
-        return jdbcTemplate.update(DELETE_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
+    public void expelDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException {
+        if (1 != jdbcTemplate.update(DELETE_DISCIPLINE_SPECIALISM, disciplineId, specialismId))
+            throw new NotFoundException("Unable to expel discipline entity with id " + disciplineId +
+                    "with specialism entity with id " + specialismId);
     }
 
 

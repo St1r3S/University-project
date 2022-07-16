@@ -31,14 +31,14 @@ public class WeeklyScheduleServiceImpl implements CrudService<WeeklySchedule, Lo
 
     @Override
     @Transactional
-    public int deleteById(Long id) {
-        return weeklyScheduleDao.deleteById(id);
+    public void deleteById(Long id) throws NotFoundException {
+        weeklyScheduleDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public int deleteById(WeeklySchedule entity) {
-        return weeklyScheduleDao.deleteById(entity.getId());
+    public void deleteById(WeeklySchedule entity) throws NotFoundException {
+        weeklyScheduleDao.deleteById(entity.getId());
     }
 
     @Override

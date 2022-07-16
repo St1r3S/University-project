@@ -19,6 +19,5 @@ class DisciplineServiceImplTest {
     @Test
     void shouldTrowNotFindException() {
         assertThrows(NotFoundException.class, () -> disciplineService.findById(1L));
-
     }
 }
