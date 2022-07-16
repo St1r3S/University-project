@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.EducatorDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.EducatorRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.user.Educator;
 
 import java.util.List;
@@ -73,23 +73,19 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public Educator update(Educator entity) throws NotFoundException {
+    public Educator update(Educator entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
                 entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
 
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Educator entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new EmptyResultDataAccessException("Unable to delete educator entity with id" + id, 1);
     }
 
     @Override
@@ -103,12 +99,16 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public void enroll(Long educatorId, Long specialismId) {
-        jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public void enrollEducatorSpecialism(Long educatorId, Long specialismId) {
+        if (1 != jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId))
+            throw new EmptyResultDataAccessException("Unable to enroll educator entity with id " + educatorId +
+                    "with specialism entity with id " + specialismId, 1);
     }
 
     @Override
-    public void expel(Long educatorId, Long specialismId) {
-        jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public void expelEducatorSpecialism(Long educatorId, Long specialismId) {
+        if (1 != jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId))
+            throw new EmptyResultDataAccessException("Unable to expel educator entity with id " + educatorId +
+                    "with specialism entity with id " + specialismId, 1);
     }
 }

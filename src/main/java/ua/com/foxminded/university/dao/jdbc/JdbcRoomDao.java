@@ -1,12 +1,12 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.RoomRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Room;
 
 import java.util.List;
@@ -47,21 +47,17 @@ public class JdbcRoomDao extends AbstractCrudDao<Room, Long> {
     }
 
     @Override
-    public Room update(Room entity) throws NotFoundException {
+    public Room update(Room entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getRoomNumber(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Room entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new EmptyResultDataAccessException("Unable to delete room entity with id" + id, 1);
     }
 
     @Override

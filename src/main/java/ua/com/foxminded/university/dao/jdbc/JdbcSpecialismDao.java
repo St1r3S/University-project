@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.SpecialismDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.SpecialismRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.misc.Specialism;
 
 import java.util.List;
@@ -58,21 +58,17 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
-    public Specialism update(Specialism entity) throws NotFoundException {
+    public Specialism update(Specialism entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getSpecialismName(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Specialism entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new EmptyResultDataAccessException("Unable to delete specialism entity with id" + id, 1);
     }
 
     @Override

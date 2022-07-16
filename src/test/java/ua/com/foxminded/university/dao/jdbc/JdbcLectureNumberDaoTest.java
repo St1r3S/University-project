@@ -64,15 +64,7 @@ class JdbcLectureNumberDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.deleteById(1L);
-        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        LectureNumber expected = new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00"));
-        dao.deleteById(expected);
+        assertDoesNotThrow(() -> dao.deleteById(1L));
         assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
     }
 

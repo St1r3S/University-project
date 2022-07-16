@@ -64,15 +64,7 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
-        dao.deleteById(1L);
-        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        Discipline expected = new Discipline(1L, "OOP", 1L);
-        dao.deleteById(expected);
+        assertDoesNotThrow(() -> dao.deleteById(1L));
         assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
@@ -103,10 +95,10 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyExpelAndEnroll() {
-        dao.expel(1L, 1L);
-        dao.expel(2L, 1L);
+        assertDoesNotThrow(() -> dao.expelDisciplineSpecialism(1L, 1L));
+        assertDoesNotThrow(() -> dao.expelDisciplineSpecialism(2L, 1L));
         assertFalse(dao.findAllBySpecialismId(1L).stream().findFirst().isPresent());
-        dao.enroll(1L, 1L);
+        assertDoesNotThrow(() -> dao.enrollDisciplineSpecialism(1L, 1L));
         assertTrue(dao.findAllBySpecialismId(1L).stream().findFirst().isPresent());
     }
 

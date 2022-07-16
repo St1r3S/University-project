@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.LectureDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.LectureRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
@@ -79,22 +79,18 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public Lecture update(Lecture entity) throws NotFoundException {
+    public Lecture update(Lecture entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getDisciplineId(), entity.getLectureNumberId(),
                 entity.getRoomId(), entity.getDailyScheduleId(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
     public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Lecture entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+        if (1 != jdbcTemplate.update(DELETE, id))
+            throw new EmptyResultDataAccessException("Unable to delete lecture entity with id" + id, 1);
     }
 
     @Override
