@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcLectureNumberDao;
 import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.LectureNumber;
@@ -17,26 +18,31 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LectureNumber findById(Long id) throws NotFoundException {
         return lectureNumberDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such lecture number!"));
     }
 
     @Override
+    @Transactional
     public LectureNumber save(LectureNumber entity) {
         return lectureNumberDao.save(entity);
     }
 
     @Override
+    @Transactional
     public int deleteById(Long id) {
         return lectureNumberDao.deleteById(id);
     }
 
     @Override
+    @Transactional
     public int deleteById(LectureNumber entity) {
         return lectureNumberDao.deleteById(entity.getId());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<LectureNumber> findAll() {
         return lectureNumberDao.findAll();
     }
