@@ -1,6 +1,5 @@
 package ua.com.foxminded.university.dao;
 
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Discipline;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public interface DisciplineDao extends CrudDao<Discipline, Long> {
 
     Optional<Discipline> findByDisciplineName(String disciplineName);
 
-    void enrollDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException;
+    void enrollDisciplineSpecialism(Long disciplineId, Long specialismId);
 
-    void expelDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException;
+    void expelDisciplineSpecialism(Long disciplineId, Long specialismId);
 }

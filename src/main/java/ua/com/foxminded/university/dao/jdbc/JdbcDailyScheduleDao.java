@@ -1,12 +1,12 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.DailyScheduleRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.schedule.DailySchedule;
 
 import java.util.List;
@@ -50,17 +50,17 @@ public class JdbcDailyScheduleDao extends AbstractCrudDao<DailySchedule, Long> {
     }
 
     @Override
-    public DailySchedule update(DailySchedule entity) throws NotFoundException {
+    public DailySchedule update(DailySchedule entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getDateOfScheduleCell(), entity.getDayOfWeek().toString(), entity.getWeeklyScheduleId(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         if (1 != jdbcTemplate.update(DELETE, id))
-            throw new NotFoundException("Unable to delete daily schedule entity with id" + id);
+            throw new EmptyResultDataAccessException("Unable to delete daily schedule entity with id" + id, 1);
     }
 
     @Override

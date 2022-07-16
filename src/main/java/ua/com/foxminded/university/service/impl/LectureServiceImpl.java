@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcLectureDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 import ua.com.foxminded.university.model.user.Student;
@@ -22,8 +22,9 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional(readOnly = true)
-    public Lecture findById(Long id) throws NotFoundException {
-        return lectureDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such lecture!"));
+    public Lecture findById(Long id) {
+        return lectureDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such lecture with id " + id, 1));
     }
 
     @Override
@@ -34,13 +35,13 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         lectureDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(Lecture entity) throws NotFoundException {
+    public void deleteById(Lecture entity) {
         lectureDao.deleteById(entity.getId());
     }
 

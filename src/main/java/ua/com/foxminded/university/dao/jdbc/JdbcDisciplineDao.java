@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.DisciplineDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.DisciplineRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Discipline;
 
 import java.util.List;
@@ -58,17 +58,17 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public Discipline update(Discipline entity) throws NotFoundException {
+    public Discipline update(Discipline entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getDisciplineName(), entity.getEducatorId(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         if (1 != jdbcTemplate.update(DELETE, id))
-            throw new NotFoundException("Unable to delete discipline entity with id" + id);
+            throw new EmptyResultDataAccessException("Unable to delete discipline entity with id" + id, 1);
     }
 
     @Override
@@ -89,17 +89,17 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public void enrollDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException {
+    public void enrollDisciplineSpecialism(Long disciplineId, Long specialismId) {
         if (1 != jdbcTemplate.update(INSERT_DISCIPLINE_SPECIALISM, disciplineId, specialismId))
-            throw new NotFoundException("Unable to enroll discipline entity with id " + disciplineId +
-                    "with specialism entity with id " + specialismId);
+            throw new EmptyResultDataAccessException("Unable to enroll discipline entity with id " + disciplineId +
+                    "with specialism entity with id " + specialismId, 1);
     }
 
     @Override
-    public void expelDisciplineSpecialism(Long disciplineId, Long specialismId) throws NotFoundException {
+    public void expelDisciplineSpecialism(Long disciplineId, Long specialismId) {
         if (1 != jdbcTemplate.update(DELETE_DISCIPLINE_SPECIALISM, disciplineId, specialismId))
-            throw new NotFoundException("Unable to expel discipline entity with id " + disciplineId +
-                    "with specialism entity with id " + specialismId);
+            throw new EmptyResultDataAccessException("Unable to expel discipline entity with id " + disciplineId +
+                    "with specialism entity with id " + specialismId, 1);
     }
 
 

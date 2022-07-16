@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcStudentDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Lecture;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Student;
@@ -22,8 +22,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Student findById(Long id) throws NotFoundException {
-        return studentDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such student!"));
+    public Student findById(Long id) {
+        return studentDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such student with id " + id, 1));
     }
 
     @Override
@@ -34,13 +35,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         studentDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(Student entity) throws NotFoundException {
+    public void deleteById(Student entity) {
         studentDao.deleteById(entity.getId());
     }
 
@@ -88,13 +89,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public void enrollLectureStudent(Lecture lecture, Student student) throws NotFoundException {
+    public void enrollLectureStudent(Lecture lecture, Student student) {
         studentDao.enrollLectureStudent(lecture.getId(), student.getId());
     }
 
     @Override
     @Transactional
-    public void expelLectureStudent(Lecture lecture, Student student) throws NotFoundException {
+    public void expelLectureStudent(Lecture lecture, Student student) {
         studentDao.expelLectureStudent(lecture.getId(), student.getId());
     }
 }

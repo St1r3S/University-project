@@ -1,6 +1,5 @@
 package ua.com.foxminded.university.service;
 
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Discipline;
 import ua.com.foxminded.university.model.misc.Specialism;
 
@@ -11,9 +10,9 @@ public interface DisciplineService extends CrudService<Discipline, Long> {
 
     List<Discipline> findAllBySpecialismId(Specialism specialism);
 
-    Discipline findByDisciplineName(String disciplineName) throws NotFoundException;
+    Discipline findByDisciplineName(String disciplineName);
 
-    void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException;
+    void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism);
 
-    void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException;
+    void expelDisciplineSpecialism(Discipline discipline, Specialism specialism);
 }

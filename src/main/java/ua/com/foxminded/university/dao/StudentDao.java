@@ -1,6 +1,5 @@
 package ua.com.foxminded.university.dao;
 
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.user.Student;
 
 import java.time.LocalDate;
@@ -15,7 +14,7 @@ public interface StudentDao extends CrudDao<Student, Long> {
 
     List<Student> findAllByBirthday(LocalDate birthday);
 
-    void enrollLectureStudent(Long lectureId, Long studentId) throws NotFoundException;
+    void enrollLectureStudent(Long lectureId, Long studentId);
 
-    void expelLectureStudent(Long lectureId, Long studentId) throws NotFoundException;
+    void expelLectureStudent(Long lectureId, Long studentId);
 }

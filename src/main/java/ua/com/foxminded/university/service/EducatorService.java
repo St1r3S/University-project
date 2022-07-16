@@ -1,6 +1,5 @@
 package ua.com.foxminded.university.service;
 
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Educator;
 
@@ -11,7 +10,7 @@ public interface EducatorService extends CrudService<Educator, Long> {
 
     List<Educator> findAllBySpecialismId(Specialism specialism);
 
-    void enrollEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException;
+    void enrollEducatorSpecialism(Educator educator, Specialism specialism);
 
-    void expelEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException;
+    void expelEducatorSpecialism(Educator educator, Specialism specialism);
 }

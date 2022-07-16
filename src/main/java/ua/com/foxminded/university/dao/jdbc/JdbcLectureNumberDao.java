@@ -1,12 +1,12 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.LectureNumberRowMapper;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.LectureNumber;
 
 import java.util.List;
@@ -51,17 +51,17 @@ public class JdbcLectureNumberDao extends AbstractCrudDao<LectureNumber, Long> {
     }
 
     @Override
-    public LectureNumber update(LectureNumber entity) throws NotFoundException {
+    public LectureNumber update(LectureNumber entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getNumber(), entity.getTimeStart(), entity.getTimeEnd(), entity.getId())) {
             return entity;
         }
-        throw new NotFoundException("Unable to update entity " + entity);
+        throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
     }
 
     @Override
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         if (1 != jdbcTemplate.update(DELETE, id))
-            throw new NotFoundException("Unable to delete lecture number entity with id" + id);
+            throw new EmptyResultDataAccessException("Unable to delete lecture number entity with id" + id, 1);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcSpecialismDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Discipline;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Educator;
@@ -21,8 +21,9 @@ public class SpecialismServiceImpl implements SpecialismService {
 
     @Override
     @Transactional(readOnly = true)
-    public Specialism findById(Long id) throws NotFoundException {
-        return specialismDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such specialism!"));
+    public Specialism findById(Long id) {
+        return specialismDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such specialism with id " + id, 1));
     }
 
     @Override
@@ -33,13 +34,13 @@ public class SpecialismServiceImpl implements SpecialismService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         specialismDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(Specialism entity) throws NotFoundException {
+    public void deleteById(Specialism entity) {
         specialismDao.deleteById(entity.getId());
     }
 
@@ -75,7 +76,8 @@ public class SpecialismServiceImpl implements SpecialismService {
 
     @Override
     @Transactional(readOnly = true)
-    public Specialism findBySpecialismName(String specialismName) throws NotFoundException {
-        return specialismDao.findBySpecialismName(specialismName).orElseThrow(() -> new NotFoundException("There's no such specialism!"));
+    public Specialism findBySpecialismName(String specialismName) {
+        return specialismDao.findBySpecialismName(specialismName).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such specialism with name " + specialismName, 1));
     }
 }

@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcDisciplineDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.lecture.Discipline;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.service.DisciplineService;
@@ -20,8 +20,9 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional(readOnly = true)
-    public Discipline findById(Long id) throws NotFoundException {
-        return disciplineDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such daily schedule"));
+    public Discipline findById(Long id) {
+        return disciplineDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such daily schedule with id " + id, 1));
     }
 
     @Override
@@ -32,13 +33,13 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         disciplineDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(Discipline entity) throws NotFoundException {
+    public void deleteById(Discipline entity) {
         disciplineDao.deleteById(entity.getId());
     }
 
@@ -62,19 +63,20 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional(readOnly = true)
-    public Discipline findByDisciplineName(String disciplineName) throws NotFoundException {
-        return disciplineDao.findByDisciplineName(disciplineName).orElseThrow(() -> new NotFoundException("There's no such discipline!"));
+    public Discipline findByDisciplineName(String disciplineName) {
+        return disciplineDao.findByDisciplineName(disciplineName).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such discipline with name " + disciplineName, 1));
     }
 
     @Override
     @Transactional
-    public void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException {
+    public void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) {
         disciplineDao.enrollDisciplineSpecialism(discipline.getId(), specialism.getId());
     }
 
     @Override
     @Transactional
-    public void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) throws NotFoundException {
+    public void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) {
         disciplineDao.expelDisciplineSpecialism(discipline.getId(), specialism.getId());
     }
 }

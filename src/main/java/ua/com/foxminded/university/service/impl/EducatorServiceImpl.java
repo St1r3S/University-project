@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcEducatorDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.service.EducatorService;
@@ -20,8 +20,9 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     @Transactional(readOnly = true)
-    public Educator findById(Long id) throws NotFoundException {
-        return educatorDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such educator!"));
+    public Educator findById(Long id) {
+        return educatorDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such educator with id " + id, 1));
     }
 
     @Override
@@ -32,13 +33,13 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         educatorDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(Educator entity) throws NotFoundException {
+    public void deleteById(Educator entity) {
         educatorDao.deleteById(entity.getId());
     }
 
@@ -62,13 +63,13 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     @Transactional
-    public void enrollEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException {
+    public void enrollEducatorSpecialism(Educator educator, Specialism specialism) {
         educatorDao.enrollEducatorSpecialism(educator.getId(), specialism.getId());
     }
 
     @Override
     @Transactional
-    public void expelEducatorSpecialism(Educator educator, Specialism specialism) throws NotFoundException {
+    public void expelEducatorSpecialism(Educator educator, Specialism specialism) {
         educatorDao.expelEducatorSpecialism(educator.getId(), specialism.getId());
     }
 }

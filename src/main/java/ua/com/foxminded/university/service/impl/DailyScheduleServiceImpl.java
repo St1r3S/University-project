@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.jdbc.JdbcDailyScheduleDao;
-import ua.com.foxminded.university.exception.NotFoundException;
 import ua.com.foxminded.university.model.schedule.DailySchedule;
 import ua.com.foxminded.university.service.CrudService;
 
@@ -19,8 +19,9 @@ public class DailyScheduleServiceImpl implements CrudService<DailySchedule, Long
 
     @Override
     @Transactional(readOnly = true)
-    public DailySchedule findById(Long id) throws NotFoundException {
-        return dailyScheduleDao.findById(id).orElseThrow(() -> new NotFoundException("There's no such daily schedule!"));
+    public DailySchedule findById(Long id) {
+        return dailyScheduleDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such daily schedule with id " + id, 1));
     }
 
     @Override
@@ -31,13 +32,13 @@ public class DailyScheduleServiceImpl implements CrudService<DailySchedule, Long
 
     @Override
     @Transactional
-    public void deleteById(Long id) throws NotFoundException {
+    public void deleteById(Long id) {
         dailyScheduleDao.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void deleteById(DailySchedule entity) throws NotFoundException {
+    public void deleteById(DailySchedule entity) {
         dailyScheduleDao.deleteById(entity.getId());
     }
 
