@@ -14,7 +14,7 @@ public interface StudentDao extends CrudDao<Student, Long> {
 
     List<Student> findAllByBirthday(LocalDate birthday);
 
-    void enroll(Long lectureId, Long studentId);
+    int enrollLectureStudent(Long lectureId, Long studentId);
 
-    void expel(Long lectureId, Long studentId);
+    int expelLectureStudent(Long lectureId, Long studentId);
 }

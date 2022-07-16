@@ -11,9 +11,7 @@ public interface CrudDao<T extends Entity<K>, K extends Number> {
 
     T save(T entity);
 
-    void deleteById(K id);
-
-    void deleteById(T entity);
+    int deleteById(K id);
 
     List<T> findAll();
 }

@@ -88,13 +88,8 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Lecture entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+    public int deleteById(Long id) {
+        return jdbcTemplate.update(DELETE, id);
     }
 
     @Override

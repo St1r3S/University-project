@@ -83,13 +83,8 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Educator entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+    public int deleteById(Long id) {
+        return jdbcTemplate.update(DELETE, id);
     }
 
     @Override
@@ -103,12 +98,12 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
-    public void enroll(Long educatorId, Long specialismId) {
-        jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public int enrollEducatorSpecialism(Long educatorId, Long specialismId) {
+        return jdbcTemplate.update(INSERT_EDUCATOR_SPECIALISM, educatorId, specialismId);
     }
 
     @Override
-    public void expel(Long educatorId, Long specialismId) {
-        jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId);
+    public int expelEducatorSpecialism(Long educatorId, Long specialismId) {
+        return jdbcTemplate.update(DELETE_EDUCATOR_SPECIALISM, educatorId, specialismId);
     }
 }

@@ -70,14 +70,6 @@ class JdbcRoomDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        Room expected = new Room(1L, "404");
-        dao.deleteById(expected);
-        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
         List<Room> expected = List.of(new Room(1L, "404"));
         List<Room> actual = dao.findAll();

@@ -10,7 +10,7 @@ public interface DisciplineDao extends CrudDao<Discipline, Long> {
 
     Optional<Discipline> findByDisciplineName(String disciplineName);
 
-    void enroll(Long disciplineId, Long specialismId);
+    int enrollDisciplineSpecialism(Long disciplineId, Long specialismId);
 
-    void expel(Long disciplineId, Long specialismId);
+    int expelDisciplineSpecialism(Long disciplineId, Long specialismId);
 }

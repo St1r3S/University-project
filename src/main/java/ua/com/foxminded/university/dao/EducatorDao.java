@@ -7,8 +7,8 @@ import java.util.List;
 public interface EducatorDao extends CrudDao<Educator, Long> {
     List<Educator> findAllBySpecialismId(Long specialismId);
 
-    void enroll(Long educatorId, Long specialismId);
+    int enrollEducatorSpecialism(Long educatorId, Long specialismId);
 
-    void expel(Long educatorId, Long specialismId);
+    int expelEducatorSpecialism(Long educatorId, Long specialismId);
 
 }

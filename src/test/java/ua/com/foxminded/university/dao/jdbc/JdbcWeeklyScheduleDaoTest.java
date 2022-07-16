@@ -69,14 +69,6 @@ class JdbcWeeklyScheduleDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        WeeklySchedule expected = new WeeklySchedule(1L, 1);
-        dao.deleteById(expected);
-        assertFalse(jdbcTemplate.query(SELECT_WEEKLY_SCHEDULE_BY_ID, new WeeklyScheduleRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
         List<WeeklySchedule> expected = List.of(new WeeklySchedule(1L, 1));
         List<WeeklySchedule> actual = dao.findAll();

@@ -89,13 +89,8 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Student entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+    public int deleteById(Long id) {
+        return jdbcTemplate.update(DELETE, id);
     }
 
     @Override
@@ -124,12 +119,12 @@ public class JdbcStudentDao extends AbstractCrudDao<Student, Long> implements St
     }
 
     @Override
-    public void enroll(Long lectureId, Long studentId) {
-        jdbcTemplate.update(INSERT_LECTURE_STUDENT, lectureId, studentId);
+    public int enrollLectureStudent(Long lectureId, Long studentId) {
+        return jdbcTemplate.update(INSERT_LECTURE_STUDENT, lectureId, studentId);
     }
 
     @Override
-    public void expel(Long lectureId, Long studentId) {
-        jdbcTemplate.update(DELETE_LECTURE_STUDENT, lectureId, studentId);
+    public int expelLectureStudent(Long lectureId, Long studentId) {
+        return jdbcTemplate.update(DELETE_LECTURE_STUDENT, lectureId, studentId);
     }
 }

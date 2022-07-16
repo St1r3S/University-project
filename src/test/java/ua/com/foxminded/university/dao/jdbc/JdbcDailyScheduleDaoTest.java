@@ -72,14 +72,6 @@ class JdbcDailyScheduleDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        DailySchedule expected = new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L);
-        dao.deleteById(expected);
-        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
         List<DailySchedule> expected = List.of(new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L));
         List<DailySchedule> actual = dao.findAll();

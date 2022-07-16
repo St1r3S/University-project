@@ -72,14 +72,6 @@ class JdbcStudentDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        Student expected = new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L);
-        dao.deleteById(expected);
-        assertFalse(jdbcTemplate.query(SELECT_STUDENT_BY_ID, new StudentRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
         List<Student> expected = List.of(new Student(1L, "Alex", "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, UserRole.STUDENT, "NAI-196", 1L));
         List<Student> actual = dao.findAll();
@@ -121,9 +113,9 @@ class JdbcStudentDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyExpelAndEnroll() {
-        dao.expel(1L, 1L);
+        dao.expelLectureStudent(1L, 1L);
         assertFalse(dao.findAllByLectureId(1L).stream().findFirst().isPresent());
-        dao.enroll(1L, 1L);
+        dao.enrollLectureStudent(1L, 1L);
         assertTrue(dao.findAllByLectureId(1L).stream().findFirst().isPresent());
     }
 

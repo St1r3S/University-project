@@ -66,13 +66,8 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE, id);
-    }
-
-    @Override
-    public void deleteById(Discipline entity) {
-        jdbcTemplate.update(DELETE, entity.getId());
+    public int deleteById(Long id) {
+        return jdbcTemplate.update(DELETE, id);
     }
 
     @Override
@@ -93,13 +88,13 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     }
 
     @Override
-    public void enroll(Long disciplineId, Long specialismId) {
-        jdbcTemplate.update(INSERT_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
+    public int enrollDisciplineSpecialism(Long disciplineId, Long specialismId) {
+        return jdbcTemplate.update(INSERT_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
     }
 
     @Override
-    public void expel(Long disciplineId, Long specialismId) {
-        jdbcTemplate.update(DELETE_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
+    public int expelDisciplineSpecialism(Long disciplineId, Long specialismId) {
+        return jdbcTemplate.update(DELETE_DISCIPLINE_SPECIALISM, disciplineId, specialismId);
     }
 
 
