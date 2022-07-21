@@ -1,5 +1,7 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Service
 public class WeeklyScheduleServiceImpl implements CrudService<WeeklySchedule, Long> {
+    private static final Logger logger = LoggerFactory.getLogger("ua.com.foxminded.university.service");
     private final JdbcWeeklyScheduleDao weeklyScheduleDao;
 
     public WeeklyScheduleServiceImpl(JdbcWeeklyScheduleDao weeklyScheduleDao) {
@@ -27,19 +30,38 @@ public class WeeklyScheduleServiceImpl implements CrudService<WeeklySchedule, Lo
     @Override
     @Transactional
     public WeeklySchedule save(WeeklySchedule entity) {
-        return weeklyScheduleDao.save(entity);
+        try {
+            return weeklyScheduleDao.save(entity);
+        } catch (EmptyResultDataAccessException ex) {
+            if (entity.getId() == null) {
+                logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
+            } else {
+                logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
+            }
+        }
+        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        weeklyScheduleDao.deleteById(id);
+        try {
+            weeklyScheduleDao.deleteById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(WeeklySchedule entity) {
-        weeklyScheduleDao.deleteById(entity.getId());
+        try {
+            weeklyScheduleDao.deleteById(entity.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
 
     @Override

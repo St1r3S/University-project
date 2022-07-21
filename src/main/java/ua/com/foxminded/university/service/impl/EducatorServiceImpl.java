@@ -1,5 +1,8 @@
 package ua.com.foxminded.university.service.impl;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,7 @@ import java.util.List;
 
 @Service
 public class EducatorServiceImpl implements EducatorService {
+    private static final Logger logger = LoggerFactory.getLogger("ua.com.foxminded.university.service");
     private final JdbcEducatorDao educatorDao;
 
     public EducatorServiceImpl(JdbcEducatorDao educatorDao) {
@@ -28,19 +32,38 @@ public class EducatorServiceImpl implements EducatorService {
     @Override
     @Transactional
     public Educator save(Educator entity) {
-        return educatorDao.save(entity);
+        try {
+            return educatorDao.save(entity);
+        } catch (EmptyResultDataAccessException ex) {
+            if (entity.getId() == null) {
+                logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
+            } else {
+                logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
+            }
+        }
+        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        educatorDao.deleteById(id);
+        try {
+            educatorDao.deleteById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(Educator entity) {
-        educatorDao.deleteById(entity.getId());
+        try {
+            educatorDao.deleteById(entity.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
 
     @Override
