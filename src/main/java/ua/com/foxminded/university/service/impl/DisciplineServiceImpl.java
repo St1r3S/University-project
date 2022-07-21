@@ -1,5 +1,7 @@
 package ua.com.foxminded.university.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Service
 public class DisciplineServiceImpl implements DisciplineService {
+    private static final Logger logger = LoggerFactory.getLogger("ua.com.foxminded.university.service");
     private final JdbcDisciplineDao disciplineDao;
 
     public DisciplineServiceImpl(JdbcDisciplineDao disciplineDao) {
@@ -28,19 +31,38 @@ public class DisciplineServiceImpl implements DisciplineService {
     @Override
     @Transactional
     public Discipline save(Discipline entity) {
-        return disciplineDao.save(entity);
+        try {
+            return disciplineDao.save(entity);
+        } catch (EmptyResultDataAccessException ex) {
+            if (entity.getId() == null) {
+                logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
+            } else {
+                logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
+            }
+        }
+        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        disciplineDao.deleteById(id);
+        try {
+            disciplineDao.deleteById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
     @Transactional
     public void deleteById(Discipline entity) {
-        disciplineDao.deleteById(entity.getId());
+        try {
+            disciplineDao.deleteById(entity.getId());
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
 
     @Override
