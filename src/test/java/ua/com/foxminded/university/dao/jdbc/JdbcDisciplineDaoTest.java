@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ua.com.foxminded.university.BaseDaoTest;
-import ua.com.foxminded.university.dao.jdbc.mappers.DailyScheduleRowMapper;
 import ua.com.foxminded.university.dao.jdbc.mappers.DisciplineRowMapper;
 import ua.com.foxminded.university.model.lecture.Discipline;
 
@@ -46,6 +45,12 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyRetrieve() {
         Discipline expected = new Discipline(1L, "OOP", 1L);
         Discipline actual = dao.findById(1L).get();
@@ -65,15 +70,72 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyDeleteById() {
         assertDoesNotThrow(() -> dao.deleteById(1L));
-        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        Discipline entity = new Discipline(1L, "Math", 1L);
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<Discipline> entities = List.of(
+                new Discipline(1L, "OOP", 1L),
+                new Discipline(2L, "Physics", 1L)
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DISCIPLINE_BY_ID, new DisciplineRowMapper(), 2).stream().findFirst().isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<Discipline> expected = List.of(new Discipline(1L, "OOP", 1L), new Discipline(2L, "Physics", 1L));
+        List<Discipline> expected = List.of(
+                new Discipline(1L, "OOP", 1L),
+                new Discipline(2L, "Physics", 1L)
+        );
         List<Discipline> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<Discipline> expected = List.of(
+                new Discipline(1L, "OOP", 1L),
+                new Discipline(2L, "Physics", 1L)
+        );
+        List<Discipline> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 
     @Test

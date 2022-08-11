@@ -38,10 +38,16 @@ class JdbcLectureNumberDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        LectureNumber expected = new LectureNumber(2, LocalTime.parse("09:50:00"), LocalTime.parse("11:25:00"));
+        LectureNumber expected = new LectureNumber(3, LocalTime.parse("11:40:00"), LocalTime.parse("13:15:00"));
         dao.save(expected);
-        LectureNumber actual = jdbcTemplate.queryForObject(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 2);
+        LectureNumber actual = jdbcTemplate.queryForObject(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 3);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
     }
 
     @Test
@@ -70,9 +76,66 @@ class JdbcLectureNumberDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        LectureNumber entity = new LectureNumber(1L, 1, LocalTime.parse("08:10:00"), LocalTime.parse("09:35:00"));
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<LectureNumber> entities = List.of(
+                new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00")),
+                new LectureNumber(2L, 2, LocalTime.parse("09:50:00"), LocalTime.parse("11:25:00"))
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_NUMBER_BY_ID, new LectureNumberRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<LectureNumber> expected = List.of(new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00")));
+        List<LectureNumber> expected = List.of(
+                new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00")),
+                new LectureNumber(2L, 2, LocalTime.parse("09:50:00"), LocalTime.parse("11:25:00"))
+        );
         List<LectureNumber> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<LectureNumber> expected = List.of(
+                new LectureNumber(1L, 1, LocalTime.parse("08:00:00"), LocalTime.parse("09:35:00")),
+                new LectureNumber(2L, 2, LocalTime.parse("09:50:00"), LocalTime.parse("11:25:00"))
+        );
+        List<LectureNumber> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 }

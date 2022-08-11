@@ -10,6 +10,7 @@ import ua.com.foxminded.university.dao.EducatorDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.EducatorRowMapper;
 import ua.com.foxminded.university.model.user.Educator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,13 +34,17 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     public static final String DELETE = "DELETE FROM educator WHERE id = ?";
     public static final String FIND_ALL = "SELECT id, first_name, last_name, birthday, email, weekly_schedule_id, user_role, " +
             "educator_position FROM educator LIMIT 100";
+    public static final String COUNT = "SELECT count(*) FROM educator";
+    public static final String FIND_ALL_BY_IDS = "SELECT id, first_name, last_name, birthday, email, " +
+            "weekly_schedule_id, user_role, educator_position FROM educator WHERE id IN (%s)";
+    public static final String DELETE_ALL = "DELETE FROM educator";
+    public static final String DELETE_ALL_BY_IDS = "DELETE FROM educator WHERE id IN (%s)";
     private static final String EDUCATORS_BY_SPECIALISM_ID = "SELECT e.id, e.first_name, e.last_name, e.birthday, e.email, " +
             "e.weekly_schedule_id, e.user_role, e.educator_position FROM educator AS e " +
             "INNER JOIN educator_specialism AS es ON e.id = es.educator_id " +
             "INNER JOIN specialism AS s ON es.specialism_id = s.id where s.id = ?";
     private static final String INSERT_EDUCATOR_SPECIALISM = "INSERT INTO educator_specialism(educator_id, specialism_id) VALUES (?, ?)";
     private static final String DELETE_EDUCATOR_SPECIALISM = "DELETE FROM educator_specialism WHERE educator_id = ? AND specialism_id = ?";
-
     private final JdbcTemplate jdbcTemplate;
 
     private final SimpleJdbcInsert jdbcInsert;
@@ -73,6 +78,11 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
+    }
+
+    @Override
     public Educator update(Educator entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getFirstName(), entity.getLastName(), entity.getBirthday(),
                 entity.getEmail(), entity.getWeeklyScheduleId(), entity.getUserRole().toString(), entity.getPosition(), entity.getId())) {
@@ -89,8 +99,52 @@ public class JdbcEducatorDao extends AbstractCrudDao<Educator, Long> implements 
     }
 
     @Override
+    public void delete(Educator entity) {
+        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
+            throw new EmptyResultDataAccessException("Unable to delete educator entity with id" + entity.getId(), 1);
+    }
+
+    @Override
+    public void deleteAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                ids.toArray());
+    }
+
+    @Override
+    public void deleteAll(List<Educator> entities) {
+        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                entities.stream().map(Educator::getId).toArray());
+    }
+
+    @Override
+    public void deleteAll() {
+        jdbcTemplate.update(DELETE_ALL);
+    }
+
+    @Override
     public List<Educator> findAll() {
         return jdbcTemplate.query(FIND_ALL, new EducatorRowMapper());
+    }
+
+    @Override
+    public List<Educator> findAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        return jdbcTemplate.query(
+                String.format(FIND_ALL_BY_IDS, inSql),
+                new EducatorRowMapper(),
+                ids.toArray());
+    }
+
+    @Override
+    public long count() {
+        return jdbcTemplate.queryForObject(COUNT, Long.class);
     }
 
     @Override

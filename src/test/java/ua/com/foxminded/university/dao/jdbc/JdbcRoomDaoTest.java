@@ -40,8 +40,14 @@ class JdbcRoomDaoTest extends BaseDaoTest {
     void shouldVerifyCreate() {
         Room expected = new Room("55");
         dao.save(expected);
-        Room actual = jdbcTemplate.queryForObject(SELECT_ROOM_BY_ID, new RoomRowMapper(), 2);
+        Room actual = jdbcTemplate.queryForObject(SELECT_ROOM_BY_ID, new RoomRowMapper(), 3);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
     }
 
     @Test
@@ -70,9 +76,66 @@ class JdbcRoomDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        Room entity = new Room(1L, "505");
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<Room> entities = List.of(
+                new Room(1L, "404"),
+                new Room(2L, "777")
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_ROOM_BY_ID, new RoomRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<Room> expected = List.of(new Room(1L, "404"));
+        List<Room> expected = List.of(
+                new Room(1L, "404"),
+                new Room(2L, "777")
+        );
         List<Room> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<Room> expected = List.of(
+                new Room(1L, "404"),
+                new Room(2L, "777")
+        );
+        List<Room> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 }

@@ -43,8 +43,14 @@ class JdbcEducatorDaoTest extends BaseDaoTest {
     void shouldVerifyCreate() {
         Educator expected = new Educator("Jack", "Black", LocalDate.parse("1965-08-22"), "blackJack@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer");
         dao.save(expected);
-        Educator actual = jdbcTemplate.queryForObject(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 2);
+        Educator actual = jdbcTemplate.queryForObject(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 3);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
     }
 
     @Test
@@ -73,10 +79,67 @@ class JdbcEducatorDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        Educator entity = new Educator(1L, "Jack", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer");
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<Educator> entities = List.of(
+                new Educator(1L, "John", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer"),
+                new Educator(2L, "Alex", "Test", LocalDate.parse("1980-03-28"), "alex@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer")
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_EDUCATOR_BY_ID, new EducatorRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<Educator> expected = List.of(new Educator(1L, "John", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer"));
+        List<Educator> expected = List.of(
+                new Educator(1L, "John", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer"),
+                new Educator(2L, "Alex", "Test", LocalDate.parse("1980-03-28"), "alex@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer")
+        );
         List<Educator> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<Educator> expected = List.of(
+                new Educator(1L, "John", "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer"),
+                new Educator(2L, "Alex", "Test", LocalDate.parse("1980-03-28"), "alex@gmail.com", 1L, UserRole.EDUCATOR, "Lecturer")
+        );
+        List<Educator> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 
     @Test

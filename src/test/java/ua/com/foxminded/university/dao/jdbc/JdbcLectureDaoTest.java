@@ -42,8 +42,14 @@ class JdbcLectureDaoTest extends BaseDaoTest {
     void shouldVerifyCreate() {
         Lecture expected = new Lecture(2L, 1L, 1L, 1L);
         dao.save(expected);
-        Lecture actual = jdbcTemplate.queryForObject(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 2);
+        Lecture actual = jdbcTemplate.queryForObject(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 3);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
     }
 
     @Test
@@ -72,10 +78,67 @@ class JdbcLectureDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        Lecture entity = new Lecture(1L, 2L, 1L, 1L, 1L);
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<Lecture> entities = List.of(
+                new Lecture(1L, 1L, 1L, 1L, 1L),
+                new Lecture(2L, 2L, 2L, 2L, 2L)
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_LECTURE_BY_ID, new LectureRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<Lecture> expected = List.of(new Lecture(1L, 1L, 1L, 1L, 1L));
+        List<Lecture> expected = List.of(
+                new Lecture(1L, 1L, 1L, 1L, 1L),
+                new Lecture(2L, 2L, 2L, 2L, 2L)
+        );
         List<Lecture> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<Lecture> expected = List.of(
+                new Lecture(1L, 1L, 1L, 1L, 1L),
+                new Lecture(2L, 2L, 2L, 2L, 2L)
+        );
+        List<Lecture> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 
     @Test

@@ -10,6 +10,7 @@ import ua.com.foxminded.university.dao.SpecialismDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.SpecialismRowMapper;
 import ua.com.foxminded.university.model.misc.Specialism;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +26,15 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     public static final String SPECIALISMS_BY_DISCIPLINE_ID = "SELECT s.id, s.specialism_name FROM specialism AS s " +
             "INNER JOIN discipline_specialism AS ds ON s.id = ds.specialism_id " +
             "INNER JOIN discipline AS d ON ds.discipline_id = d.id where d.id = ?";
+    public static final String COUNT = "SELECT count(*) FROM specialism";
+    public static final String DELETE_ALL_BY_IDS = "DELETE FROM specialism WHERE id IN (%s)";
     private static final String SPECIALISMS_BY_EDUCATOR_ID = "SELECT s.id, s.specialism_name FROM specialism AS s " +
             "INNER JOIN educator_specialism AS es ON s.id = es.specialism_id " +
             "INNER JOIN educator AS e ON es.educator_id = e.id where e.id = ?";
     private static final String SPECIALISM_BY_SPECIALISM_NAME = "SELECT id, specialism_name " +
             "FROM specialism WHERE specialism_name = ?";
-
+    private static final String FIND_ALL_BY_IDS = "SELECT id, specialism_name FROM specialism WHERE id IN (%s)";
+    private static final String DELETE_ALL = "DELETE FROM specialism";
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -58,6 +62,11 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
+    }
+
+    @Override
     public Specialism update(Specialism entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getSpecialismName(), entity.getId())) {
             return entity;
@@ -72,8 +81,53 @@ public class JdbcSpecialismDao extends AbstractCrudDao<Specialism, Long> impleme
     }
 
     @Override
+    public void delete(Specialism entity) {
+        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
+            throw new EmptyResultDataAccessException("Unable to delete specialism entity with id" + entity.getId(), 1);
+
+    }
+
+    @Override
+    public void deleteAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                ids.toArray());
+    }
+
+    @Override
+    public void deleteAll(List<Specialism> entities) {
+        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                entities.stream().map(Specialism::getId).toArray());
+    }
+
+    @Override
+    public void deleteAll() {
+        jdbcTemplate.update(DELETE_ALL);
+    }
+
+    @Override
     public List<Specialism> findAll() {
         return jdbcTemplate.query(FIND_ALL, new SpecialismRowMapper());
+    }
+
+    @Override
+    public List<Specialism> findAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        return jdbcTemplate.query(
+                String.format(FIND_ALL_BY_IDS, inSql),
+                new SpecialismRowMapper(),
+                ids.toArray());
+    }
+
+    @Override
+    public long count() {
+        return jdbcTemplate.queryForObject(COUNT, Long.class);
     }
 
     @Override

@@ -12,6 +12,7 @@ import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,10 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     public static final String DELETE = "DELETE FROM lecture WHERE id = ?";
     public static final String FIND_ALL = "SELECT id, discipline_id, lecture_number_id, room_id, daily_schedule_id " +
             "FROM lecture LIMIT 100";
+    public static final String COUNT = "SELECT count(*) FROM lecture";
+    public static final String FIND_ALL_BY_IDS = "SELECT id, discipline_id, lecture_number_id, room_id, daily_schedule_id FROM lecture WHERE id IN (%s)";
+    public static final String DELETE_ALL = "DELETE FROM lecture";
+    public static final String DELETE_ALL_BY_IDS = "DELETE FROM lecture WHERE id IN (%s)";
     private static final String LECTURES_BY_STUDENT_ID = "SELECT l.id, l.discipline_id, l.lecture_number_id, " +
             "l.room_id, l.daily_schedule_id FROM lecture AS l " +
             "INNER JOIN lecture_student AS ls ON l.id = ls.lecture_id " +
@@ -51,7 +56,6 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
             "l.room_id, l.daily_schedule_id FROM lecture AS l " +
             "INNER JOIN room AS r ON l.room_id = r.id " +
             "where r.room_number = ?";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
 
@@ -79,6 +83,11 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return findById(id).isPresent();
+    }
+
+    @Override
     public Lecture update(Lecture entity) {
         if (1 == jdbcTemplate.update(UPDATE, entity.getDisciplineId(), entity.getLectureNumberId(),
                 entity.getRoomId(), entity.getDailyScheduleId(), entity.getId())) {
@@ -94,8 +103,52 @@ public class JdbcLectureDao extends AbstractCrudDao<Lecture, Long> implements Le
     }
 
     @Override
+    public void delete(Lecture entity) {
+        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
+            throw new EmptyResultDataAccessException("Unable to delete lecture entity with id" + entity.getId(), 1);
+    }
+
+    @Override
+    public void deleteAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                ids.toArray());
+    }
+
+    @Override
+    public void deleteAll(List<Lecture> entities) {
+        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
+
+        jdbcTemplate.update(
+                String.format(DELETE_ALL_BY_IDS, inSql),
+                entities.stream().map(Lecture::getId).toArray());
+    }
+
+    @Override
+    public void deleteAll() {
+        jdbcTemplate.update(DELETE_ALL);
+    }
+
+    @Override
     public List<Lecture> findAll() {
         return jdbcTemplate.query(FIND_ALL, new LectureRowMapper());
+    }
+
+    @Override
+    public List<Lecture> findAllById(List<Long> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        return jdbcTemplate.query(
+                String.format(FIND_ALL_BY_IDS, inSql),
+                new LectureRowMapper(),
+                ids.toArray());
+    }
+
+    @Override
+    public long count() {
+        return jdbcTemplate.queryForObject(COUNT, Long.class);
     }
 
     @Override

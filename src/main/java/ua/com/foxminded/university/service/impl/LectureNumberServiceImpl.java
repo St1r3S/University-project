@@ -5,18 +5,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.com.foxminded.university.dao.jdbc.JdbcLectureNumberDao;
+import ua.com.foxminded.university.dao.LectureNumberDao;
 import ua.com.foxminded.university.model.lecture.LectureNumber;
-import ua.com.foxminded.university.service.CrudService;
+import ua.com.foxminded.university.service.LectureNumberService;
 
 import java.util.List;
 
 @Service
-public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long> {
+public class LectureNumberServiceImpl implements LectureNumberService {
     private static final Logger logger = LoggerFactory.getLogger("ua.com.foxminded.university.service");
-    private final JdbcLectureNumberDao lectureNumberDao;
+    private final LectureNumberDao lectureNumberDao;
 
-    public LectureNumberServiceImpl(JdbcLectureNumberDao lectureNumberDao) {
+    public LectureNumberServiceImpl(LectureNumberDao lectureNumberDao) {
         this.lectureNumberDao = lectureNumberDao;
     }
 
@@ -25,6 +25,12 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
     public LectureNumber findById(Long id) {
         return lectureNumberDao.findById(id).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such lecture number with id " + id, 1));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return lectureNumberDao.existsById(id);
     }
 
     @Override
@@ -44,6 +50,17 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
 
     @Override
     @Transactional
+    public List<LectureNumber> saveAll(List<LectureNumber> entities) {
+        try {
+            return lectureNumberDao.saveAll(entities);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         try {
             lectureNumberDao.deleteById(id);
@@ -55,7 +72,7 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
 
     @Override
     @Transactional
-    public void deleteById(LectureNumber entity) {
+    public void delete(LectureNumber entity) {
         try {
             lectureNumberDao.deleteById(entity.getId());
         } catch (EmptyResultDataAccessException ex) {
@@ -65,9 +82,54 @@ public class LectureNumberServiceImpl implements CrudService<LectureNumber, Long
     }
 
     @Override
+    @Transactional
+    public void deleteAllById(List<Long> ids) {
+        try {
+            lectureNumberDao.deleteAllById(ids);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAll(List<LectureNumber> entities) {
+        try {
+            lectureNumberDao.deleteAll(entities);
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAll() {
+        try {
+            lectureNumberDao.deleteAll();
+        } catch (EmptyResultDataAccessException ex) {
+            logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
+        }
+        throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<LectureNumber> findAll() {
         return lectureNumberDao.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<LectureNumber> findAllById(List<Long> ids) {
+        return lectureNumberDao.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long count() {
+        return lectureNumberDao.count();
     }
 
 }

@@ -42,8 +42,14 @@ class JdbcDailyScheduleDaoTest extends BaseDaoTest {
     void shouldVerifyCreate() {
         DailySchedule expected = new DailySchedule(LocalDate.of(2022, 9, 2), DayOfWeek.FRIDAY, 1L);
         dao.save(expected);
-        DailySchedule actual = jdbcTemplate.queryForObject(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 2);
+        DailySchedule actual = jdbcTemplate.queryForObject(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 3);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyIsExistById() {
+        assertTrue(dao.existsById(1L));
     }
 
     @Test
@@ -70,11 +76,69 @@ class JdbcDailyScheduleDaoTest extends BaseDaoTest {
         assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
     }
 
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteByEntity() {
+        DailySchedule entity = new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L);
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<DailySchedule> entities = List.of(
+                new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L),
+                new DailySchedule(2L, LocalDate.of(2022, 9, 8), DayOfWeek.THURSDAY, 2L)
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 1).stream().findFirst().isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_DAILY_SCHEDULE_BY_ID, new DailyScheduleRowMapper(), 2).stream().findFirst().isPresent());
+    }
+
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
-        List<DailySchedule> expected = List.of(new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L));
+        List<DailySchedule> expected = List.of(
+                new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L),
+                new DailySchedule(2L, LocalDate.of(2022, 9, 8), DayOfWeek.THURSDAY, 2L)
+        );
         List<DailySchedule> actual = dao.findAll();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllById() {
+        List<DailySchedule> expected = List.of(
+                new DailySchedule(1L, LocalDate.of(2022, 9, 1), DayOfWeek.THURSDAY, 1L),
+                new DailySchedule(2L, LocalDate.of(2022, 9, 8), DayOfWeek.THURSDAY, 2L)
+        );
+        List<DailySchedule> actual = dao.findAllById(List.of(1L, 2L));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyCount() {
+        long actual = dao.count();
+        assertEquals(2L, actual);
     }
 }
