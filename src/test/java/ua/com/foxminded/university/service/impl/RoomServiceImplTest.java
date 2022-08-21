@@ -16,7 +16,7 @@ class RoomServiceImplTest {
     RoomServiceImpl roomService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> roomService.findById(1L));
     }
 }

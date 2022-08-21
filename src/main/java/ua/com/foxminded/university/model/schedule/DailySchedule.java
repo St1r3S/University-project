@@ -1,9 +1,6 @@
 package ua.com.foxminded.university.model.schedule;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.lecture.DayOfWeek;
 import ua.com.foxminded.university.model.lecture.Lecture;
@@ -15,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class DailySchedule extends LongEntity implements Schedule {
 
     private LocalDate dateOfScheduleCell;

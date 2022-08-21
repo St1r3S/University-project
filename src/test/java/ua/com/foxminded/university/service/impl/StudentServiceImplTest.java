@@ -16,7 +16,7 @@ class StudentServiceImplTest {
     StudentServiceImpl studentService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> studentService.findById(1L));
     }
 }

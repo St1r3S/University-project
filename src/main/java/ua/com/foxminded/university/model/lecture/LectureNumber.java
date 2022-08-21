@@ -1,9 +1,6 @@
 package ua.com.foxminded.university.model.lecture;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ua.com.foxminded.university.model.LongEntity;
 
 import java.time.LocalTime;
@@ -12,6 +9,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class LectureNumber extends LongEntity {
 
     private Integer number;

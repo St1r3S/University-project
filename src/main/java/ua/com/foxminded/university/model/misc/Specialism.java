@@ -1,15 +1,13 @@
 package ua.com.foxminded.university.model.misc;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ua.com.foxminded.university.model.LongEntity;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Specialism extends LongEntity {
 
     private String specialismName;

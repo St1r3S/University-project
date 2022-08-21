@@ -131,4 +131,10 @@ public class WeeklyScheduleServiceImpl implements WeeklyScheduleService {
     public long count() {
         return weeklyScheduleDao.count();
     }
+
+    @Override
+    public WeeklySchedule findByWeekNumber(Integer weekNumber) {
+        return weeklyScheduleDao.findByWeekNumber(weekNumber).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such weekly schedule with week number " + weekNumber, 1));
+    }
 }

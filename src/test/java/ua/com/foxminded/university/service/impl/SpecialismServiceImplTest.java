@@ -16,7 +16,7 @@ class SpecialismServiceImplTest {
     SpecialismServiceImpl specialismService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> specialismService.findById(1L));
     }
 }

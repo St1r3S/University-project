@@ -1,9 +1,6 @@
 package ua.com.foxminded.university.model.user;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -11,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Student extends User {
 
 

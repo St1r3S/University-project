@@ -1,9 +1,7 @@
 package ua.com.foxminded.university.model.user;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import ua.com.foxminded.university.model.LongEntity;
 
 import java.time.LocalDate;
@@ -12,15 +10,16 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class User extends LongEntity {
 
     private String firstName;
     private String lastName;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private String email;
     private Long weeklyScheduleId;
     private UserRole userRole;
-
 
     public User(Long id, String firstName, String lastName, LocalDate birthday, String email, Long weeklyScheduleId, UserRole userRole) {
         super(id);

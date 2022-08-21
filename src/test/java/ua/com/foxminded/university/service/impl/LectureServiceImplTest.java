@@ -16,7 +16,7 @@ class LectureServiceImplTest {
     LectureServiceImpl lectureService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> lectureService.findById(1L));
     }
 }

@@ -137,4 +137,12 @@ class JdbcWeeklyScheduleDaoTest extends BaseDaoTest {
         long actual = dao.count();
         assertEquals(2L, actual);
     }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindByWeekNumber() {
+        WeeklySchedule expected = new WeeklySchedule(1L, 1);
+        WeeklySchedule actual = dao.findByWeekNumber(1).get();
+        assertEquals(expected, actual);
+    }
 }

@@ -27,6 +27,7 @@ public class JdbcWeeklyScheduleDao extends AbstractCrudDao<WeeklySchedule, Long>
     public static final String FIND_ALL_BY_IDS = "SELECT id, week_number FROM weekly_schedule WHERE id IN (%s)";
     public static final String DELETE_ALL = "DELETE FROM weekly_schedule";
     public static final String DELETE_ALL_BY_IDS = "DELETE FROM weekly_schedule WHERE id IN (%s)";
+    public static final String FIND_BY_WEEK_NUMBER = "SELECT id, week_number FROM weekly_schedule WHERE week_number = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -118,5 +119,10 @@ public class JdbcWeeklyScheduleDao extends AbstractCrudDao<WeeklySchedule, Long>
     @Override
     public long count() {
         return jdbcTemplate.queryForObject(COUNT, Long.class);
+    }
+
+    @Override
+    public Optional<WeeklySchedule> findByWeekNumber(Integer weekNumber) {
+        return jdbcTemplate.query(FIND_BY_WEEK_NUMBER, new WeeklyScheduleRowMapper(), weekNumber).stream().findFirst();
     }
 }

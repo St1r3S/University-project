@@ -17,7 +17,7 @@ class DailyScheduleServiceImplTest {
     DailyScheduleServiceImpl dailyScheduleService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> dailyScheduleService.findById(1L));
     }
 }

@@ -1,7 +1,10 @@
 package ua.com.foxminded.university.model;
 
+import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
+@NoArgsConstructor
 abstract public class LongEntity implements Entity<Long> {
 
     protected Long id;

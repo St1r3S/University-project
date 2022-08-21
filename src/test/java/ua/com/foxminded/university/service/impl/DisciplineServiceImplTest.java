@@ -17,7 +17,7 @@ class DisciplineServiceImplTest {
     DisciplineServiceImpl disciplineService;
 
     @Test
-    void shouldTrowNotFindException() {
+    void shouldThrowNotFindException() {
         assertThrows(EmptyResultDataAccessException.class, () -> disciplineService.findById(1L));
     }
 }
