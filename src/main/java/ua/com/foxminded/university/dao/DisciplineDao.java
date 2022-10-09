@@ -1,16 +1,17 @@
 package ua.com.foxminded.university.dao;
 
-import ua.com.foxminded.university.model.lecture.Discipline;
+import ua.com.foxminded.university.model.lesson.Discipline;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface DisciplineDao extends CrudDao<Discipline, Long> {
-    List<Discipline> findAllBySpecialismId(Long specialismId);
-
     Optional<Discipline> findByDisciplineName(String disciplineName);
 
-    void enrollDisciplineSpecialism(Long disciplineId, Long specialismId);
+    List<Discipline> findAllBySpecialismId(Long specialismId);
 
-    void expelDisciplineSpecialism(Long disciplineId, Long specialismId);
+    List<Discipline> findAllByAcademicYearId(Long academicYearId);
+
+    Optional<Discipline> findByEducatorId(Long educatorId);
+
 }

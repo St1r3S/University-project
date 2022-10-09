@@ -1,97 +1,74 @@
-create table weekly_schedule
-(
-    id          bigserial primary key,
-    week_number int unique not null
-);
-
-create table educator
-(
-    id                 bigserial primary key,
-    first_name         text                                                                       not null,
-    last_name          text                                                                       not null,
-    birthday           date                                                                       not null,
-    email              text unique                                                                not null,
-    weekly_schedule_id bigint references weekly_schedule (id) on update cascade on delete cascade not null,
-    user_role          text                                                                       not null,
-    educator_position  text                                                                       not null
-);
-
-create table discipline
-(
-    id              bigserial primary key,
-    discipline_name text                                                                not null,
-    educator_id     bigint references educator (id) on update cascade on delete cascade not null,
-    unique (discipline_name, educator_id)
-);
-
-create table room
-(
-    id          bigserial primary key,
-    room_number text unique not null
-);
-
-create table lecture_number
-(
-    id         bigserial primary key,
-    number     int  not null,
-    time_start time not null,
-    time_end   time not null
-);
-
-create table specialism
+create table specialisms
 (
     id              bigserial primary key,
     specialism_name text unique not null
 );
 
-create table daily_schedule
+create table schedule_days
 (
-    id                    bigserial primary key,
-    date_of_schedule_cell date                                                                       not null,
-    day_of_week           text                                                                       not null,
-    weekly_schedule_id    bigint references weekly_schedule (id) on update cascade on delete cascade not null,
-    unique (date_of_schedule_cell, day_of_week, weekly_schedule_id)
+    id            bigserial primary key,
+    day_of_week   text not null,
+    semester_type text not null,
+    unique (day_of_week, semester_type)
 );
 
-create table educator_specialism
+create table rooms
 (
-    educator_id   bigint references educator (id) on update cascade on delete cascade   not null,
-    specialism_id bigint references specialism (id) on update cascade on delete cascade not null,
-    constraint educator_specialism_pk primary key (educator_id, specialism_id)
+    id          bigserial primary key,
+    room_number text unique not null
 );
 
-create table discipline_specialism
+create table academic_years
 (
-    discipline_id bigint references discipline (id) on update cascade on delete cascade not null,
-    specialism_id bigint references specialism (id) on update cascade on delete cascade not null,
-    constraint discipline_specialism_pk primary key (discipline_id, specialism_id)
+    id            bigserial primary key,
+    year_number   bigint not null,
+    semester_type text   not null,
+    unique (year_number, semester_type)
 );
 
-create table lecture
+create table groupss
 (
-    id                bigserial primary key,
-    discipline_id     bigint references discipline (id) on update cascade on delete cascade     not null,
-    lecture_number_id bigint references lecture_number (id) on update cascade on delete cascade not null,
-    room_id           bigint references room (id) on update cascade on delete cascade           not null,
-    daily_schedule_id bigint references daily_schedule (id) on update cascade on delete cascade not null
+    id               bigserial primary key,
+    group_name       text unique                                                               not null,
+    specialism_id    bigint references specialisms (id) on update cascade on delete cascade    not null,
+    academic_year_id bigint references academic_years (id) on update cascade on delete cascade not null,
+    unique (group_name, specialism_id, academic_year_id)
 );
 
-create table student
+create table users
 (
-    id                 bigserial primary key,
-    first_name         text                                                                       not null,
-    last_name          text                                                                       not null,
-    birthday           date                                                                       not null,
-    email              text unique                                                                not null,
-    weekly_schedule_id bigint references weekly_schedule (id) on update cascade on delete cascade not null,
-    user_role          text                                                                       not null,
-    group_name         text                                                                       not null,
-    specialism_id      bigint references specialism (id) on update cascade on delete cascade      not null
+    id               bigserial primary key,
+    user_type        bigint      not null,
+    user_name        text unique not null,
+    password_hash    text        not null,
+    user_role        text        not null,
+    first_name       text        not null,
+    last_name        text        not null,
+    birthday         date        not null,
+    email            text unique not null,
+    academic_rank    text,
+    group_id         bigint references groupss (id) on update cascade on delete cascade,
+    specialism_id    bigint references specialisms (id) on update cascade on delete cascade,
+    academic_year_id bigint references academic_years (id) on update cascade on delete cascade
 );
 
-create table lecture_student
+create table disciplines
 (
-    lecture_id bigint references lecture (id) on update cascade on delete cascade not null,
-    student_id bigint references student (id) on update cascade on delete cascade not null,
-    constraint lecture_student_pk primary key (lecture_id, student_id)
+    id               bigserial primary key,
+    discipline_name  text                                                                      not null,
+    specialism_id    bigint references specialisms (id) on update cascade on delete cascade    not null,
+    academic_year_id bigint references academic_years (id) on update cascade on delete cascade not null,
+    educator_id      bigint references users (id) on update cascade on delete cascade unique   not null,
+    unique (discipline_name, specialism_id, academic_year_id, educator_id)
+);
+
+create table lessons
+(
+    id              bigserial primary key,
+    discipline_id   bigint references disciplines (id) on update cascade on delete cascade   not null,
+    group_id        bigint references groupss (id) on update cascade on delete cascade       not null,
+    lesson_number   bigint                                                                   not null,
+    room_id         bigint references rooms (id) on update cascade on delete cascade         not null,
+    schedule_day_id bigint references schedule_days (id) on update cascade on delete cascade not null,
+    unique (lesson_number, room_id, schedule_day_id)
 );

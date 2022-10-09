@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.RoomDao;
-import ua.com.foxminded.university.model.lecture.Room;
+import ua.com.foxminded.university.model.lesson.Room;
 import ua.com.foxminded.university.service.RoomService;
 
 import java.util.List;
@@ -20,18 +20,6 @@ public class RoomServiceImpl implements RoomService {
         this.roomDao = roomDao;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Room findById(Long id) {
-        return roomDao.findById(id).orElseThrow(
-                () -> new EmptyResultDataAccessException("There's no such room with id " + id, 1));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Long id) {
-        return roomDao.existsById(id);
-    }
 
     @Override
     @Transactional
@@ -57,6 +45,37 @@ public class RoomServiceImpl implements RoomService {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Room findById(Long id) {
+        return roomDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such room with id " + id, 1));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return roomDao.existsById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Room> findAll() {
+        return roomDao.findAll(100);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Room> findAllById(List<Long> ids) {
+        return roomDao.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long count() {
+        return roomDao.count();
     }
 
     @Override
@@ -114,21 +133,10 @@ public class RoomServiceImpl implements RoomService {
         throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Room> findAll() {
-        return roomDao.findAll();
-    }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Room> findAllById(List<Long> ids) {
-        return roomDao.findAllById(ids);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public long count() {
-        return roomDao.count();
+    public Room findByRoomNumber(String roomNumber) {
+        return roomDao.findByRoomNumber(roomNumber).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such room with number " + roomNumber, 1));
     }
 }

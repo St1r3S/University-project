@@ -4,11 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.StudentDao;
-import ua.com.foxminded.university.model.lecture.Lecture;
-import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Student;
+import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.StudentService;
 
 import java.time.LocalDate;
@@ -23,21 +21,8 @@ public class StudentServiceImpl implements StudentService {
         this.studentDao = studentDao;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Student findById(Long id) {
-        return studentDao.findById(id).orElseThrow(
-                () -> new EmptyResultDataAccessException("There's no such student with id " + id, 1));
-    }
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Long id) {
-        return studentDao.existsById(id);
-    }
-
-    @Override
-    @Transactional
     public Student save(Student entity) {
         try {
             return studentDao.save(entity);
@@ -52,7 +37,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    @Transactional
     public List<Student> saveAll(List<Student> entities) {
         try {
             return studentDao.saveAll(entities);
@@ -63,7 +47,32 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    @Transactional
+    public Student findById(Long id) {
+        return studentDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such student with id " + id, 1));
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return studentDao.existsById(id);
+    }
+
+    @Override
+    public List<Student> findAll() {
+        return studentDao.findAll(100);
+    }
+
+    @Override
+    public List<Student> findAllById(List<Long> ids) {
+        return studentDao.findAllById(ids);
+    }
+
+    @Override
+    public long count() {
+        return studentDao.count();
+    }
+
+    @Override
     public void deleteById(Long id) {
         try {
             studentDao.deleteById(id);
@@ -71,10 +80,10 @@ public class StudentServiceImpl implements StudentService {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
+
     }
 
     @Override
-    @Transactional
     public void delete(Student entity) {
         try {
             studentDao.deleteById(entity.getId());
@@ -82,10 +91,10 @@ public class StudentServiceImpl implements StudentService {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
+
     }
 
     @Override
-    @Transactional
     public void deleteAllById(List<Long> ids) {
         try {
             studentDao.deleteAllById(ids);
@@ -93,10 +102,10 @@ public class StudentServiceImpl implements StudentService {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
+
     }
 
     @Override
-    @Transactional
     public void deleteAll(List<Student> entities) {
         try {
             studentDao.deleteAll(entities);
@@ -104,10 +113,10 @@ public class StudentServiceImpl implements StudentService {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
+
     }
 
     @Override
-    @Transactional
     public void deleteAll() {
         try {
             studentDao.deleteAll();
@@ -115,71 +124,43 @@ public class StudentServiceImpl implements StudentService {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
+
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAll() {
-        return studentDao.findAll();
+    public Student findByLogin(String userName) {
+        return studentDao.findByLogin(userName).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such student with login " + userName, 1));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllById(List<Long> ids) {
-        return studentDao.findAllById(ids);
+    public Student findByEmail(String email) {
+        return studentDao.findByLogin(email).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such student with email " + email, 1));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public long count() {
-        return studentDao.count();
+    public List<Student> findAllByUserRole(UserRole userRole) {
+        return studentDao.findAllByUserRole(userRole);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllByLectureId(Long lectureId) {
-        return studentDao.findAllByLectureId(lectureId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllByLectureId(Lecture lecture) {
-        return studentDao.findAllByLectureId(lecture.getId());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllBySpecialismId(Long specialismId) {
-        return studentDao.findAllBySpecialismId(specialismId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllBySpecialismId(Specialism specialism) {
-        return studentDao.findAllBySpecialismId(specialism.getId());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Student> findAllByGroupName(String groupName) {
-        return studentDao.findAllByGroupName(groupName);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Student> findAllByBirthday(LocalDate birthday) {
         return studentDao.findAllByBirthday(birthday);
     }
 
     @Override
-    @Transactional
-    public void enrollLectureStudent(Lecture lecture, Student student) {
-        studentDao.enrollLectureStudent(lecture.getId(), student.getId());
+    public List<Student> findAllByGroupId(Long groupId) {
+        return studentDao.findAllByGroupId(groupId);
     }
 
     @Override
-    @Transactional
-    public void expelLectureStudent(Lecture lecture, Student student) {
-        studentDao.expelLectureStudent(lecture.getId(), student.getId());
+    public List<Student> findAllBySpecialismId(Long specialismId) {
+        return studentDao.findAllBySpecialismId(specialismId);
+    }
+
+    @Override
+    public List<Student> findAllByAcademicYearId(Long academicYearId) {
+        return studentDao.findAllByAcademicYearId(academicYearId);
     }
 }

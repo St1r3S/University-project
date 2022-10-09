@@ -1,26 +1,13 @@
 package ua.com.foxminded.university.service;
 
-import ua.com.foxminded.university.model.lecture.Lecture;
-import ua.com.foxminded.university.model.misc.Specialism;
 import ua.com.foxminded.university.model.user.Student;
 
-import java.time.LocalDate;
 import java.util.List;
 
-public interface StudentService extends CrudService<Student, Long> {
-    List<Student> findAllByLectureId(Long lectureId);
-
-    List<Student> findAllByLectureId(Lecture lecture);
+public interface StudentService extends CrudUserService<Student, Long> {
+    List<Student> findAllByGroupId(Long groupId);
 
     List<Student> findAllBySpecialismId(Long specialismId);
 
-    List<Student> findAllBySpecialismId(Specialism specialism);
-
-    List<Student> findAllByGroupName(String groupName);
-
-    List<Student> findAllByBirthday(LocalDate birthday);
-
-    void enrollLectureStudent(Lecture lecture, Student student);
-
-    void expelLectureStudent(Lecture lecture, Student student);
+    List<Student> findAllByAcademicYearId(Long academicYearId);
 }

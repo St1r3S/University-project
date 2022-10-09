@@ -2,19 +2,14 @@ package ua.com.foxminded.university.dao;
 
 import ua.com.foxminded.university.model.user.Student;
 
-import java.time.LocalDate;
 import java.util.List;
 
-public interface StudentDao extends CrudDao<Student, Long> {
-    List<Student> findAllByLectureId(Long lectureId);
+public interface StudentDao extends CrudUserDao<Student, Long> {
+
+    List<Student> findAllByGroupId(Long groupId);
 
     List<Student> findAllBySpecialismId(Long specialismId);
 
-    List<Student> findAllByGroupName(String groupName);
+    List<Student> findAllByAcademicYearId(Long academicYearId);
 
-    List<Student> findAllByBirthday(LocalDate birthday);
-
-    void enrollLectureStudent(Long lectureId, Long studentId);
-
-    void expelLectureStudent(Long lectureId, Long studentId);
 }

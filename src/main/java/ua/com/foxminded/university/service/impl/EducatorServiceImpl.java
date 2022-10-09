@@ -7,10 +7,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.EducatorDao;
-import ua.com.foxminded.university.model.misc.Specialism;
+import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
+import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.EducatorService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,19 +22,6 @@ public class EducatorServiceImpl implements EducatorService {
 
     public EducatorServiceImpl(EducatorDao educatorDao) {
         this.educatorDao = educatorDao;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Educator findById(Long id) {
-        return educatorDao.findById(id).orElseThrow(
-                () -> new EmptyResultDataAccessException("There's no such educator with id " + id, 1));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Long id) {
-        return educatorDao.existsById(id);
     }
 
     @Override
@@ -59,6 +48,37 @@ public class EducatorServiceImpl implements EducatorService {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Educator findById(Long id) {
+        return educatorDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such educator with id " + id, 1));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return educatorDao.existsById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Educator> findAll() {
+        return educatorDao.findAll(100);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Educator> findAllById(List<Long> ids) {
+        return educatorDao.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long count() {
+        return educatorDao.count();
     }
 
     @Override
@@ -117,44 +137,29 @@ public class EducatorServiceImpl implements EducatorService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Educator> findAll() {
-        return educatorDao.findAll();
+    public Educator findByLogin(String userName) {
+        return educatorDao.findByLogin(userName).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such educator with login " + userName, 1));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Educator> findAllById(List<Long> ids) {
-        return educatorDao.findAllById(ids);
+    public Educator findByEmail(String email) {
+        return educatorDao.findByLogin(email).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such educator with email " + email, 1));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public long count() {
-        return educatorDao.count();
+    public List<Educator> findAllByUserRole(UserRole userRole) {
+        return educatorDao.findAllByUserRole(userRole);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Educator> findAllBySpecialismId(Long specialismId) {
-        return educatorDao.findAllBySpecialismId(specialismId);
+    public List<Educator> findAllByBirthday(LocalDate birthday) {
+        return educatorDao.findAllByBirthday(birthday);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Educator> findAllBySpecialismId(Specialism specialism) {
-        return educatorDao.findAllBySpecialismId(specialism.getId());
-    }
-
-    @Override
-    @Transactional
-    public void enrollEducatorSpecialism(Educator educator, Specialism specialism) {
-        educatorDao.enrollEducatorSpecialism(educator.getId(), specialism.getId());
-    }
-
-    @Override
-    @Transactional
-    public void expelEducatorSpecialism(Educator educator, Specialism specialism) {
-        educatorDao.expelEducatorSpecialism(educator.getId(), specialism.getId());
+    public List<Educator> findAllByAcademicRank(AcademicRank academicRank) {
+        return educatorDao.findAllByAcademicRank(academicRank);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.SpecialismRowMapper;
-import ua.com.foxminded.university.model.misc.Specialism;
+import ua.com.foxminded.university.model.lesson.Specialism;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JdbcSpecialismDaoTest extends BaseDaoTest {
-    public static final String SELECT_SPECIALISM_BY_ID = "SELECT id, specialism_name FROM specialism WHERE id = ?";
+    public static final String SELECT_SPECIALISM_BY_ID = "SELECT * FROM specialisms WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -37,9 +37,26 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        Specialism expected = new Specialism("Data analytics");
+        Specialism expected = new Specialism("112");
         dao.save(expected);
-        Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 3);
+        Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 4);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyUpdate() {
+        Specialism expected = new Specialism(1L, "112");
+        dao.save(expected);
+        Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindById() {
+        Specialism expected = new Specialism(1L, "122");
+        Specialism actual = dao.findById(1L).get();
         assertEquals(expected, actual);
     }
 
@@ -51,72 +68,13 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyRetrieve() {
-        Specialism expected = new Specialism(1L, "Computer science");
-        Specialism actual = dao.findById(1L).get();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyUpdate() {
-        Specialism expected = new Specialism(1L, "Cybersecurity");
-        dao.save(expected);
-        Specialism actual = jdbcTemplate.queryForObject(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteById() {
-        assertDoesNotThrow(() -> dao.deleteById(1L));
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteByEntity() {
-        Specialism entity = new Specialism(1L, "Cybersecurity");
-        assertDoesNotThrow(() -> dao.delete(entity));
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteAllById() {
-        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteAllByEntities() {
-        List<Specialism> entities = List.of(
-                new Specialism(1L, "Computer science"),
-                new Specialism(2L, "Medicine")
-        );
-        assertDoesNotThrow(() -> dao.deleteAll(entities));
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyDeleteAll() {
-        assertDoesNotThrow(() -> dao.deleteAll());
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1).stream().findFirst().isPresent());
-        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2).stream().findFirst().isPresent());
-    }
-
-    @Test
-    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAll() {
         List<Specialism> expected = List.of(
-                new Specialism(1L, "Computer science"),
-                new Specialism(2L, "Medicine")
+                new Specialism(1L, "122"),
+                new Specialism(2L, "125"),
+                new Specialism(3L, "127")
         );
-        List<Specialism> actual = dao.findAll();
+        List<Specialism> actual = dao.findAll(100);
         assertEquals(expected, actual);
     }
 
@@ -124,8 +82,8 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindAllById() {
         List<Specialism> expected = List.of(
-                new Specialism(1L, "Computer science"),
-                new Specialism(2L, "Medicine")
+                new Specialism(1L, "122"),
+                new Specialism(2L, "125")
         );
         List<Specialism> actual = dao.findAllById(List.of(1L, 2L));
         assertEquals(expected, actual);
@@ -135,32 +93,86 @@ class JdbcSpecialismDaoTest extends BaseDaoTest {
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCount() {
         long actual = dao.count();
-        assertEquals(2L, actual);
+        assertEquals(3L, actual);
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyGetSpecialismsByDisciplineId() {
-        List<Specialism> expected = List.of(new Specialism(1L, "Computer science"));
-        List<Specialism> actual = dao.findAllByDisciplineId(2L);
-        assertEquals(expected, actual);
+    void shouldVerifyDeleteById() {
+        assertDoesNotThrow(() -> dao.deleteById(1L));
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1)
+                .stream()
+                .findFirst()
+                .isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyGetSpecialismsByEducatorId() {
-        List<Specialism> expected = List.of(new Specialism(1L, "Computer science"));
-        List<Specialism> actual = dao.findAllByEducatorId(1L);
-        assertEquals(expected, actual);
+    void shouldVerifyDeleteByEntity() {
+        Specialism entity = new Specialism(1L, "122");
+        assertDoesNotThrow(() -> dao.delete(entity));
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1)
+                .stream()
+                .findFirst()
+                .isPresent());
     }
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
-    void shouldVerifyGetSpecialismBySpecialismName() {
-        Specialism expected = new Specialism(1L, "Computer science");
-        Specialism actual = dao.findBySpecialismName("Computer science").get();
-        assertEquals(expected, actual);
+    void shouldVerifyDeleteAllById() {
+        assertDoesNotThrow(() -> dao.deleteAllById(List.of(1L, 2L)));
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1)
+                .stream()
+                .findFirst()
+                .isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2)
+                .stream()
+                .findFirst()
+                .isPresent());
     }
 
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAllByEntities() {
+        List<Specialism> entities = List.of(
+                new Specialism(1L, "122"),
+                new Specialism(2L, "125")
+        );
+        assertDoesNotThrow(() -> dao.deleteAll(entities));
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1)
+                .stream()
+                .findFirst()
+                .isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2)
+                .stream()
+                .findFirst()
+                .isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyDeleteAll() {
+        assertDoesNotThrow(() -> dao.deleteAll());
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 1)
+                .stream()
+                .findFirst()
+                .isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 2)
+                .stream()
+                .findFirst()
+                .isPresent());
+        assertFalse(jdbcTemplate.query(SELECT_SPECIALISM_BY_ID, new SpecialismRowMapper(), 3)
+                .stream()
+                .findFirst()
+                .isPresent());
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindBySpecialismName() {
+        Specialism expected = new Specialism(1L, "122");
+        Specialism actual = dao.findBySpecialismName("122").get();
+        assertEquals(expected, actual);
+    }
 
 }

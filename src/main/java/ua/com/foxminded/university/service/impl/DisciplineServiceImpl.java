@@ -6,8 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.DisciplineDao;
-import ua.com.foxminded.university.model.lecture.Discipline;
-import ua.com.foxminded.university.model.misc.Specialism;
+import ua.com.foxminded.university.model.lesson.Discipline;
 import ua.com.foxminded.university.service.DisciplineService;
 
 import java.util.List;
@@ -19,19 +18,6 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     public DisciplineServiceImpl(DisciplineDao disciplineDao) {
         this.disciplineDao = disciplineDao;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Discipline findById(Long id) {
-        return disciplineDao.findById(id).orElseThrow(
-                () -> new EmptyResultDataAccessException("There's no such daily schedule with id " + id, 1));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsById(Long id) {
-        return disciplineDao.existsById(id);
     }
 
     @Override
@@ -50,7 +36,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Discipline> saveAll(List<Discipline> entities) {
         try {
             return disciplineDao.saveAll(entities);
@@ -58,6 +44,37 @@ public class DisciplineServiceImpl implements DisciplineService {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
         }
         throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Discipline findById(Long id) {
+        return disciplineDao.findById(id).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such discipline with id " + id, 1));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return disciplineDao.existsById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Discipline> findAll() {
+        return disciplineDao.findAll(100);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Discipline> findAllById(List<Long> ids) {
+        return disciplineDao.findAllById(ids);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long count() {
+        return disciplineDao.count();
     }
 
     @Override
@@ -81,6 +98,7 @@ public class DisciplineServiceImpl implements DisciplineService {
         }
         throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -117,20 +135,9 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Discipline> findAll() {
-        return disciplineDao.findAll();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Discipline> findAllById(List<Long> ids) {
-        return disciplineDao.findAllById(ids);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public long count() {
-        return disciplineDao.count();
+    public Discipline findByDisciplineName(String disciplineName) {
+        return disciplineDao.findByDisciplineName(disciplineName).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such discipline with name " + disciplineName, 1));
     }
 
     @Override
@@ -141,26 +148,14 @@ public class DisciplineServiceImpl implements DisciplineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Discipline> findAllBySpecialismId(Specialism specialism) {
-        return disciplineDao.findAllBySpecialismId(specialism.getId());
+    public List<Discipline> findAllByAcademicYearId(Long academicYearId) {
+        return disciplineDao.findAllBySpecialismId(academicYearId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Discipline findByDisciplineName(String disciplineName) {
-        return disciplineDao.findByDisciplineName(disciplineName).orElseThrow(
-                () -> new EmptyResultDataAccessException("There's no such discipline with name " + disciplineName, 1));
-    }
-
-    @Override
-    @Transactional
-    public void enrollDisciplineSpecialism(Discipline discipline, Specialism specialism) {
-        disciplineDao.enrollDisciplineSpecialism(discipline.getId(), specialism.getId());
-    }
-
-    @Override
-    @Transactional
-    public void expelDisciplineSpecialism(Discipline discipline, Specialism specialism) {
-        disciplineDao.expelDisciplineSpecialism(discipline.getId(), specialism.getId());
+    public Discipline findByEducatorId(Long educatorId) {
+        return disciplineDao.findByEducatorId(educatorId).orElseThrow(
+                () -> new EmptyResultDataAccessException("There's no such discipline with educator id " + educatorId, 1));
     }
 }
