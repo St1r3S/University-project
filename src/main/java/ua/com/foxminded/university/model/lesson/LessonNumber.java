@@ -2,6 +2,7 @@ package ua.com.foxminded.university.model.lesson;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum LessonNumber {
 
@@ -35,6 +36,14 @@ public enum LessonNumber {
 
     public Map<String, String> getLessonTime() {
         return lessonTime;
+    }
+
+    public String getLessonTimeView() {
+        return lessonTime
+                .entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + "-" + entry.getValue())
+                .collect(Collectors.joining(", "));
     }
 
     public Map.Entry<Integer, Map<String, String>> getLessonNumberAndTime() {

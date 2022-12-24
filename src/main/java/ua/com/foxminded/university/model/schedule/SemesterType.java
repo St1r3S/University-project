@@ -1,8 +1,8 @@
 package ua.com.foxminded.university.model.schedule;
 
 public enum SemesterType {
-    FALL_SEMESTER("Fall"),
-    SPRING_SEMESTER("Spring");
+    FALL_SEMESTER("fall"),
+    SPRING_SEMESTER("spring");
 
     private final String value;
 

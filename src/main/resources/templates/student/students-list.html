@@ -16,36 +16,8 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">UniversityProj</a>
-        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-                class="navbar-toggler" data-bs-target="#navbarSupportedContent"
-                data-bs-toggle="collapse" type="button">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a aria-current="page" class="nav-link active" href="/static">Home</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                       role="button">
-                        Student
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/students/showForm">Add student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="/students/list">Students list</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
 <div class="container my-2">
     <div class="card">
         <div class="card-body">
@@ -63,9 +35,9 @@
                                 <th>Full name</th>
                                 <th>Birthday</th>
                                 <th>Email</th>
-                                <th>Schedule week</th>
                                 <th>Group name</th>
-                                <th>Specialism</th>
+                                <th>Specialism name</th>
+                                <th>Academic year</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
                             </tr>
@@ -75,9 +47,9 @@
                                 <td th:text="${student.firstName + ' ' + student.lastName}"></td>
                                 <td th:text="${student.birthday}"></td>
                                 <td th:text="${student.email}"></td>
-                                <td th:text="${student.scheduleWeek}"></td>
                                 <td th:text="${student.groupName}"></td>
-                                <td th:text="${student.specialism}"></td>
+                                <td th:text="${student.specialismName}"></td>
+                                <td th:text="${student.academicYearNumber + ', ' + student.semesterType.value}"></td>
                                 <td><a class="btn btn-primary" th:href="@{/students/edit/{id}(id=${student.id})}"><i
                                         class="fas fa-user-edit ml-2"></i></a></td>
                                 <td><a class="btn btn-primary" th:href="@{/students/delete/{id}(id=${student.id})}"><i
@@ -86,7 +58,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>

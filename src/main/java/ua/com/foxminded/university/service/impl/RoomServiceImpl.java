@@ -6,18 +6,26 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.RoomDao;
+import ua.com.foxminded.university.model.lesson.Lesson;
+import ua.com.foxminded.university.model.lesson.LessonNumber;
 import ua.com.foxminded.university.model.lesson.Room;
+import ua.com.foxminded.university.model.schedule.ScheduleDay;
+import ua.com.foxminded.university.service.LessonService;
 import ua.com.foxminded.university.service.RoomService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService {
     private static final Logger logger = LoggerFactory.getLogger("ua.com.foxminded.university.service");
     private final RoomDao roomDao;
 
-    public RoomServiceImpl(RoomDao roomDao) {
+    private final LessonService lessonService;
+
+    public RoomServiceImpl(RoomDao roomDao, LessonService lessonService) {
         this.roomDao = roomDao;
+        this.lessonService = lessonService;
     }
 
 
@@ -32,8 +40,8 @@ public class RoomServiceImpl implements RoomService {
             } else {
                 logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
             }
+            throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
@@ -43,8 +51,8 @@ public class RoomServiceImpl implements RoomService {
             return roomDao.saveAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
     }
 
     @Override
@@ -85,8 +93,8 @@ public class RoomServiceImpl implements RoomService {
             roomDao.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
@@ -96,8 +104,8 @@ public class RoomServiceImpl implements RoomService {
             roomDao.deleteById(entity.getId());
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
 
     @Override
@@ -107,8 +115,8 @@ public class RoomServiceImpl implements RoomService {
             roomDao.deleteAllById(ids);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
     }
 
     @Override
@@ -118,8 +126,8 @@ public class RoomServiceImpl implements RoomService {
             roomDao.deleteAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
     }
 
     @Override
@@ -129,8 +137,8 @@ public class RoomServiceImpl implements RoomService {
             roomDao.deleteAll();
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
     }
 
 
@@ -138,5 +146,15 @@ public class RoomServiceImpl implements RoomService {
     public Room findByRoomNumber(String roomNumber) {
         return roomDao.findByRoomNumber(roomNumber).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such room with number " + roomNumber, 1));
+    }
+
+    @Override
+    public List<Room> findAllFreeRooms(LessonNumber lessonNumber, ScheduleDay scheduleDay) {
+        List<Long> busyRooms = lessonService.findAll().stream()
+                .filter(lesson -> lesson.getLessonNumber() == lessonNumber
+                        && lesson.getScheduleDayId().equals(scheduleDay.getId()))
+                .map(Lesson::getRoomId).collect(Collectors.toList());
+
+        return roomDao.findAll(10000).stream().filter(room -> !busyRooms.contains(room.getId())).collect(Collectors.toList());
     }
 }

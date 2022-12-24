@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface EducatorService extends CrudUserService<Educator, Long> {
     List<Educator> findAllByAcademicRank(AcademicRank academicRank);
+
+    List<Educator> findAllFreeEducators();
 }

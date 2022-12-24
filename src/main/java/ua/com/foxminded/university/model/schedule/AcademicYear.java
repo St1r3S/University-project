@@ -22,4 +22,5 @@ public class AcademicYear extends LongEntity {
     public AcademicYear(Integer yearNumber, SemesterType semesterType) {
         this(null, yearNumber, semesterType);
     }
+
 }

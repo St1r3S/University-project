@@ -11,5 +11,7 @@ public interface DisciplineService extends CrudService<Discipline, Long> {
 
     List<Discipline> findAllByAcademicYearId(Long academicYearId);
 
+    List<Discipline> findAllBySpecialismIdAndAcademicYearId(Long specialismId, Long academicYearId);
+
     Discipline findByEducatorId(Long educatorId);
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CrudUserService<T extends Entity<K>, K extends Number> extends CrudService<T, K> {
 
-    T findByLogin(String userName);
+    T findByUsername(String userName);
 
     T findByEmail(String email);
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="ie=edge" http-equiv="x-ua-compatible">
-    <title>Add User</title>
+    <title>Add Student</title>
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
@@ -15,36 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">UniversityProj</a>
-        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-                class="navbar-toggler" data-bs-target="#navbarSupportedContent"
-                data-bs-toggle="collapse" type="button">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a aria-current="page" class="nav-link active" href="/static">Home</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                       role="button">
-                        Student
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="/students/showForm">Add student</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="/students/list">Students list</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div th:replace="~{fragments/general/header :: admin-header}">
+    <!--th:replace="${#authentication.principal.isAdmin()} ? ~{fragments/header :: admin-header} : ~{fragments/header :: header}">-->
+</div>
 <div class="container my-5">
     <h3> Add Student</h3>
     <div class="card">
@@ -53,14 +26,49 @@
                 <form action="#" method="post" th:action="@{/students/add}" th:object="${studentView}">
                     <div class="row">
                         <div class="form-group col-md-8">
+                            <label class="col-form-label" for="userRole">User Role</label>
+                            <select class="custom-select" id="userRole" name="userRole">
+                                <option th:each="localUserRole : ${userRoles}"
+                                        th:selected="${localUserRole.value.equals('Student')}"
+                                        th:text="${localUserRole.value}"
+                                        th:value="${localUserRole}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{userRole}"
+                                    th:if="${#fields.hasErrors('userRole')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="userName">Username</label>
+                            <input class="form-control"
+                                   id="userName"
+                                   placeholder="Username"
+                                   th:field="*{userName}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{userName}"
+                                    th:if="${#fields.hasErrors('userName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="passwordHash">Password</label>
+                            <input class="form-control"
+                                   id="passwordHash"
+                                   placeholder="Password"
+                                   th:field="*{passwordHash}"
+                                   type="password">
+                            <span
+                                    class="text-danger" th:errors="*{passwordHash}"
+                                    th:if="${#fields.hasErrors('passwordHash')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
                             <label class="col-form-label" for="firstName">First name</label>
                             <input class="form-control"
                                    id="firstName"
                                    placeholder="First name"
                                    th:field="*{firstName}"
-                                   type="text"> <span
-                                class="text-danger" th:errors="*{firstName}"
-                                th:if="${#fields.hasErrors('firstName')}"></span>
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{firstName}"
+                                    th:if="${#fields.hasErrors('firstName')}"></span>
                         </div>
                         <div class="form-group col-md-8">
                             <label class="col-form-label" for="lastName">Last name</label>
@@ -68,19 +76,21 @@
                                    id="lastName"
                                    placeholder="Last name"
                                    th:field="*{lastName}"
-                                   type="text"> <span
-                                class="text-danger" th:errors="*{lastName}"
-                                th:if="${#fields.hasErrors('lastName')}"></span>
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{lastName}"
+                                    th:if="${#fields.hasErrors('lastName')}"></span>
                         </div>
                         <div class="form-group col-md-8">
                             <label class="col-form-label" for="birthday">Birthday</label>
                             <input class="form-control"
                                    id="birthday"
-                                   placeholder="Email"
+                                   placeholder="Birthday"
                                    th:field="*{birthday}"
-                                   type="date"> <span
-                                class="text-danger" th:errors="*{birthday}"
-                                th:if="${#fields.hasErrors('birthday')}"></span>
+                                   type="date">
+                            <span
+                                    class="text-danger" th:errors="*{birthday}"
+                                    th:if="${#fields.hasErrors('birthday')}"></span>
                         </div>
                         <div class="form-group col-md-8">
                             <label class="col-form-label" for="email">Email</label>
@@ -88,51 +98,61 @@
                                    id="email"
                                    placeholder="Email"
                                    th:field="*{email}"
-                                   type="text"> <span
-                                class="text-danger" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></span>
-                        </div>
-
-                        <div class="form-group col-md-8">
-                            <label class="col-form-label" for="weekSchedule">Schedule week</label>
-                            <select class="custom-select" id="weekSchedule">
-                                <option selected style="display: none;"></option>
-                                <option th:each="weeklyScheduleView : ${weeklySchedules}"
-                                        th:field="*{weeklySchedule}"
-                                        th:text="${weeklyScheduleView}"
-                                        th:value="${weeklyScheduleView}"></option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-8">
-                            <label class="col-form-label" for="userRole">User Role</label>
-                            <select class="custom-select" id="userRole">
-                                <option selected style="display: none;"></option>
-                                <option th:each="userRole : ${T(ua.com.foxminded.university.model.user.UserRole).values()}"
-                                        th:text="${userRole}"
-                                        th:value="${userRole}"></option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-8">
-                            <label class="col-form-label" for="groupName">Group Name</label>
-                            <input class="form-control"
-                                   id="groupName"
-                                   placeholder="Group Name"
-                                   th:field="*{groupName}"
                                    type="text">
-                            <span class="text-danger" th:errors="*{groupName}"
-                                  th:if="${#fields.hasErrors('groupName')}"></span>
+                            <span
+                                    class="text-danger" th:errors="*{email}"
+                                    th:if="${#fields.hasErrors('email')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="groupName">Group name</label>
+                            <select class="custom-select" id="groupName" name="groupName">
+                                <option disabled hidden selected th:text="'Group name'" th:value="${null}"></option>
+                                <option th:each="localGroupName : ${groupNames}"
+                                        th:text="${localGroupName}"
+                                        th:value="${localGroupName}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{groupName}"
+                                    th:if="${#fields.hasErrors('groupName')}"></span>
                         </div>
                         <div class="form-group col-md-8">
                             <label class="col-form-label" for="specialism">Specialism</label>
-                            <select class="custom-select" id="specialism">
-                                <option selected style="display: none;"></option>
-                                <option th:each="specialismView : ${specialisms}"
-                                        th:field="*{specialism}"
-                                        th:text="${specialismView}"
-                                        th:value="${specialismView}"></option>
+                            <select class="custom-select" id="specialism" name="specialismName">
+                                <option disabled hidden selected th:text="'Specialism'"
+                                        th:value="${null}"></option>
+                                <option th:each="localSpecialismName : ${specialismNames}"
+                                        th:text="${localSpecialismName}"
+                                        th:value="${localSpecialismName}"></option>
                             </select>
+                            <span
+                                    class="text-danger" th:errors="*{specialismName}"
+                                    th:if="${#fields.hasErrors('specialismName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="academicYear">Academic year</label>
+                            <select class="custom-select" id="academicYear" name="academicYearNumber">
+                                <option disabled hidden selected th:text="'Academic year'" th:value="${null}"></option>
+                                <option th:each="academicYear : ${academicYears}"
+                                        th:text="${academicYear}"
+                                        th:value="${academicYear}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{academicYearNumber}"
+                                    th:if="${#fields.hasErrors('academicYearNumber')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="semesterType">Semester type</label>
+                            <select class="custom-select" id="semesterType" name="semesterType">
+                                <option disabled hidden selected th:text="'Semester type'" th:value="${null}"></option>
+                                <option th:each="localSemesterType : ${semesterTypes}"
+                                        th:text="${localSemesterType.value}"
+                                        th:value="${localSemesterType}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{semesterType}"
+                                    th:if="${#fields.hasErrors('semesterType')}"></span>
                         </div>
                         <div class="col-md-6">
-                            <input class="btn btn-primary" type="submit" value="Add Student">
                             <input class="btn btn-primary" type="submit" value="Add Student">
                         </div>
                         <div class="form-group col-md-8"></div>

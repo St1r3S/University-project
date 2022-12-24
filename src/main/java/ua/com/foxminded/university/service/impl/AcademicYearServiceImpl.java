@@ -33,8 +33,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             } else {
                 logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
             }
+            throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             return academicYearDao.saveAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
     }
 
     @Override
@@ -86,8 +86,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             academicYearDao.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             academicYearDao.deleteById(entity.getId());
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
     }
 
     @Override
@@ -108,8 +108,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             academicYearDao.deleteAllById(ids);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
     }
 
     @Override
@@ -119,8 +119,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             academicYearDao.deleteAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
     }
 
     @Override
@@ -130,8 +130,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             academicYearDao.deleteAll();
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
     }
 
     @Override
@@ -152,5 +152,10 @@ public class AcademicYearServiceImpl implements AcademicYearService {
         return academicYearDao.findByYearNumberAndSemesterType(yearNumber, semesterType).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such academic year with year number " + yearNumber
                         + " and semester type " + semesterType, 1));
+    }
+
+    @Override
+    public Integer getSemesterNumber(AcademicYear academicYear) {
+        return academicYear.getSemesterType() == SemesterType.FALL_SEMESTER ? (academicYear.getYearNumber() * 2 - 1) : (academicYear.getYearNumber() * 2);
     }
 }

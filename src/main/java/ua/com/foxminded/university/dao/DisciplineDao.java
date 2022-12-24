@@ -12,6 +12,8 @@ public interface DisciplineDao extends CrudDao<Discipline, Long> {
 
     List<Discipline> findAllByAcademicYearId(Long academicYearId);
 
+    List<Discipline> findAllBySpecialismIdAndAcademicYearId(Long specialismId, Long academicYearId);
+
     Optional<Discipline> findByEducatorId(Long educatorId);
 
 }

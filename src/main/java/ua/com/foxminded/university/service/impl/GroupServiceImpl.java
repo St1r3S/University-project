@@ -31,8 +31,8 @@ public class GroupServiceImpl implements GroupService {
             } else {
                 logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
             }
+            throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class GroupServiceImpl implements GroupService {
             return groupDao.saveAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
     }
 
     @Override
@@ -84,8 +84,8 @@ public class GroupServiceImpl implements GroupService {
             groupDao.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
     }
 
     @Override
@@ -95,9 +95,8 @@ public class GroupServiceImpl implements GroupService {
             groupDao.deleteById(entity.getId());
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
-
     }
 
     @Override
@@ -107,9 +106,8 @@ public class GroupServiceImpl implements GroupService {
             groupDao.deleteAllById(ids);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
-
     }
 
     @Override
@@ -119,9 +117,8 @@ public class GroupServiceImpl implements GroupService {
             groupDao.deleteAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
-
     }
 
     @Override
@@ -131,9 +128,8 @@ public class GroupServiceImpl implements GroupService {
             groupDao.deleteAll();
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
-
     }
 
     @Override

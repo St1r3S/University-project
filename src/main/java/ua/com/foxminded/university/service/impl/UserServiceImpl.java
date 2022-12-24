@@ -33,8 +33,8 @@ public class UserServiceImpl implements UserService {
             } else {
                 logger.error("Unable to update entity {} due {}", entity, ex.getMessage(), ex);
             }
+            throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entity " + entity, 1);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class UserServiceImpl implements UserService {
             return userDao.saveAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
     }
 
     @Override
@@ -86,9 +86,8 @@ public class UserServiceImpl implements UserService {
             userDao.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
-
     }
 
     @Override
@@ -98,9 +97,8 @@ public class UserServiceImpl implements UserService {
             userDao.deleteById(entity.getId());
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
-
     }
 
     @Override
@@ -110,9 +108,8 @@ public class UserServiceImpl implements UserService {
             userDao.deleteAllById(ids);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
-
     }
 
     @Override
@@ -122,9 +119,8 @@ public class UserServiceImpl implements UserService {
             userDao.deleteAll(entities);
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
-
     }
 
     @Override
@@ -134,14 +130,13 @@ public class UserServiceImpl implements UserService {
             userDao.deleteAll();
         } catch (EmptyResultDataAccessException ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
+            throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
-        throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
-
     }
 
     @Override
     @Transactional(readOnly = true)
-    public User findByLogin(String userName) {
+    public User findByUsername(String userName) {
         return userDao.findByLogin(userName).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such user with login " + userName, 1));
     }

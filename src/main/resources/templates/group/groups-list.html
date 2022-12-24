@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <title>Groups</title>
+
+    <link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-2">
+    <div class="card">
+        <div class="card-body">
+            <div class="container my-5" th:switch="${groups}">
+                <p class="my-5">
+                    <a class="btn btn-primary" href="/groups/showForm"><i
+                            class="fas fa-solid fa-plus"> Add Group</i></a>
+                </p>
+                <div class="col-md-12">
+                    <h2 th:case="null">No Groups yet!</h2>
+                    <div th:case="*">
+                        <table class="table table-striped table-responsive-md">
+                            <thead>
+                            <tr>
+                                <th>Group name</th>
+                                <th>Specialism name</th>
+                                <th>Academic year</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="group : ${groups}">
+                                <td th:text="${group.groupName}"></td>
+                                <td th:text="${group.specialismName}"></td>
+                                <td th:text="${group.academicYearNumber + ', ' + group.semesterType}"></td>
+                                <td><a class="btn btn-primary" th:href="@{/groups/edit/{id}(id=${group.id})}"><i
+                                        class="fas fa-solid fa-pen"></i></a></td>
+                                <td><a class="btn btn-primary" th:href="@{/groups/delete/{id}(id=${group.id})}"><i
+                                        class="fas fa-solid fa-trash"></i></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

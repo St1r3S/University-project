@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <title>Choose schedule</title>
+
+    <link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-2">
+    <div class="card">
+        <div class="card-body">
+            <!--            <div class="custom-control custom-radio custom-control-inline ml-5"-->
+            <!--                 th:each="localType : ${scheduleListTypes}">-->
+            <!--                <label class="custom-control-label" th:text="${localType.value}">-->
+            <!--                    <a th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${localType})}">-->
+            <!--                        <input class="custom-control-input"-->
+            <!--                               th:checked="${localType.value.equals('Group')}"-->
+            <!--                               th:value="${scheduleListType}"-->
+            <!--                               type="radio">-->
+            <!--                    </a>-->
+            <!--                </label>-->
+            <!--            </div>-->
+            <div class="container my-5" th:switch="${scheduleListType}">
+                <div class="col-md-12">
+                    <h2 th:case="null">Something went wrong!</h2>
+                    <div th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).GROUPS_LIST.value}">
+                        <table class="table table-striped table-responsive-md">
+                            <thead>
+                            <tr>
+                                <th>Group name</th>
+                                <th>Specialism name</th>
+                                <th>Academic year</th>
+                                <th>Show Schedule</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="group : ${groups}">
+                                <td th:text="${group.groupName}"></td>
+                                <td th:text="${group.specialismName}"></td>
+                                <td th:text="${group.academicYearNumber + ', ' + group.semesterType}"></td>
+                                <td><a class="btn btn-primary"
+                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-user-edit"> Schedule</i></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).EDUCATORS_LIST.value}">
+                        <table class="table table-striped table-responsive-md">
+                            <thead>
+                            <tr>
+                                <th>Full name</th>
+                                <th>Birthday</th>
+                                <th>Email</th>
+                                <th>Academic rank</th>
+                                <th>Show Schedule</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="educator : ${educators}">
+                                <td th:text="${educator.firstName + ' ' + educator.lastName}"></td>
+                                <td th:text="${educator.birthday}"></td>
+                                <td th:text="${educator.email}"></td>
+                                <td th:text="${educator.academicRank.key}"></td>
+                                <td><a class="btn btn-primary"
+                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-user-edit"> Schedule</i></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-8 d-flex"
+                         th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).ROOMS_LIST.value}">
+                        <table class="table table-striped table-responsive-md">
+                            <thead>
+                            <tr>
+                                <th>Room number</th>
+                                <th>Show Schedule</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="room : ${rooms}">
+                                <td th:text="${room.roomNumber}"></td>
+                                <td><a class="btn btn-primary"
+                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-pen"> Schedule</i></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

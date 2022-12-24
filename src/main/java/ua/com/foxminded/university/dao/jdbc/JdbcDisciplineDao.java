@@ -33,6 +33,7 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     private static final String DISCIPLINE_BY_DISCIPLINE_NAME = "SELECT * FROM disciplines WHERE discipline_name = ?";
     private static final String DISCIPLINES_BY_SPECIALISM_ID = "SELECT * FROM disciplines WHERE specialism_id = ?";
     private static final String DISCIPLINES_BY_ACADEMIC_YEAR_ID = "SELECT * FROM disciplines WHERE academic_year_id = ?";
+    private static final String DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID = "SELECT * FROM disciplines WHERE specialism_id = ? AND academic_year_id = ?";
     private static final String DISCIPLINE_BY_EDUCATOR_ID = "SELECT * FROM disciplines WHERE educator_id = ?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -146,6 +147,11 @@ public class JdbcDisciplineDao extends AbstractCrudDao<Discipline, Long> impleme
     @Override
     public List<Discipline> findAllByAcademicYearId(Long academicYearId) {
         return jdbcTemplate.query(DISCIPLINES_BY_ACADEMIC_YEAR_ID, new DisciplineRowMapper(), academicYearId);
+    }
+
+    @Override
+    public List<Discipline> findAllBySpecialismIdAndAcademicYearId(Long specialismId, Long academicYearId) {
+        return jdbcTemplate.query(DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID, new DisciplineRowMapper(), specialismId, academicYearId);
     }
 
     @Override

@@ -13,4 +13,6 @@ public interface AcademicYearService extends CrudService<AcademicYear, Long> {
 
     AcademicYear findByYearNumberAndSemesterType(Integer yearNumber, SemesterType semesterType);
 
+    Integer getSemesterNumber(AcademicYear academicYear);
+
 }

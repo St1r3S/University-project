@@ -200,6 +200,17 @@ class JdbcDisciplineDaoTest extends BaseDaoTest {
 
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
+    void shouldVerifyFindAllBySpecialismIdAndAcademicYearId() {
+        List<Discipline> expected = List.of(
+                new Discipline(1L, "Math", 1L, 1L, 5L),
+                new Discipline(2L, "Physics", 1L, 1L, 6L)
+        );
+        List<Discipline> actual = dao.findAllBySpecialismIdAndAcademicYearId(1L, 1L);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyFindByEducatorId() {
         Discipline expected = new Discipline(1L, "Math", 1L, 1L, 5L);
         Discipline actual = dao.findByEducatorId(5L).get();
