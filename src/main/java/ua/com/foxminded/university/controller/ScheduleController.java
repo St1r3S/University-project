@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/schedule/")
+@RequestMapping("/schedule")
 public class ScheduleController {
 
     private final LessonService lessonService;
@@ -47,31 +47,60 @@ public class ScheduleController {
         this.academicYearService = academicYearService;
     }
 
-    @GetMapping("{scheduleType}/edit/{id}/{semesterType}/showForm")
-    public String showLessonForm(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, LessonNumber lessonNumber, DayOfWeek dayOfWeek, LessonView lessonView, Model model) {
+    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/showForm")
+    public String showLessonForm(@PathVariable("scheduleType") String scheduleType,
+                                 @PathVariable("id") long id,
+                                 @PathVariable("semesterType") String semesterType,
+                                 LessonNumber lessonNumber,
+                                 DayOfWeek dayOfWeek,
+                                 LessonView lessonView,
+                                 Model model) {
         model.addAttribute("disciplineNames", this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
         model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
         model.addAttribute("lessonNumber", lessonNumber);
         model.addAttribute("scheduleDay", scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
-//        lessonView.setLessonNumber(lessonNumber);
-//        lessonView.setScheduleDay(scheduleDay);
         model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
-//        model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonView.getLessonNumber(), lessonView.getScheduleDay()));
 
         return "schedule/add-lesson";
     }
 
-    @PostMapping("{scheduleType}/edit/{id}/{semesterType}/add")
-    public String addLesson(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, LessonView lessonView, BindingResult result, Model model) {
+    @PostMapping("/{scheduleType}/edit/{contextId}/{semesterType}/add")
+    public String addLesson(@PathVariable("scheduleType") String scheduleType,
+                            @PathVariable("contextId") long id,
+                            @PathVariable("semesterType") String semesterType,
+                            LessonView lessonView,
+                            BindingResult result,
+                            Model model) {
         if (result.hasErrors()) {
             return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
         }
+        Lesson lessonToSave;
+        switch (scheduleType) {
+            case "groups":
+                lessonToSave = lessonView.lessonViewToLesson(
+                        disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
+                        groupService.findById(id),
+                        roomService.findByRoomNumber(lessonView.getRoomNumber())
+                );
+                break;
+            case "educators":
+                lessonToSave = lessonView.lessonViewToLesson(
+                        disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
+                        groupService.findByGroupName(lessonView.getGroupName()),
+                        roomService.findByRoomNumber(lessonView.getRoomNumber())
+                );
+                break;
+            case "rooms":
+                lessonToSave = lessonView.lessonViewToLesson(
+                        disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
+                        groupService.findByGroupName(lessonView.getGroupName()),
+                        roomService.findById(id)
+                );
+                break;
+            default:
+                throw new NullPointerException("There's no such schedule type!");
+        }
 
-        Lesson lessonToSave = lessonView.lessonViewToLesson(
-                disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
-                groupService.findByGroupName(lessonView.getGroupName()),
-                roomService.findByRoomNumber(lessonView.getRoomNumber())
-        );
 
         this.lessonService.save(lessonToSave);
 
@@ -79,7 +108,7 @@ public class ScheduleController {
     }
 
 
-    @GetMapping("list/{scheduleListType}")
+    @GetMapping("/list/{scheduleListType}")
     public String showScheduleLists(@PathVariable("scheduleListType") String scheduleListType, Model model) {
         model.addAttribute("scheduleListTypes", Arrays.asList(ScheduleListType.values()));
 
@@ -104,14 +133,21 @@ public class ScheduleController {
         return "schedule/choose-schedule";
     }
 
-    @GetMapping("{scheduleType}/edit/{id}/{semesterType}")
-    public String showSchedule(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, Model model) {
+    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}")
+    public String showSchedule(@PathVariable("scheduleType") String scheduleType,
+                               @PathVariable("id") long id,
+                               @PathVariable("semesterType") String semesterType,
+                               Model model) {
         makeModelToShowSchedule(scheduleType, id, semesterType, model);
         return "schedule/show-schedule";
     }
 
-    @GetMapping("{scheduleType}/edit/{id}/{semesterType}/edit/{idToEdit}")
-    public String showUpdateForm(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, @PathVariable("idToEdit") long idToEdit, Model model) {
+    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/edit/{idToEdit}")
+    public String showUpdateForm(@PathVariable("scheduleType") String scheduleType,
+                                 @PathVariable("id") long id,
+                                 @PathVariable("semesterType") String semesterType,
+                                 @PathVariable("idToEdit") long idToEdit,
+                                 Model model) {
         Lesson lesson = this.lessonService.findById(idToEdit);
 
         LessonView lessonView = LessonView.lessonToLessonView(
@@ -129,13 +165,19 @@ public class ScheduleController {
         model.addAttribute("disciplineNames", this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
         model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
         model.addAttribute("lessonNumbers", Arrays.asList(LessonNumber.values()));
-        model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonView.getLessonNumber(), lessonView.getScheduleDay()));
+        model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonView.getLessonNumber(), lessonView.getScheduleDay()).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
 
         return "schedule/update-lesson";
     }
 
-    @PostMapping("{scheduleType}/edit/{id}/{semesterType}/update/{idToUpdate}")
-    public String updateLesson(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, @PathVariable("idToUpdate") long idToUpdate, LessonView lessonView, BindingResult result, Model model) {
+    @PostMapping("/{scheduleType}/edit/{id}/{semesterType}/update/{idToUpdate}")
+    public String updateLesson(@PathVariable("scheduleType") String scheduleType,
+                               @PathVariable("id") long id,
+                               @PathVariable("semesterType") String semesterType,
+                               @PathVariable("idToUpdate") long idToUpdate,
+                               LessonView lessonView,
+                               BindingResult result,
+                               Model model) {
         Lesson lessonToSave = lessonView.lessonViewToLesson(
                 disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                 groupService.findByGroupName(lessonView.getGroupName()),
@@ -152,7 +194,7 @@ public class ScheduleController {
         return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
     }
 
-    @GetMapping("{scheduleType}/edit/{id}/{semesterType}/delete/{idToDelete}")
+    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/delete/{idToDelete}")
     public String deleteLesson(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, @PathVariable("idToDelete") long idToDelete, Model model) {
         Lesson lessonToDelete = lessonService.findById(idToDelete);
         lessonService.delete(lessonToDelete);
@@ -160,10 +202,13 @@ public class ScheduleController {
     }
 
 
-    private void makeModelToShowSchedule(String scheduleType, long id, String semesterType, Model model) {
+    private void makeModelToShowSchedule(String scheduleType,
+                                         long id,
+                                         String semesterType,
+                                         Model model) {
         model.addAttribute("scheduleListTypes", Arrays.asList(ScheduleListType.values()));
         model.addAttribute("semesterTypes", academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
-        List<LessonView> lessons = null;
+        List<LessonView> lessons;
         Map<LessonNumber, List<LessonView>> mappedLessons = new LinkedHashMap<>();
         switch (scheduleType) {
             case "groups":
@@ -229,16 +274,17 @@ public class ScheduleController {
             }
             for (DayOfWeek day : DayOfWeek.values()) {
                 for (LessonView tempLesson : tempLessons) {
-                    if (!tempLesson.getIsBlank()) {
+                    if (!Objects.isNull(tempLesson.getScheduleDay())) {
                         if (tempLesson.getScheduleDay().getDayOfWeek().equals(day) &&
                                 tempLessons.indexOf(tempLesson) != day.ordinal()) {
                             Collections.swap(tempLessons, tempLessons.indexOf(tempLesson), day.ordinal());
                             break;
                         }
                     } else {
-                        if (!tempLessons.stream().filter(lessonView -> !lessonView.getIsBlank()).map(lessonView -> lessonView.getScheduleDay().getDayOfWeek()).collect(Collectors.toList()).contains(day)) {
+                        if (!tempLessons.stream().filter(lessonView -> !Objects.isNull(lessonView.getScheduleDay())).map(lessonView -> lessonView.getScheduleDay().getDayOfWeek()).collect(Collectors.toList()).contains(day)) {
                             tempLesson.setScheduleDay(scheduleDayService.findByDayOfWeekAndSemesterType(day, SemesterType.get(semesterType)));
                             tempLesson.setLessonNumber(lessonNumber);
+                            break;
                         }
                     }
                 }

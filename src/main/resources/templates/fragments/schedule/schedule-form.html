@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Lesson Add Form</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="add-group-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <select class="custom-select" id="discipline" name="disciplineName">
+                <option disabled hidden selected th:text="'Discipline name'"
+                        th:value="${null}"></option>
+                <option th:each="localDisciplineName : ${disciplineNames}"
+                        th:text="${localDisciplineName}"
+                        th:value="${localDisciplineName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${scheduleDay.id}"
+               type="hidden">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="roomNumber">Room number</label>
+            <select class="custom-select" id="roomNumber" name="roomNumber">
+                <option disabled hidden selected th:text="'Room number'"
+                        th:value="${null}"></option>
+                <option th:each="localRoomNumber : ${roomNumbers}"
+                        th:text="${localRoomNumber}"
+                        th:value="${localRoomNumber}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{roomNumber}"
+                    th:if="${#fields.hasErrors('roomNumber')}"></span>
+        </div>
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Add lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+<th:block th:fragment="add-educator-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <select class="custom-select" id="discipline" name="disciplineName">
+                <option disabled hidden selected th:text="'Discipline name'"
+                        th:value="${null}"></option>
+                <option th:each="localDisciplineName : ${disciplineNames}"
+                        th:text="${localDisciplineName}"
+                        th:value="${localDisciplineName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="groupName">Group name</label>
+            <select class="custom-select" id="groupName" name="groupName">
+                <option disabled hidden selected th:text="'Group name'" th:value="${null}"></option>
+                <option th:each="localGroupName : ${groupNames}"
+                        th:text="${localGroupName}"
+                        th:value="${localGroupName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{groupName}"
+                    th:if="${#fields.hasErrors('groupName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${scheduleDay.id}"
+               type="hidden">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="roomNumber">Room number</label>
+            <select class="custom-select" id="roomNumber" name="roomNumber">
+                <option disabled hidden selected th:text="'Room number'"
+                        th:value="${null}"></option>
+                <option th:each="localRoomNumber : ${roomNumbers}"
+                        th:text="${localRoomNumber}"
+                        th:value="${localRoomNumber}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{roomNumber}"
+                    th:if="${#fields.hasErrors('roomNumber')}"></span>
+        </div>
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Add lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+<th:block th:fragment="add-room-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <select class="custom-select" id="discipline" name="disciplineName">
+                <option disabled hidden selected th:text="'Discipline name'"
+                        th:value="${null}"></option>
+                <option th:each="localDisciplineName : ${disciplineNames}"
+                        th:text="${localDisciplineName}"
+                        th:value="${localDisciplineName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="groupName">Group name</label>
+            <select class="custom-select" id="groupName" name="groupName">
+                <option disabled hidden selected th:text="'Group name'" th:value="${null}"></option>
+                <option th:each="localGroupName : ${groupNames}"
+                        th:text="${localGroupName}"
+                        th:value="${localGroupName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{groupName}"
+                    th:if="${#fields.hasErrors('groupName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${scheduleDay.id}"
+               type="hidden">
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Add lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+<th:block th:fragment="edit-group-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="groupName">Group name</label>
+            <input class="form-control"
+                   id="groupName"
+                   placeholder="Group name"
+                   readonly
+                   th:field="*{groupName}"
+                   type="text">
+            <span
+                    class="text-danger" th:errors="*{groupName}"
+                    th:if="${#fields.hasErrors('groupName')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <select class="custom-select" id="discipline" th:field="*{disciplineName}">
+                <option th:each="localDisciplineName : ${disciplineNames}"
+                        th:text="${localDisciplineName}"
+                        th:value="${localDisciplineName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${lesson.scheduleDay.id}"
+               type="hidden">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="roomNumber">Room number</label>
+            <select class="custom-select" id="roomNumber" th:field="*{roomNumber}">
+                <option th:each="localRoomNumber : ${roomNumbers}"
+                        th:text="${localRoomNumber}"
+                        th:value="${localRoomNumber}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{roomNumber}"
+                    th:if="${#fields.hasErrors('roomNumber')}"></span>
+        </div>
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Update lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+<th:block th:fragment="edit-educator-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <input class="form-control"
+                   id="discipline"
+                   placeholder="Discipline name"
+                   readonly
+                   th:field="*{disciplineName}"
+                   type="text">
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="groupName">Group name</label>
+            <select class="custom-select" id="groupName" th:field="*{groupName}">
+                <option th:each="localGroupName : ${groupNames}"
+                        th:text="${localGroupName}"
+                        th:value="${localGroupName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{groupName}"
+                    th:if="${#fields.hasErrors('groupName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${lesson.scheduleDay.id}"
+               type="hidden">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="roomNumber">Room number</label>
+            <select class="custom-select" id="roomNumber" th:field="*{roomNumber}">
+                <option th:each="localRoomNumber : ${roomNumbers}"
+                        th:text="${localRoomNumber}"
+                        th:value="${localRoomNumber}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{roomNumber}"
+                    th:if="${#fields.hasErrors('roomNumber')}"></span>
+        </div>
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Update lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+<th:block th:fragment="edit-room-lesson">
+    <div class="row">
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="roomNumber">Room number</label>
+            <input class="form-control"
+                   id="roomNumber"
+                   placeholder="Room number"
+                   readonly
+                   th:field="*{roomNumber}"
+                   type="text">
+            <span
+                    class="text-danger" th:errors="*{roomNumber}"
+                    th:if="${#fields.hasErrors('roomNumber')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="groupName">Group name</label>
+            <select class="custom-select" id="groupName" th:field="*{groupName}">
+                <option th:each="localGroupName : ${groupNames}"
+                        th:text="${localGroupName}"
+                        th:value="${localGroupName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{groupName}"
+                    th:if="${#fields.hasErrors('groupName')}"></span>
+        </div>
+        <div class="form-group col-md-8">
+            <label class="col-form-label" for="discipline">Discipline name</label>
+            <select class="custom-select" id="discipline" th:field="*{disciplineName}">
+                <option th:each="localDisciplineName : ${disciplineNames}"
+                        th:text="${localDisciplineName}"
+                        th:value="${localDisciplineName}"></option>
+            </select>
+            <span
+                    class="text-danger" th:errors="*{disciplineName}"
+                    th:if="${#fields.hasErrors('disciplineName')}"></span>
+        </div>
+        <input class="form-control"
+               id="lessonNumber"
+               name="lessonNumber"
+               th:value="${lessonNumber}"
+               type="hidden">
+        <input class="form-control"
+               id="scheduleDay"
+               name="scheduleDay.id"
+               th:value="${lesson.scheduleDay.id}"
+               type="hidden">
+        <div class="col-md-6">
+            <input class="btn btn-primary" type="submit" value="Update lesson">
+        </div>
+        <div class="form-group col-md-8"></div>
+    </div>
+</th:block>
+</body>
+</html>
