@@ -5,13 +5,30 @@ import ua.com.foxminded.university.model.Entity;
 import java.util.List;
 
 public interface CrudService<T extends Entity<K>, K extends Number> {
-    T findById(K id);
 
     T save(T entity);
 
-    void deleteById(K id);
+    List<T> saveAll(List<T> entities);
 
-    void deleteById(T entity);
+    T findById(K id);
+
+    boolean existsById(K id);
 
     List<T> findAll();
+
+    List<T> findAllById(List<K> ids);
+
+    long count();
+
+    void deleteById(K id);
+
+    void delete(T entity);
+
+    void deleteAllById(List<K> ids);
+
+    void deleteAll(List<T> entities);
+
+    void deleteAll();
+
+
 }

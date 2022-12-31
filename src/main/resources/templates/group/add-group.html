@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Add Group</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-5">
+    <h3> Add Group</h3>
+    <div class="card">
+        <div class="card-body">
+            <div class="col-md-10">
+                <form action="#" method="post" th:action="@{/groups/add}" th:object="${groupView}">
+                    <div class="row">
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="groupName">Group name</label>
+                            <input class="form-control"
+                                   id="groupName"
+                                   placeholder="Group name"
+                                   th:field="*{groupName}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{groupName}"
+                                    th:if="${#fields.hasErrors('groupName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="specialism">Specialism</label>
+                            <select class="custom-select" id="specialism" name="specialismName">
+                                <option disabled hidden selected th:text="'Specialism'" th:value="${null}"></option>
+                                <option th:each="localSpecialismName : ${specialismNames}"
+                                        th:text="${localSpecialismName}"
+                                        th:value="${localSpecialismName}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{specialismName}"
+                                    th:if="${#fields.hasErrors('specialismName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="academicYear">Academic year</label>
+                            <select class="custom-select" id="academicYear" name="academicYearNumber">
+                                <option disabled hidden selected th:text="'Academic year'" th:value="${null}"></option>
+                                <option th:each="academicYear : ${academicYears}"
+                                        th:text="${academicYear}"
+                                        th:value="${academicYear}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{academicYearNumber}"
+                                    th:if="${#fields.hasErrors('academicYearNumber')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="semesterType">Semester type</label>
+                            <select class="custom-select" id="semesterType" name="semesterType">
+                                <option disabled hidden selected th:text="'Semester type'" th:value="${null}"></option>
+                                <option th:each="localSemesterType : ${semesterTypes}"
+                                        th:text="${localSemesterType.value}"
+                                        th:value="${localSemesterType}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{semesterType}"
+                                    th:if="${#fields.hasErrors('semesterType')}"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="btn btn-primary" type="submit" value="Add Group">
+                        </div>
+                        <div class="form-group col-md-8"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

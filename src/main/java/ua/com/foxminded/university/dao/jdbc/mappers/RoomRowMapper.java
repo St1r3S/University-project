@@ -1,7 +1,7 @@
 package ua.com.foxminded.university.dao.jdbc.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
-import ua.com.foxminded.university.model.lecture.Room;
+import ua.com.foxminded.university.model.lesson.Room;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

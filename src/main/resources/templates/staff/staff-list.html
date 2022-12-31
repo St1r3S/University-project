@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Staff</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-2">
+    <div class="card">
+        <div class="card-body">
+            <div class="container my-5" th:switch="${staff}">
+                <p class="my-5">
+                    <a class="btn btn-primary" href="/staff/showForm"><i
+                            class="fas fa-user-plus ml-2"> Add Staff Member</i></a>
+                </p>
+                <div class="col-md-12">
+                    <h2 th:case="null">No Staff yet!</h2>
+                    <div th:case="*">
+                        <table class="table table-striped table-responsive-md">
+                            <thead>
+                            <tr>
+                                <th>Full name</th>
+                                <th>Birthday</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="staffMember : ${staff}">
+                                <td th:text="${staffMember.firstName + ' ' + staffMember.lastName}"></td>
+                                <td th:text="${staffMember.birthday}"></td>
+                                <td th:text="${staffMember.email}"></td>
+                                <td th:text="${staffMember.userRole.value}"></td>
+                                <td><a class="btn btn-primary" th:href="@{/staff/edit/{id}(id=${staffMember.id})}"><i
+                                        class="fas fa-user-edit ml-2"></i></a></td>
+                                <td><a class="btn btn-primary" th:href="@{/staff/delete/{id}(id=${staffMember.id})}"><i
+                                        class="fas fa-user-times ml-2"></i></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

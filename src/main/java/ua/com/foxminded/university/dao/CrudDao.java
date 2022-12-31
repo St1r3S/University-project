@@ -7,11 +7,27 @@ import java.util.Optional;
 
 public interface CrudDao<T extends Entity<K>, K extends Number> {
 
+    T save(T entity);
+
+    List<T> saveAll(List<T> entities);
+
     Optional<T> findById(K id);
 
-    T save(T entity);
+    boolean existsById(K id);
+
+    List<T> findAll(Number limit);
+
+    List<T> findAllById(List<K> ids);
+
+    long count();
 
     void deleteById(K id);
 
-    List<T> findAll();
+    void delete(T entity);
+
+    void deleteAllById(List<K> ids);
+
+    void deleteAll(List<T> entities);
+
+    void deleteAll();
 }

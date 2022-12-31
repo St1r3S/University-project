@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add Schedule Cell</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-5">
+    <h3> Add Lesson</h3>
+    <div class="card">
+        <div class="card-body">
+            <div class="col-md-10">
+                <th:block th:switch="${scheduleType}">
+                    <form action="#" method="post"
+                          th:action="@{/schedule/{scheduleType}/edit/{id}/{semesterType}/add(scheduleType=${scheduleType},id=${id},semesterType=${semesterType})}"
+                          th:object="${lessonView}">
+
+                        <th:block
+                                th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).GROUPS_LIST.value}">
+                            <th:block
+                                    th:replace="~{fragments/schedule/schedule-form :: add-group-lesson}">
+                            </th:block>
+                        </th:block>
+                        <th:block
+                                th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).EDUCATORS_LIST.value}">
+                            <th:block
+                                    th:replace="~{fragments/schedule/schedule-form :: add-educator-lesson}">
+                            </th:block>
+                        </th:block>
+                        <th:block
+                                th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).ROOMS_LIST.value}">
+                            <th:block
+                                    th:replace="~{fragments/schedule/schedule-form :: add-room-lesson}">
+                            </th:block>
+                        </th:block>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

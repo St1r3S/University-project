@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Add Student</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+    <!--th:replace="${#authentication.principal.isAdmin()} ? ~{fragments/header :: admin-header} : ~{fragments/header :: header}">-->
+</div>
+<div class="container my-5">
+    <h3> Add Student</h3>
+    <div class="card">
+        <div class="card-body">
+            <div class="col-md-10">
+                <form action="#" method="post" th:action="@{/students/add}" th:object="${studentView}">
+                    <div class="row">
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="userRole">User Role</label>
+                            <select class="custom-select" id="userRole" name="userRole">
+                                <option th:each="localUserRole : ${userRoles}"
+                                        th:selected="${localUserRole.value.equals('Student')}"
+                                        th:text="${localUserRole.value}"
+                                        th:value="${localUserRole}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{userRole}"
+                                    th:if="${#fields.hasErrors('userRole')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="userName">Username</label>
+                            <input class="form-control"
+                                   id="userName"
+                                   placeholder="Username"
+                                   th:field="*{userName}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{userName}"
+                                    th:if="${#fields.hasErrors('userName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="passwordHash">Password</label>
+                            <input class="form-control"
+                                   id="passwordHash"
+                                   placeholder="Password"
+                                   th:field="*{passwordHash}"
+                                   type="password">
+                            <span
+                                    class="text-danger" th:errors="*{passwordHash}"
+                                    th:if="${#fields.hasErrors('passwordHash')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="firstName">First name</label>
+                            <input class="form-control"
+                                   id="firstName"
+                                   placeholder="First name"
+                                   th:field="*{firstName}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{firstName}"
+                                    th:if="${#fields.hasErrors('firstName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="lastName">Last name</label>
+                            <input class="form-control"
+                                   id="lastName"
+                                   placeholder="Last name"
+                                   th:field="*{lastName}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{lastName}"
+                                    th:if="${#fields.hasErrors('lastName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="birthday">Birthday</label>
+                            <input class="form-control"
+                                   id="birthday"
+                                   placeholder="Birthday"
+                                   th:field="*{birthday}"
+                                   type="date">
+                            <span
+                                    class="text-danger" th:errors="*{birthday}"
+                                    th:if="${#fields.hasErrors('birthday')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="email">Email</label>
+                            <input class="form-control"
+                                   id="email"
+                                   placeholder="Email"
+                                   th:field="*{email}"
+                                   type="text">
+                            <span
+                                    class="text-danger" th:errors="*{email}"
+                                    th:if="${#fields.hasErrors('email')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="groupName">Group name</label>
+                            <select class="custom-select" id="groupName" name="groupName">
+                                <option disabled hidden selected th:text="'Group name'" th:value="${null}"></option>
+                                <option th:each="localGroupName : ${groupNames}"
+                                        th:text="${localGroupName}"
+                                        th:value="${localGroupName}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{groupName}"
+                                    th:if="${#fields.hasErrors('groupName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="specialism">Specialism</label>
+                            <select class="custom-select" id="specialism" name="specialismName">
+                                <option disabled hidden selected th:text="'Specialism'"
+                                        th:value="${null}"></option>
+                                <option th:each="localSpecialismName : ${specialismNames}"
+                                        th:text="${localSpecialismName}"
+                                        th:value="${localSpecialismName}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{specialismName}"
+                                    th:if="${#fields.hasErrors('specialismName')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="academicYear">Academic year</label>
+                            <select class="custom-select" id="academicYear" name="academicYearNumber">
+                                <option disabled hidden selected th:text="'Academic year'" th:value="${null}"></option>
+                                <option th:each="academicYear : ${academicYears}"
+                                        th:text="${academicYear}"
+                                        th:value="${academicYear}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{academicYearNumber}"
+                                    th:if="${#fields.hasErrors('academicYearNumber')}"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="col-form-label" for="semesterType">Semester type</label>
+                            <select class="custom-select" id="semesterType" name="semesterType">
+                                <option disabled hidden selected th:text="'Semester type'" th:value="${null}"></option>
+                                <option th:each="localSemesterType : ${semesterTypes}"
+                                        th:text="${localSemesterType.value}"
+                                        th:value="${localSemesterType}"></option>
+                            </select>
+                            <span
+                                    class="text-danger" th:errors="*{semesterType}"
+                                    th:if="${#fields.hasErrors('semesterType')}"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="btn btn-primary" type="submit" value="Add Student">
+                        </div>
+                        <div class="form-group col-md-8"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

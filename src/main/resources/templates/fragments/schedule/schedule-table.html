@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Schedule Table Fragment</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="schedule-table(mappedLessons)">
+    <table class="table table-striped table-responsive-md table-bordered">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+        </thead>
+        <tbody th:each="lessonEntry,iStat : ${mappedLessons}">
+        <tr>
+            <td class="align-middle coll-md-6" style="white-space: pre;"
+                th:utext="${lessonEntry.key.lessonNumber + '. <br>' + lessonEntry.key.lessonTimeView}">
+            </td>
+            <th:block th:each="lesson : ${lessonEntry.value}">
+                <th:block
+                        th:replace="${lesson.isBlank}?~{fragments/schedule/schedule-cell :: add-lesson-cell(lesson=${lesson})}:~{fragments/schedule/schedule-cell :: show-lesson-cell(lesson=${lesson})}">
+                    <!--                <div th:case="false" th:replace="~{fragments/schedule/schedule-cell :: show-lesson-cell}">-->
+                    <!--                </div>-->
+                    <!--                <div th:case="true" th:replace="~{fragments/schedule/schedule-cell :: add-lesson-cell}">-->
+                    <!--                </div>-->
+                </th:block>
+            </th:block>
+        </tr>
+        </tbody>
+    </table>
+</th:block>
+</body>
+</html>

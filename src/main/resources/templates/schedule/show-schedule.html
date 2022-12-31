@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Show Schedule</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<div th:replace="~{fragments/general/header :: admin-header}">
+</div>
+<div class="container my-2">
+    <div class="card">
+        <div class="card-body">
+            <div class="container my-5" th:switch="${scheduleType}">
+                <p class="my-5" th:switch="${semesterType}">
+                    <a class="btn btn-primary"
+                       th:case="${T(ua.com.foxminded.university.model.schedule.SemesterType).SPRING_SEMESTER.value}"
+                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleType},id=${id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                            th:text="${'Switch to fall semester'}"></i></a>
+                    <a class="btn btn-primary"
+                       th:case="${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value}"
+                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleType},id=${id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).SPRING_SEMESTER.value})}"><i
+                            th:text="${'Switch to spring semester'}"></i></a>
+                </p>
+                <div class="col-md-12">
+                    <h2 th:case="null">Something went wrong!</h2>
+                    <div th:case="*">
+                        <div th:replace="~{fragments/schedule/schedule-table :: schedule-table(mappedLessons=${mappedLessons})}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

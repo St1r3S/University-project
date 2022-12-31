@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Schedule Cell Fragment</title>
+    <th:block th:replace="~{fragments/general/header :: head}">
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="show-lesson-cell(lesson)">
+    <td class="align-middle p-3">
+        <table class="table table-borderless table-sm">
+            <tr class="row ">
+                <td class="col col-md-5" th:text="${'RN' + lesson.roomNumber}"></td>
+                <td><a class="btn btn-primary btn-sm col-md-auto"
+                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}/edit/{idToEdit}(scheduleType=${scheduleType},id=${id},semesterType=${semesterType},idToEdit=${lesson.id})}"><i
+                        class="fas fa-solid fa-pen"></i></a></td>
+                <td><a class="btn btn-primary btn-sm col-md-auto"
+                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}/delete/{idToDelete}(scheduleType=${scheduleType},id=${id},semesterType=${semesterType},idToDelete=${lesson.id})}"><i
+                        class="fas fa-solid fa-trash"></i></a></td>
+            </tr>
+            <tr class="row justify-content-center">
+                <td th:text="${lesson.disciplineName}"></td>
+            </tr>
+            <tr class="row justify-content-center">
+                <td th:text="${lesson.educator.academicRank.value + ' ' + lesson.educator.lastName}"></td>
+            </tr>
+            <tr class="row justify-content-center">
+                <td th:text="${'GROUP: '+ lesson.groupName}"></td>
+            </tr>
+        </table>
+    </td>
+</th:block>
+<th:block th:fragment="add-lesson-cell(lesson)">
+    <td class="align-middle"><a class="btn btn-primary"
+                                th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}/showForm(scheduleType=${scheduleType},id=${id},semesterType=${semesterType},lessonNumber=${lesson.lessonNumber}, dayOfWeek=${lesson.scheduleDay.dayOfWeek})}"><i
+            class="fas fa-solid fa-plus"> Add Lesson</i></a></td>
+</th:block>
+</body>
+</html>
