@@ -41,7 +41,7 @@
                                 <td th:text="${group.specialismName}"></td>
                                 <td th:text="${group.academicYearNumber + ', ' + group.semesterType}"></td>
                                 <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-user-edit"> Schedule</i></a></td>
                             </tr>
                             </tbody>
@@ -65,7 +65,7 @@
                                 <td th:text="${educator.email}"></td>
                                 <td th:text="${educator.academicRank.key}"></td>
                                 <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-user-edit"> Schedule</i></a></td>
                             </tr>
                             </tbody>
@@ -84,7 +84,7 @@
                             <tr th:each="room : ${rooms}">
                                 <td th:text="${room.roomNumber}"></td>
                                 <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleListType},id=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-pen"> Schedule</i></a></td>
                             </tr>
                             </tbody>

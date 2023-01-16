@@ -100,7 +100,10 @@ public class DisciplineController {
     }
 
     @PostMapping("update/{id}")
-    public String updateDiscipline(@PathVariable("id") long id, DisciplineView disciplineView, BindingResult result, Model model) {
+    public String updateDiscipline(@PathVariable("id") long id,
+                                   DisciplineView disciplineView,
+                                   BindingResult result,
+                                   Model model) {
         Discipline disciplineToSave = disciplineView.disciplineViewToDiscipline(
                 specialismService.findBySpecialismName(disciplineView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(disciplineView.getAcademicYearNumber(), disciplineView.getSemesterType()),

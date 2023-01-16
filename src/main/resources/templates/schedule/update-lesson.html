@@ -15,7 +15,7 @@
             <div class="col-md-10">
                 <th:block th:switch="${scheduleType}">
                     <form action="#" method="post"
-                          th:action="@{{scheduleType}/edit/{id}/{semesterType}/update/{idToUpdate}(scheduleType=${scheduleType},id=${id},semesterType=${semesterType},idToUpdate=${lesson.id})}"
+                          th:action="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/update/{id}(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},id=${lesson.id})}"
                           th:object="${lesson}">
                         <th:block
                                 th:case="${T(ua.com.foxminded.university.model.schedule.ScheduleListType).GROUPS_LIST.value}">
@@ -37,66 +37,6 @@
                         </th:block>
                     </form>
                 </th:block>
-
-                <!--                <form action="#" method="post"-->
-                <!--                      th:action="@{{scheduleType}/edit/{id}/{semesterType}/update/{idToUpdate}(scheduleType=${scheduleType},id=${id},semesterType=${semesterType},idToUpdate=${lessonView.id})}"-->
-                <!--                      th:object="${lessonView}">-->
-                <!--                    <div class="row">-->
-                <!--                        <div class="form-group col-md-8">-->
-                <!--                            <label class="col-form-label" for="discipline">Discipline name</label>-->
-                <!--                            <select class="custom-select" id="discipline" name="disciplineName">-->
-                <!--                                <option disabled hidden selected th:text="'Discipline name'"-->
-                <!--                                        th:value="${null}"></option>-->
-                <!--                                <option th:each="localDisciplineName : ${disciplineNames}"-->
-                <!--                                        th:text="${localDisciplineName}"-->
-                <!--                                        th:value="${localDisciplineName}"></option>-->
-                <!--                            </select>-->
-                <!--                            <span-->
-                <!--                                    class="text-danger" th:errors="*{disciplineName}"-->
-                <!--                                    th:if="${#fields.hasErrors('disciplineName')}"></span>-->
-                <!--                        </div>-->
-                <!--                        <div class="form-group col-md-8">-->
-                <!--                            <label class="col-form-label" for="groupName">Group name</label>-->
-                <!--                            <select class="custom-select" id="groupName" name="groupName">-->
-                <!--                                <option disabled hidden selected th:text="'Group name'" th:value="${null}"></option>-->
-                <!--                                <option th:each="localGroupName : ${groupNames}"-->
-                <!--                                        th:text="${localGroupName}"-->
-                <!--                                        th:value="${localGroupName}"></option>-->
-                <!--                            </select>-->
-                <!--                            <span-->
-                <!--                                    class="text-danger" th:errors="*{groupName}"-->
-                <!--                                    th:if="${#fields.hasErrors('groupName')}"></span>-->
-                <!--                        </div>-->
-                <!--                        <div class="form-group col-md-8">-->
-                <!--                            <label class="col-form-label" for="lessonNumber">Lesson number</label>-->
-                <!--                            <select class="custom-select" id="lessonNumber" name="lessonNumber">-->
-                <!--                                <option disabled hidden selected th:text="'Lesson number'" th:value="${null}"></option>-->
-                <!--                                <option th:each="localLessonNumber : ${lessonNumbers}"-->
-                <!--                                        th:text="${localLessonNumber.lessonNumber + '. ' + localLessonNumber.lessonTimeView}"-->
-                <!--                                        th:value="${localLessonNumber}"></option>-->
-                <!--                            </select>-->
-                <!--                            <span-->
-                <!--                                    class="text-danger" th:errors="*{lessonNumber}"-->
-                <!--                                    th:if="${#fields.hasErrors('lessonNumber')}"></span>-->
-                <!--                        </div>-->
-                <!--                        <div class="form-group col-md-8">-->
-                <!--                            <label class="col-form-label" for="roomNumber">Room number</label>-->
-                <!--                            <select class="custom-select" id="roomNumber" name="roomNumber">-->
-                <!--                                <option disabled hidden selected th:text="'Room number'" th:value="${null}"></option>-->
-                <!--                                <option th:each="localRoomNumber : ${roomNumbers}"-->
-                <!--                                        th:text="${localRoomNumber}"-->
-                <!--                                        th:value="${localRoomNumber}"></option>-->
-                <!--                            </select>-->
-                <!--                            <span-->
-                <!--                                    class="text-danger" th:errors="*{roomNumber}"-->
-                <!--                                    th:if="${#fields.hasErrors('roomNumber')}"></span>-->
-                <!--                        </div>-->
-                <!--                        <div class="col-md-6">-->
-                <!--                            <input class="btn btn-primary" type="submit" value="Update lesson">-->
-                <!--                        </div>-->
-                <!--                        <div class="form-group col-md-8"></div>-->
-                <!--                    </div>-->
-                <!--                </form>-->
             </div>
         </div>
     </div>
