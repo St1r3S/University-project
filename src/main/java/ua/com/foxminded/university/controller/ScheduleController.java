@@ -47,9 +47,9 @@ public class ScheduleController {
         this.academicYearService = academicYearService;
     }
 
-    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/showForm")
+    @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/showForm")
     public String showLessonForm(@PathVariable("scheduleType") String scheduleType,
-                                 @PathVariable("id") long id,
+                                 @PathVariable("contextId") long contextId,
                                  @PathVariable("semesterType") String semesterType,
                                  LessonNumber lessonNumber,
                                  DayOfWeek dayOfWeek,
@@ -66,20 +66,20 @@ public class ScheduleController {
 
     @PostMapping("/{scheduleType}/edit/{contextId}/{semesterType}/add")
     public String addLesson(@PathVariable("scheduleType") String scheduleType,
-                            @PathVariable("contextId") long id,
+                            @PathVariable("contextId") long contextId,
                             @PathVariable("semesterType") String semesterType,
                             LessonView lessonView,
                             BindingResult result,
                             Model model) {
         if (result.hasErrors()) {
-            return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
+            return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
         }
         Lesson lessonToSave;
         switch (scheduleType) {
             case "groups":
                 lessonToSave = lessonView.lessonViewToLesson(
                         disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
-                        groupService.findById(id),
+                        groupService.findById(contextId),
                         roomService.findByRoomNumber(lessonView.getRoomNumber())
                 );
                 break;
@@ -94,7 +94,7 @@ public class ScheduleController {
                 lessonToSave = lessonView.lessonViewToLesson(
                         disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                         groupService.findByGroupName(lessonView.getGroupName()),
-                        roomService.findById(id)
+                        roomService.findById(contextId)
                 );
                 break;
             default:
@@ -104,7 +104,7 @@ public class ScheduleController {
 
         this.lessonService.save(lessonToSave);
 
-        return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
+        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
     }
 
 
@@ -133,20 +133,20 @@ public class ScheduleController {
         return "schedule/choose-schedule";
     }
 
-    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}")
+    @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}")
     public String showSchedule(@PathVariable("scheduleType") String scheduleType,
-                               @PathVariable("id") long id,
+                               @PathVariable("contextId") long contextId,
                                @PathVariable("semesterType") String semesterType,
                                Model model) {
-        makeModelToShowSchedule(scheduleType, id, semesterType, model);
+        makeModelToShowSchedule(scheduleType, contextId, semesterType, model);
         return "schedule/show-schedule";
     }
 
-    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/edit/{idToEdit}")
+    @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/edit/{id}")
     public String showUpdateForm(@PathVariable("scheduleType") String scheduleType,
-                                 @PathVariable("id") long id,
+                                 @PathVariable("contextId") long contextId,
                                  @PathVariable("semesterType") String semesterType,
-                                 @PathVariable("idToEdit") long idToEdit,
+                                 @PathVariable("id") long idToEdit,
                                  Model model) {
         Lesson lesson = this.lessonService.findById(idToEdit);
 
@@ -170,11 +170,11 @@ public class ScheduleController {
         return "schedule/update-lesson";
     }
 
-    @PostMapping("/{scheduleType}/edit/{id}/{semesterType}/update/{idToUpdate}")
+    @PostMapping("/{scheduleType}/edit/{contextId}/{semesterType}/update/{id}")
     public String updateLesson(@PathVariable("scheduleType") String scheduleType,
-                               @PathVariable("id") long id,
+                               @PathVariable("contextId") long contextId,
                                @PathVariable("semesterType") String semesterType,
-                               @PathVariable("idToUpdate") long idToUpdate,
+                               @PathVariable("id") long idToUpdate,
                                LessonView lessonView,
                                BindingResult result,
                                Model model) {
@@ -191,19 +191,23 @@ public class ScheduleController {
 
         this.lessonService.save(lessonToSave);
 
-        return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
+        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
     }
 
-    @GetMapping("/{scheduleType}/edit/{id}/{semesterType}/delete/{idToDelete}")
-    public String deleteLesson(@PathVariable("scheduleType") String scheduleType, @PathVariable("id") long id, @PathVariable("semesterType") String semesterType, @PathVariable("idToDelete") long idToDelete, Model model) {
+    @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/delete/{id}")
+    public String deleteLesson(@PathVariable("scheduleType") String scheduleType,
+                               @PathVariable("contextId") long contextId,
+                               @PathVariable("semesterType") String semesterType,
+                               @PathVariable("id") long idToDelete,
+                               Model model) {
         Lesson lessonToDelete = lessonService.findById(idToDelete);
         lessonService.delete(lessonToDelete);
-        return "redirect:/schedule/" + scheduleType + "/edit/" + id + "/" + semesterType;
+        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
     }
 
 
     private void makeModelToShowSchedule(String scheduleType,
-                                         long id,
+                                         long contextId,
                                          String semesterType,
                                          Model model) {
         model.addAttribute("scheduleListTypes", Arrays.asList(ScheduleListType.values()));
@@ -212,7 +216,7 @@ public class ScheduleController {
         Map<LessonNumber, List<LessonView>> mappedLessons = new LinkedHashMap<>();
         switch (scheduleType) {
             case "groups":
-                lessons = lessonService.findAllByGroupId(id)
+                lessons = lessonService.findAllByGroupId(contextId)
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))
                                 .stream()
@@ -229,7 +233,7 @@ public class ScheduleController {
                         .collect(Collectors.toList());
                 break;
             case "educators":
-                lessons = lessonService.findAllByDisciplineId(disciplineService.findByEducatorId(id).getId())
+                lessons = lessonService.findAllByDisciplineId(disciplineService.findByEducatorId(contextId).getId())
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))
                                 .stream()
@@ -246,7 +250,7 @@ public class ScheduleController {
                         .collect(Collectors.toList());
                 break;
             case "rooms":
-                lessons = lessonService.findAllByRoomId(id)
+                lessons = lessonService.findAllByRoomId(contextId)
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))
                                 .stream()

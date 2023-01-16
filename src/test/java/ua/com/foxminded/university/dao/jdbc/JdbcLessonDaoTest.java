@@ -47,7 +47,7 @@ class JdbcLessonDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyUpdate() {
-        Lesson expected = new Lesson(1L, 1L, 1L, LessonNumber.FIFTH_LESSON, 1L, 2L);
+        Lesson expected = new Lesson(1L, 1L, 1L, LessonNumber.FIRST_LESSON, 1L, 1L);
         dao.save(expected);
         Lesson actual = jdbcTemplate.queryForObject(SELECT_LESSON_BY_ID, new LessonRowMapper(), 1);
         assertEquals(expected, actual);
