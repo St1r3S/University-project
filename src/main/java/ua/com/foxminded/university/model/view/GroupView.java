@@ -31,6 +31,6 @@ public class GroupView {
     }
 
     public Group groupViewToGroup(Specialism specialism, AcademicYear academicYear) {
-        return new Group(id, groupName, specialism.getId(), academicYear.getId());
+        return new Group(id, groupName, specialism, academicYear);
     }
 }

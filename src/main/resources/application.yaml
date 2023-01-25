@@ -1,4 +1,8 @@
 spring:
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: validate
   datasource:
     url: jdbc:postgresql://localhost:5432/university
     username: rector

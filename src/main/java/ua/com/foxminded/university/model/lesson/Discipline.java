@@ -1,29 +1,50 @@
 package ua.com.foxminded.university.model.lesson;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.LongEntity;
+import ua.com.foxminded.university.model.schedule.AcademicYear;
+import ua.com.foxminded.university.model.user.Educator;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Data
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Entity
+@Table(name = "disciplines")
 public class Discipline extends LongEntity {
 
+    @Column(name = "discipline_name", nullable = false)
     private String disciplineName;
-    private Long specialismId;
-    private Long academicYearId;
-    private Long educatorId;
 
-    public Discipline(Long id, String disciplineName, Long specialismId, Long academicYearId, Long educatorId) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialism_id", nullable = false)
+    private Specialism specialism;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialism_id", nullable = false)
+    private AcademicYear academicYear;
+    @OneToOne
+    @JoinColumn(name = "educator_id", nullable = false, referencedColumnName = "id")
+    private Educator educator;
+    
+    @OneToMany(mappedBy = "discipline")
+    private List<Lesson> lessons;
+
+    public Discipline(Long id, String disciplineName, Specialism specialism, AcademicYear academicYear, Educator educator) {
         super(id);
         this.disciplineName = disciplineName;
-        this.specialismId = specialismId;
-        this.academicYearId = academicYearId;
-        this.educatorId = educatorId;
+        this.specialism = specialism;
+        this.academicYear = academicYear;
+        this.educator = educator;
     }
 
-    public Discipline(String disciplineName, Long specialismId, Long academicYearId, Long educatorId) {
-        this(null, disciplineName, specialismId, academicYearId, educatorId);
+    public Discipline(String disciplineName, Specialism specialism, AcademicYear academicYear, Educator educator) {
+        this(null, disciplineName, specialism, academicYear, educator);
     }
 }
+
+
+

@@ -1,31 +1,44 @@
 package ua.com.foxminded.university.model.lesson;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.LongEntity;
+import ua.com.foxminded.university.model.schedule.ScheduleDay;
+import ua.com.foxminded.university.model.user.Group;
 
+import javax.persistence.*;
+
+@Data
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Entity
+@Table(name = "lessons")
 public class Lesson extends LongEntity {
-
-    private Long disciplineId;
-    private Long groupId;
+    @ManyToOne
+    @JoinColumn(name = "discipline_id", nullable = false)
+    private Discipline discipline;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
     private LessonNumber lessonNumber;
-    private Long roomId;
-    private Long scheduleDayId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_day_id", nullable = false)
+    private ScheduleDay scheduleDay;
 
-    public Lesson(Long id, Long disciplineId, Long groupId, LessonNumber lessonNumber, Long roomId, Long scheduleDayId) {
+    public Lesson(Long id, Discipline discipline, Group group, LessonNumber lessonNumber, Room room, ScheduleDay scheduleDay) {
         super(id);
-        this.disciplineId = disciplineId;
-        this.groupId = groupId;
+        this.discipline = discipline;
+        this.group = group;
         this.lessonNumber = lessonNumber;
-        this.roomId = roomId;
-        this.scheduleDayId = scheduleDayId;
+        this.room = room;
+        this.scheduleDay = scheduleDay;
     }
 
-    public Lesson(Long disciplineId, Long groupId, LessonNumber lessonNumber, Long roomId, Long scheduleDayId) {
-        this(null, disciplineId, groupId, lessonNumber, roomId, scheduleDayId);
+    public Lesson(Discipline discipline, Group group, LessonNumber lessonNumber, Room room, ScheduleDay scheduleDay) {
+        this(null, discipline, group, lessonNumber, room, scheduleDay);
     }
 }
