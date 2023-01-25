@@ -34,6 +34,6 @@ public class DisciplineView {
     }
 
     public Discipline disciplineViewToDiscipline(Specialism specialism, AcademicYear academicYear, Educator educator) {
-        return new Discipline(id, disciplineName, specialism.getId(), academicYear.getId(), educator.getId());
+        return new Discipline(id, disciplineName, specialism, academicYear, educator);
     }
 }

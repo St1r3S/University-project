@@ -1,18 +1,27 @@
 package ua.com.foxminded.university.model.user;
 
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import ua.com.foxminded.university.model.lesson.Discipline;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 import java.time.LocalDate;
 
+@Data
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Entity
+@DiscriminatorValue("3")
 public class Educator extends User {
-
+    @Column(name = "academic_rank")
     private AcademicRank academicRank;
+    @OneToOne(mappedBy = "educator")
+    private Discipline discipline;
 
     public Educator(Long id, String userName, String passwordHash, UserRole userRole, String firstName, String lastName, LocalDate birthday, String email, AcademicRank academicRank) {
         super(id, userName, passwordHash, userRole, firstName, lastName, birthday, email);

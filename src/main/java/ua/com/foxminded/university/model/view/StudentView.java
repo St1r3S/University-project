@@ -57,6 +57,6 @@ public class StudentView {
 
     // Don't forget to hash password while convert studentView to student
     public Student studentViewToStudent(Group group, Specialism specialism, AcademicYear academicYear) {
-        return new Student(id, userName, passwordHash, userRole, firstName, lastName, birthday, email, group.getId(), specialism.getId(), academicYear.getId());
+        return new Student(id, userName, passwordHash, userRole, firstName, lastName, birthday, email, group, specialism, academicYear);
     }
 }

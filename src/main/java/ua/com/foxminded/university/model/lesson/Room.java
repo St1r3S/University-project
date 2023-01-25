@@ -1,16 +1,26 @@
 package ua.com.foxminded.university.model.lesson;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.LongEntity;
 
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-public class Room extends LongEntity {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.List;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@Entity
+@Table(name = "rooms")
+public class Room extends LongEntity {
+    @Column(name = "room_number", unique = true, nullable = false)
     private String roomNumber;
+    @OneToMany(mappedBy = "room")
+    private List<Lesson> lessons;
 
     public Room(Long id, String roomNumber) {
         super(id);
