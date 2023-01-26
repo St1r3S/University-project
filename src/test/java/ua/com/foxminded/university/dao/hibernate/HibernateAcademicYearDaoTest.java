@@ -3,31 +3,34 @@ package ua.com.foxminded.university.dao.hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.jdbc.Sql;
 import ua.com.foxminded.university.BaseDaoTest;
-import ua.com.foxminded.university.dao.hibernate.mappers.AcademicYearRowMapper;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JdbcTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+        HibernateAcademicYearDao.class
+}))
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class HibernateAcademicYearDaoTest extends BaseDaoTest {
     public static final String SELECT_ACADEMIC_YEAR_BY_ID = "SELECT * FROM academic_years WHERE id = ?";
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
+    @Autowired
     HibernateAcademicYearDao dao;
 
     @PostConstruct
     void init() {
-        dao = new HibernateAcademicYearDao(jdbcTemplate);
+        dao = new HibernateAcademicYearDao();
     }
 
     @Test
@@ -38,9 +41,9 @@ public class HibernateAcademicYearDaoTest extends BaseDaoTest {
     @Test
     @Sql(scripts = {"/sql/university_data_clean.sql", "/sql/university_data_sample.sql"})
     void shouldVerifyCreate() {
-        AcademicYear expected = new AcademicYear(1, SemesterType.SPRING_SEMESTER);
+        AcademicYear expected = new AcademicYear(5, SemesterType.SPRING_SEMESTER);
         dao.save(expected);
-        AcademicYear actual = jdbcTemplate.queryForObject(SELECT_ACADEMIC_YEAR_BY_ID, new AcademicYearRowMapper(), 4);
+        Optional<AcademicYear> actual = dao.findById(9L);
         assertEquals(expected, actual);
     }
 

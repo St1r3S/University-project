@@ -1,49 +1,33 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.EducatorDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.EducatorRowMapper;
 import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
-import ua.com.foxminded.university.model.user.UserType;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implements EducatorDao {
-    public static final Integer EDUCATOR_TYPE_CODE = UserType.EDUCATOR.getTypeCode();
-    public static final String EDUCATOR_ID = "id";
-    public static final String USER_TYPE = "user_type";
-    public static final String EDUCATOR_LOGIN = "user_name";
-    public static final String EDUCATOR_PASSWORD = "password_hash";
-    public static final String EDUCATOR_ROLE = "user_role";
-    public static final String EDUCATOR_FIRST_NAME = "first_name";
-    public static final String EDUCATOR_LAST_NAME = "last_name";
-    public static final String EDUCATOR_BIRTHDAY = "birthday";
-    public static final String EDUCATOR_EMAIL = "email";
-    public static final String EDUCATOR_ACADEMIC_RANK = "academic_rank";
-    private static final String UPDATE = "UPDATE users SET user_name = ?, password_hash = ?, user_role = ?, first_name = ?," +
-            "last_name = ?, birthday = ?, email = ?, academic_rank = ? WHERE id = ? AND user_type = ?";
-    private static final String RETRIEVE = "SELECT * FROM users WHERE id = ? AND user_type = ?";
-    private static final String FIND_ALL = "SELECT * FROM users WHERE user_type = ? LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM users WHERE id IN (%s) AND user_type = ?";
-    private static final String COUNT = "SELECT count(*) FROM users WHERE user_type = ?";
-    private static final String DELETE = "DELETE FROM users WHERE id = ? AND user_type = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM users WHERE id IN (%s) AND user_type = ?";
-    private static final String DELETE_ALL = "DELETE FROM users WHERE user_type = ?";
-    private static final String EDUCATOR_BY_LOGIN = "SELECT * FROM users WHERE user_name = ? AND user_type = ?";
-    private static final String EDUCATOR_BY_EMAIL = "SELECT * FROM users WHERE email = ? AND user_type = ?";
-    private static final String EDUCATOR_BY_USER_ROLE = "SELECT * FROM users WHERE user_role = ? AND user_type = ?";
-    private static final String EDUCATOR_BY_BIRTHDAY = "SELECT * FROM users WHERE birthday = ? AND user_type = ?";
-    private static final String EDUCATOR_BY_ACADEMIC_RANK = "SELECT * FROM users WHERE academic_rank = ? AND user_type = ?";
+    private static final String FIND_ALL = "SELECT e FROM Educator e";
+    private static final String FIND_ALL_BY_IDS = "SELECT e FROM Educator e WHERE e.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(e) FROM Educator e";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Educator e WHERE e.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Educator e";
+    private static final String EDUCATOR_BY_USER_NAME = "SELECT e FROM Educator e WHERE e.userName = :userName";
+    private static final String EDUCATOR_BY_EMAIL = "SELECT e FROM Educator e WHERE e.email = :email";
+    private static final String EDUCATOR_BY_USER_ROLE = "SELECT e FROM Educator e WHERE e.userRole = :userRole";
+    private static final String EDUCATOR_BY_BIRTHDAY = "SELECT e FROM Educator e WHERE e.birthday = :birthday";
+    private static final String EDUCATOR_BY_ACADEMIC_RANK = "SELECT e FROM Educator e WHERE e.academicRank = :academicRank";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -56,18 +40,16 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
 
     @Override
     protected Educator update(Educator entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Educator> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new EducatorRowMapper(), id, EDUCATOR_TYPE_CODE)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(entityManager.find(Educator.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -76,96 +58,89 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
     }
 
     @Override
-    public List<Educator> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new EducatorRowMapper(), EDUCATOR_TYPE_CODE, limit);
+    public List<Educator> findAll() {
+        TypedQuery<Educator> query = entityManager.createQuery(FIND_ALL, Educator.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Educator> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-        Object[] args = new Object[ids.size() + 1];
-        for (int i = 0; i < ids.size(); i++) {
-            args[i] = ids.get(i);
-        }
-        args[ids.size()] = EDUCATOR_TYPE_CODE;
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new EducatorRowMapper(),
-                args);
+        TypedQuery<Educator> query = entityManager.createQuery(FIND_ALL_BY_IDS, Educator.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class, EDUCATOR_TYPE_CODE);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id, EDUCATOR_TYPE_CODE))
-            throw new EmptyResultDataAccessException("Unable to delete educator entity with id" + id, 1);
+        Educator entity = entityManager.find(Educator.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Educator entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId(), EDUCATOR_TYPE_CODE))
-            throw new EmptyResultDataAccessException("Unable to delete educator entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-        Object[] args = new Object[ids.size() + 1];
-        for (int i = 0; i < ids.size(); i++) {
-            args[i] = ids.get(i);
-        }
-        args[ids.size()] = EDUCATOR_TYPE_CODE;
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                args);
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Educator> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-        Object[] args = new Object[entities.size() + 1];
-        for (int i = 0; i < entities.size(); i++) {
-            args[i] = entities.get(i).getId();
-        }
-        args[entities.size()] = EDUCATOR_TYPE_CODE;
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                args);
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Educator::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL, EDUCATOR_TYPE_CODE);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
-    public Optional<Educator> findByLogin(String userName) {
-        return jdbcTemplate.query(EDUCATOR_BY_LOGIN, new EducatorRowMapper(), userName, EDUCATOR_TYPE_CODE)
-                .stream().findFirst();
+    public Optional<Educator> findByUserName(String userName) {
+        TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_USER_NAME, Educator.class);
+        try {
+            return Optional.of(query.setParameter("userName", userName).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Educator> findByEmail(String email) {
-        return jdbcTemplate.query(EDUCATOR_BY_EMAIL, new EducatorRowMapper(), email, EDUCATOR_TYPE_CODE)
-                .stream().findFirst();
+        TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_EMAIL, Educator.class);
+        try {
+            return Optional.of(query.setParameter("email", email).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Educator> findAllByUserRole(UserRole userRole) {
-        return jdbcTemplate.query(EDUCATOR_BY_USER_ROLE, new EducatorRowMapper(), userRole.getValue(), EDUCATOR_TYPE_CODE);
+        TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_USER_ROLE, Educator.class);
+        return query.setParameter("userRole", userRole).getResultList();
     }
 
     @Override
     public List<Educator> findAllByBirthday(LocalDate birthday) {
-        return jdbcTemplate.query(EDUCATOR_BY_BIRTHDAY, new EducatorRowMapper(), birthday, EDUCATOR_TYPE_CODE);
+        TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_BIRTHDAY, Educator.class);
+        return query.setParameter("birthday", birthday).getResultList();
     }
 
     @Override
     public List<Educator> findAllByAcademicRank(AcademicRank academicRank) {
-        return jdbcTemplate.query(EDUCATOR_BY_ACADEMIC_RANK, new EducatorRowMapper(), academicRank.getKey(), EDUCATOR_TYPE_CODE);
+        TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_ACADEMIC_RANK, Educator.class);
+        return query.setParameter("academicRank", academicRank).getResultList();
     }
 }

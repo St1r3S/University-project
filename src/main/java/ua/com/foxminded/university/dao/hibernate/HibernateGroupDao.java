@@ -1,35 +1,28 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.GroupDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.GroupRowMapper;
 import ua.com.foxminded.university.model.user.Group;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements GroupDao {
-    public static final String GROUP_ID = "id";
-    public static final String GROUP_NAME = "group_name";
-    public static final String GROUP_SPECIALISM_ID = "specialism_id";
-    public static final String GROUP_ACADEMIC_YEAR_ID = "academic_year_id";
-    private static final String UPDATE = "UPDATE groupss SET group_name = ?, specialism_id = ?, academic_year_id = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM groupss WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM groupss LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM groupss WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM groupss";
-    private static final String DELETE = "DELETE FROM groupss WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM groupss WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM groupss";
-    private static final String GROUP_BY_GROUP_NAME = "SELECT * FROM groupss WHERE group_name = ?";
-    private static final String GROUP_BY_SPECIALISM_ID = "SELECT * FROM groupss WHERE specialism_id = ?";
-    private static final String GROUP_BY_ACADEMIC_YEAR_ID = "SELECT * FROM groupss WHERE academic_year_id = ?";
+    private static final String FIND_ALL = "SELECT g FROM Group g";
+    private static final String FIND_ALL_BY_IDS = "SELECT g FROM Group g WHERE g.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(g) FROM Group g";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Group g WHERE g.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Group g";
+    private static final String GROUP_BY_GROUP_NAME = "SELECT g FROM Group g WHERE g.groupName = :groupName";
+    private static final String GROUP_BY_SPECIALISM_ID = "SELECT g FROM Group g WHERE g.specialism.id = :specialismId";
+    private static final String GROUP_BY_ACADEMIC_YEAR_ID = "SELECT g FROM Group g WHERE g.academicYear.id = :academicYearId";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,18 +35,16 @@ public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements G
 
     @Override
     protected Group update(Group entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Group> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new GroupRowMapper(), id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(entityManager.find(Group.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -62,74 +53,73 @@ public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements G
     }
 
     @Override
-    public List<Group> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new GroupRowMapper(), limit);
+    public List<Group> findAll() {
+        TypedQuery<Group> query = entityManager.createQuery(FIND_ALL, Group.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Group> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new GroupRowMapper(),
-                ids.toArray());
+        TypedQuery<Group> query = entityManager.createQuery(FIND_ALL_BY_IDS, Group.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete group entity with id" + id, 1);
+        Group entity = entityManager.find(Group.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Group entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete group entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Group> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(Group::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Group::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public Optional<Group> findByGroupName(String groupName) {
-        return jdbcTemplate.query(GROUP_BY_GROUP_NAME, new GroupRowMapper(), groupName)
-                .stream()
-                .findFirst();
+        TypedQuery<Group> query = entityManager.createQuery(GROUP_BY_GROUP_NAME, Group.class);
+        try {
+            return Optional.of(query.setParameter("groupName", groupName).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Group> findAllBySpecialismId(Long specialismId) {
-        return jdbcTemplate.query(GROUP_BY_SPECIALISM_ID, new GroupRowMapper(), specialismId);
+        TypedQuery<Group> query = entityManager.createQuery(GROUP_BY_SPECIALISM_ID, Group.class);
+        return query.setParameter("specialismId", specialismId).getResultList();
     }
 
     @Override
     public List<Group> findAllByAcademicYearId(Long academicYearId) {
-        return jdbcTemplate.query(GROUP_BY_ACADEMIC_YEAR_ID, new GroupRowMapper(), academicYearId);
+        TypedQuery<Group> query = entityManager.createQuery(GROUP_BY_ACADEMIC_YEAR_ID, Group.class);
+        return query.setParameter("academicYearId", academicYearId).getResultList();
     }
 }

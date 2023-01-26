@@ -15,7 +15,7 @@ public interface CrudDao<T extends Entity<K>, K extends Number> {
 
     boolean existsById(K id);
 
-    List<T> findAll(Number limit);
+    List<T> findAll();
 
     List<T> findAllById(List<K> ids);
 

@@ -194,7 +194,7 @@ class HibernateEducatorDaoTest extends BaseDaoTest {
     void shouldVerifyFindByLogin() {
         Educator expected = new Educator(5L, "grant78", "pass78", UserRole.EDUCATOR, "John",
                 "Grant", LocalDate.parse("1978-03-28"), "grant@gmail.com", AcademicRank.PROFESSOR);
-        Educator actual = dao.findByLogin("grant78").get();
+        Educator actual = dao.findByUserName("grant78").get();
         assertEquals(expected, actual);
     }
 

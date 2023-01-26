@@ -26,7 +26,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public Specialism save(Specialism entity) {
         try {
             return specialismDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -41,7 +41,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public List<Specialism> saveAll(List<Specialism> entities) {
         try {
             return specialismDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -63,7 +63,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     @Override
     @Transactional(readOnly = true)
     public List<Specialism> findAll() {
-        return specialismDao.findAll(100);
+        return specialismDao.findAll();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public void deleteById(Long id) {
         try {
             specialismDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -94,7 +94,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public void delete(Specialism entity) {
         try {
             specialismDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -105,7 +105,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public void deleteAllById(List<Long> ids) {
         try {
             specialismDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -116,7 +116,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public void deleteAll(List<Specialism> entities) {
         try {
             specialismDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -127,7 +127,7 @@ public class SpecialismServiceImpl implements SpecialismService {
     public void deleteAll() {
         try {
             specialismDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }

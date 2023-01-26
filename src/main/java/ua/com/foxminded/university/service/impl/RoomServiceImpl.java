@@ -6,7 +6,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.RoomDao;
-import ua.com.foxminded.university.model.lesson.Lesson;
 import ua.com.foxminded.university.model.lesson.LessonNumber;
 import ua.com.foxminded.university.model.lesson.Room;
 import ua.com.foxminded.university.model.schedule.ScheduleDay;
@@ -34,7 +33,7 @@ public class RoomServiceImpl implements RoomService {
     public Room save(Room entity) {
         try {
             return roomDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -49,7 +48,7 @@ public class RoomServiceImpl implements RoomService {
     public List<Room> saveAll(List<Room> entities) {
         try {
             return roomDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -71,7 +70,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional(readOnly = true)
     public List<Room> findAll() {
-        return roomDao.findAll(100);
+        return roomDao.findAll();
     }
 
     @Override
@@ -91,7 +90,7 @@ public class RoomServiceImpl implements RoomService {
     public void deleteById(Long id) {
         try {
             roomDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -102,7 +101,7 @@ public class RoomServiceImpl implements RoomService {
     public void delete(Room entity) {
         try {
             roomDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -113,7 +112,7 @@ public class RoomServiceImpl implements RoomService {
     public void deleteAllById(List<Long> ids) {
         try {
             roomDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -124,7 +123,7 @@ public class RoomServiceImpl implements RoomService {
     public void deleteAll(List<Room> entities) {
         try {
             roomDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -135,7 +134,7 @@ public class RoomServiceImpl implements RoomService {
     public void deleteAll() {
         try {
             roomDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
@@ -152,9 +151,9 @@ public class RoomServiceImpl implements RoomService {
     public List<Room> findAllFreeRooms(LessonNumber lessonNumber, ScheduleDay scheduleDay) {
         List<Long> busyRooms = lessonService.findAll().stream()
                 .filter(lesson -> lesson.getLessonNumber() == lessonNumber
-                        && lesson.getScheduleDayId().equals(scheduleDay.getId()))
-                .map(Lesson::getRoomId).collect(Collectors.toList());
+                        && lesson.getScheduleDay().getId().equals(scheduleDay.getId()))
+                .map(lesson -> lesson.getRoom().getId()).collect(Collectors.toList());
 
-        return roomDao.findAll(10000).stream().filter(room -> !busyRooms.contains(room.getId())).collect(Collectors.toList());
+        return roomDao.findAll().stream().filter(room -> !busyRooms.contains(room.getId())).collect(Collectors.toList());
     }
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CrudUserDao<T extends Entity<K>, K extends Number> extends CrudDao<T, K> {
 
-    Optional<T> findByLogin(String userName);
+    Optional<T> findByUserName(String userName);
 
     Optional<T> findByEmail(String email);
 

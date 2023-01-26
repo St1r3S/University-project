@@ -118,8 +118,8 @@ public class ScheduleController {
                         .stream()
                         .map(group -> GroupView.groupToGroupView(
                                 group,
-                                specialismService.findById(group.getSpecialismId()),
-                                academicYearService.findById(group.getAcademicYearId())))
+                                specialismService.findById(group.getSpecialism().getId()),
+                                academicYearService.findById(group.getAcademicYear().getId())))
                         .collect(Collectors.toList())
                 );
                 break;
@@ -152,11 +152,11 @@ public class ScheduleController {
 
         LessonView lessonView = LessonView.lessonToLessonView(
                 lesson,
-                disciplineService.findById(lesson.getDisciplineId()),
-                educatorService.findById(disciplineService.findById(lesson.getDisciplineId()).getEducatorId()),
-                groupService.findById(lesson.getGroupId()),
-                roomService.findById(lesson.getRoomId()),
-                scheduleDayService.findById(lesson.getScheduleDayId())
+                disciplineService.findById(lesson.getDiscipline().getId()),
+                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
+                groupService.findById(lesson.getGroup().getId()),
+                roomService.findById(lesson.getRoom().getId()),
+                scheduleDayService.findById(lesson.getScheduleDay().getId())
         );
 
         model.addAttribute("lesson",
@@ -222,14 +222,14 @@ public class ScheduleController {
                                 .stream()
                                 .map(ScheduleDay::getId)
                                 .collect(Collectors.toList())
-                                .contains(lesson.getScheduleDayId()))
+                                .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDisciplineId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDisciplineId()).getEducatorId()),
-                                groupService.findById(lesson.getGroupId()),
-                                roomService.findById(lesson.getRoomId()),
-                                scheduleDayService.findById(lesson.getScheduleDayId())))
+                                disciplineService.findById(lesson.getDiscipline().getId()),
+                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
+                                groupService.findById(lesson.getGroup().getId()),
+                                roomService.findById(lesson.getRoom().getId()),
+                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
                         .collect(Collectors.toList());
                 break;
             case "educators":
@@ -239,14 +239,14 @@ public class ScheduleController {
                                 .stream()
                                 .map(ScheduleDay::getId)
                                 .collect(Collectors.toList())
-                                .contains(lesson.getScheduleDayId()))
+                                .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDisciplineId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDisciplineId()).getEducatorId()),
-                                groupService.findById(lesson.getGroupId()),
-                                roomService.findById(lesson.getRoomId()),
-                                scheduleDayService.findById(lesson.getScheduleDayId())))
+                                disciplineService.findById(lesson.getDiscipline().getId()),
+                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
+                                groupService.findById(lesson.getGroup().getId()),
+                                roomService.findById(lesson.getRoom().getId()),
+                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
                         .collect(Collectors.toList());
                 break;
             case "rooms":
@@ -256,14 +256,14 @@ public class ScheduleController {
                                 .stream()
                                 .map(ScheduleDay::getId)
                                 .collect(Collectors.toList())
-                                .contains(lesson.getScheduleDayId()))
+                                .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDisciplineId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDisciplineId()).getEducatorId()),
-                                groupService.findById(lesson.getGroupId()),
-                                roomService.findById(lesson.getRoomId()),
-                                scheduleDayService.findById(lesson.getScheduleDayId())))
+                                disciplineService.findById(lesson.getDiscipline().getId()),
+                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
+                                groupService.findById(lesson.getGroup().getId()),
+                                roomService.findById(lesson.getRoom().getId()),
+                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
                         .collect(Collectors.toList());
                 break;
             default:

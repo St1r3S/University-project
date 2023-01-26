@@ -52,9 +52,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
 
@@ -86,9 +86,9 @@ public class DisciplineController {
         model.addAttribute("discipline",
                 DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())
                 )
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -121,9 +121,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -144,9 +144,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
 

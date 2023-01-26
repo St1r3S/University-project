@@ -1,39 +1,31 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.DisciplineDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.DisciplineRowMapper;
 import ua.com.foxminded.university.model.lesson.Discipline;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Repository
 public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> implements DisciplineDao {
-    public static final String DISCIPLINE_ID = "id";
-    public static final String DISCIPLINE_NAME = "discipline_name";
-    public static final String DISCIPLINE_SPECIALISM_ID = "specialism_id";
-    public static final String DISCIPLINE_ACADEMIC_YEAR_ID = "academic_year_id";
-    public static final String DISCIPLINE_EDUCATOR_ID = "educator_id";
-    private static final String UPDATE = "UPDATE disciplines SET discipline_name = ?, specialism_id = ?, academic_year_id = ?, educator_id = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM disciplines WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM disciplines LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM disciplines WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM disciplines";
-    private static final String DELETE = "DELETE FROM disciplines WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM disciplines WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM disciplines";
-    private static final String DISCIPLINE_BY_DISCIPLINE_NAME = "SELECT * FROM disciplines WHERE discipline_name = ?";
-    private static final String DISCIPLINES_BY_SPECIALISM_ID = "SELECT * FROM disciplines WHERE specialism_id = ?";
-    private static final String DISCIPLINES_BY_ACADEMIC_YEAR_ID = "SELECT * FROM disciplines WHERE academic_year_id = ?";
-    private static final String DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID = "SELECT * FROM disciplines WHERE specialism_id = ? AND academic_year_id = ?";
-    private static final String DISCIPLINE_BY_EDUCATOR_ID = "SELECT * FROM disciplines WHERE educator_id = ?";
+    private static final String FIND_ALL = "SELECT d FROM Discipline d";
+    private static final String FIND_ALL_BY_IDS = "SELECT d FROM Discipline d WHERE d.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(d) FROM Discipline d";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Discipline d WHERE d.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Discipline d";
+    private static final String DISCIPLINE_BY_DISCIPLINE_NAME = "SELECT d FROM Discipline d WHERE d.disciplineName = :disciplineName";
+    private static final String DISCIPLINES_BY_SPECIALISM_ID = "SELECT d FROM Discipline d WHERE d.specialism.id = :specialismId";
+    private static final String DISCIPLINES_BY_ACADEMIC_YEAR_ID = "SELECT d FROM Discipline d WHERE d.academicYear.id = :academicYearId";
+    private static final String DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID = "SELECT d FROM Discipline d WHERE d.specialism.id = :specialismId AND d.academicYear.id = :academicYearId";
+    private static final String DISCIPLINE_BY_EDUCATOR_ID = "SELECT d FROM Discipline d WHERE d.educator.id = :educatorId";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -46,16 +38,16 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
 
     @Override
     protected Discipline update(Discipline entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Discipline> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new DisciplineRowMapper(), id).stream().findFirst();
+        try {
+            return Optional.of(entityManager.find(Discipline.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -64,86 +56,89 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
     }
 
     @Override
-    public List<Discipline> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new DisciplineRowMapper(), limit);
+    public List<Discipline> findAll() {
+        TypedQuery<Discipline> query = entityManager.createQuery(FIND_ALL, Discipline.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Discipline> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new DisciplineRowMapper(),
-                ids.toArray());
+        TypedQuery<Discipline> query = entityManager.createQuery(FIND_ALL_BY_IDS, Discipline.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete discipline entity with id" + id, 1);
+        Discipline entity = entityManager.find(Discipline.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Discipline entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete discipline entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Discipline> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(Discipline::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Discipline::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public Optional<Discipline> findByDisciplineName(String disciplineName) {
-        return jdbcTemplate.query(DISCIPLINE_BY_DISCIPLINE_NAME, new DisciplineRowMapper(), disciplineName)
-                .stream()
-                .findFirst();
+        TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINE_BY_DISCIPLINE_NAME, Discipline.class);
+        try {
+            return Optional.of(query.setParameter("disciplineName", disciplineName).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Discipline> findAllBySpecialismId(Long specialismId) {
-        return jdbcTemplate.query(DISCIPLINES_BY_SPECIALISM_ID, new DisciplineRowMapper(), specialismId);
+        TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINES_BY_SPECIALISM_ID, Discipline.class);
+        return query.setParameter("specialismId", specialismId).getResultList();
     }
 
     @Override
     public List<Discipline> findAllByAcademicYearId(Long academicYearId) {
-        return jdbcTemplate.query(DISCIPLINES_BY_ACADEMIC_YEAR_ID, new DisciplineRowMapper(), academicYearId);
+        TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINES_BY_ACADEMIC_YEAR_ID, Discipline.class);
+        return query.setParameter("academicYearId", academicYearId).getResultList();
     }
 
     @Override
     public List<Discipline> findAllBySpecialismIdAndAcademicYearId(Long specialismId, Long academicYearId) {
-        return jdbcTemplate.query(DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID, new DisciplineRowMapper(), specialismId, academicYearId);
+        TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID, Discipline.class);
+        return query.setParameter("specialismId", specialismId).getResultList();
     }
 
     @Override
     public Optional<Discipline> findByEducatorId(Long educatorId) {
-        return jdbcTemplate.query(DISCIPLINE_BY_EDUCATOR_ID, new DisciplineRowMapper(), educatorId)
-                .stream()
-                .findFirst();
+        TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINE_BY_EDUCATOR_ID, Discipline.class);
+        try {
+            return Optional.of(query.setParameter("educatorId", educatorId).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

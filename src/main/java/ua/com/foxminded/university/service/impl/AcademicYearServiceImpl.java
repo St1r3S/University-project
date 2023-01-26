@@ -27,7 +27,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public AcademicYear save(AcademicYear entity) {
         try {
             return academicYearDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -42,7 +42,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public List<AcademicYear> saveAll(List<AcademicYear> entities) {
         try {
             return academicYearDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -64,7 +64,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     @Override
     @Transactional(readOnly = true)
     public List<AcademicYear> findAll() {
-        return academicYearDao.findAll(100);
+        return academicYearDao.findAll();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public void deleteById(Long id) {
         try {
             academicYearDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -95,7 +95,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public void delete(AcademicYear entity) {
         try {
             academicYearDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -106,7 +106,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public void deleteAllById(List<Long> ids) {
         try {
             academicYearDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -117,7 +117,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public void deleteAll(List<AcademicYear> entities) {
         try {
             academicYearDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -128,7 +128,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     public void deleteAll() {
         try {
             academicYearDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }

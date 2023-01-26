@@ -193,7 +193,7 @@ public class HibernateUserDaoTest extends BaseDaoTest {
     void shouldVerifyFindByLogin() {
         User expected = new User(1L, "maccas82", "pass82", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
-        User actual = dao.findByLogin("maccas82").get();
+        User actual = dao.findByUserName("maccas82").get();
         assertEquals(expected, actual);
     }
 

@@ -28,7 +28,7 @@ public class StudentServiceImpl implements StudentService {
     public Student save(Student entity) {
         try {
             return studentDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -43,7 +43,7 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> saveAll(List<Student> entities) {
         try {
             return studentDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -65,7 +65,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public List<Student> findAll() {
-        return studentDao.findAll(100);
+        return studentDao.findAll();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class StudentServiceImpl implements StudentService {
     public void deleteById(Long id) {
         try {
             studentDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -96,7 +96,7 @@ public class StudentServiceImpl implements StudentService {
     public void delete(Student entity) {
         try {
             studentDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -107,7 +107,7 @@ public class StudentServiceImpl implements StudentService {
     public void deleteAllById(List<Long> ids) {
         try {
             studentDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -118,7 +118,7 @@ public class StudentServiceImpl implements StudentService {
     public void deleteAll(List<Student> entities) {
         try {
             studentDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -129,7 +129,7 @@ public class StudentServiceImpl implements StudentService {
     public void deleteAll() {
         try {
             studentDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
@@ -138,14 +138,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public Student findByUsername(String userName) {
-        return studentDao.findByLogin(userName).orElseThrow(
+        return studentDao.findByUserName(userName).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such student with login " + userName, 1));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Student findByEmail(String email) {
-        return studentDao.findByLogin(email).orElseThrow(
+        return studentDao.findByUserName(email).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such student with email " + email, 1));
     }
 
