@@ -1,42 +1,32 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.LessonDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.LessonRowMapper;
 import ua.com.foxminded.university.model.lesson.Lesson;
 import ua.com.foxminded.university.model.lesson.LessonNumber;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Repository
 public class HibernateLessonDao extends AbstractCrudDao<Lesson, Long> implements LessonDao {
-    public static final String LESSON_ID = "id";
-    public static final String LESSON_DISCIPLINE_ID = "discipline_id";
-    public static final String LESSON_GROUP_ID = "group_id";
-    public static final String LESSON_NUMBER = "lesson_number";
-    public static final String LESSON_ROOM_ID = "room_id";
-    public static final String LESSON_SCHEDULE_DAY_ID = "schedule_day_id";
-    private static final String UPDATE = "UPDATE lessons SET discipline_id = ?, group_id = ?, lesson_number = ?, room_id = ?," +
-            "schedule_day_id = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM lessons WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM lessons LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM lessons WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM lessons";
-    private static final String DELETE = "DELETE FROM lessons WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM lessons WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM lessons";
-    private static final String LESSON_BY_DISCIPLINE_ID = "SELECT * FROM lessons WHERE discipline_id = ?";
-    private static final String LESSON_BY_GROUP_ID = "SELECT * FROM lessons WHERE group_id = ?";
-    private static final String LESSON_BY_LESSON_NUMBER = "SELECT * FROM lessons WHERE lesson_number = ?";
-    private static final String LESSON_BY_ROOM_ID = "SELECT * FROM lessons WHERE room_id = ?";
-    private static final String LESSON_BY_SCHEDULE_DAY_ID = "SELECT * FROM lessons WHERE schedule_day_id = ?";
+    private static final String FIND_ALL = "SELECT l FROM Lesson l";
+    private static final String FIND_ALL_BY_IDS = "SELECT l FROM Lesson l WHERE l.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(l) FROM Lesson l";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Lesson l WHERE l.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Lesson l";
+    private static final String LESSON_BY_DISCIPLINE_ID = "SELECT l FROM Lesson l WHERE l.discipline.id = :disciplineId";
+    private static final String LESSON_BY_GROUP_ID = "SELECT l FROM Lesson l WHERE l.group.id = :groupId";
+    private static final String LESSON_BY_LESSON_NUMBER = "SELECT l FROM Lesson l WHERE l.lessonNumber = :lessonNumber";
+    private static final String LESSON_BY_ROOM_ID = "SELECT l FROM Lesson l WHERE l.room.id = :roomId";
+    private static final String LESSON_BY_SCHEDULE_DAY_ID = "SELECT l FROM Lesson l WHERE l.scheduleDay.id = :scheduleDayId";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -50,16 +40,16 @@ public class HibernateLessonDao extends AbstractCrudDao<Lesson, Long> implements
 
     @Override
     protected Lesson update(Lesson entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Lesson> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new LessonRowMapper(), id).stream().findFirst();
+        try {
+            return Optional.of(entityManager.find(Lesson.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -68,82 +58,81 @@ public class HibernateLessonDao extends AbstractCrudDao<Lesson, Long> implements
     }
 
     @Override
-    public List<Lesson> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new LessonRowMapper(), limit);
+    public List<Lesson> findAll() {
+        TypedQuery<Lesson> query = entityManager.createQuery(FIND_ALL, Lesson.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Lesson> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new LessonRowMapper(),
-                ids.toArray());
+        TypedQuery<Lesson> query = entityManager.createQuery(FIND_ALL_BY_IDS, Lesson.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete lesson entity with id" + id, 1);
+        Lesson entity = entityManager.find(Lesson.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Lesson entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete lesson entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Lesson> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(Lesson::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Lesson::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public List<Lesson> findAllByDisciplineId(Long disciplineId) {
-        return jdbcTemplate.query(LESSON_BY_DISCIPLINE_ID, new LessonRowMapper(), disciplineId);
+        TypedQuery<Lesson> query = entityManager.createQuery(LESSON_BY_DISCIPLINE_ID, Lesson.class);
+        return query.setParameter("disciplineId", disciplineId).getResultList();
     }
 
     @Override
     public List<Lesson> findAllByGroupId(Long groupId) {
-        return jdbcTemplate.query(LESSON_BY_GROUP_ID, new LessonRowMapper(), groupId);
+        TypedQuery<Lesson> query = entityManager.createQuery(LESSON_BY_GROUP_ID, Lesson.class);
+        return query.setParameter("groupId", groupId).getResultList();
     }
 
     @Override
     public List<Lesson> findAllByLessonNumber(LessonNumber lessonNumber) {
-        return jdbcTemplate.query(LESSON_BY_LESSON_NUMBER, new LessonRowMapper(), lessonNumber.getLessonNumber());
+        TypedQuery<Lesson> query = entityManager.createQuery(LESSON_BY_LESSON_NUMBER, Lesson.class);
+        return query.setParameter("lessonNumber", lessonNumber).getResultList();
     }
 
     @Override
     public List<Lesson> findAllByRoomId(Long roomId) {
-        return jdbcTemplate.query(LESSON_BY_ROOM_ID, new LessonRowMapper(), roomId);
+        TypedQuery<Lesson> query = entityManager.createQuery(LESSON_BY_ROOM_ID, Lesson.class);
+        return query.setParameter("roomId", roomId).getResultList();
     }
 
     @Override
     public List<Lesson> findAllByScheduleDayId(Long scheduleDayId) {
-        return jdbcTemplate.query(LESSON_BY_SCHEDULE_DAY_ID, new LessonRowMapper(), scheduleDayId);
+        TypedQuery<Lesson> query = entityManager.createQuery(LESSON_BY_SCHEDULE_DAY_ID, Lesson.class);
+        return query.setParameter("scheduleDayId", scheduleDayId).getResultList();
     }
 }

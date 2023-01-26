@@ -25,7 +25,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public Discipline save(Discipline entity) {
         try {
             return disciplineDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -40,7 +40,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public List<Discipline> saveAll(List<Discipline> entities) {
         try {
             return disciplineDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -62,7 +62,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     @Override
     @Transactional(readOnly = true)
     public List<Discipline> findAll() {
-        return disciplineDao.findAll(100);
+        return disciplineDao.findAll();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public void deleteById(Long id) {
         try {
             disciplineDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -93,7 +93,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public void delete(Discipline entity) {
         try {
             disciplineDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -105,7 +105,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public void deleteAllById(List<Long> ids) {
         try {
             disciplineDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -116,7 +116,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public void deleteAll(List<Discipline> entities) {
         try {
             disciplineDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -127,7 +127,7 @@ public class DisciplineServiceImpl implements DisciplineService {
     public void deleteAll() {
         try {
             disciplineDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }

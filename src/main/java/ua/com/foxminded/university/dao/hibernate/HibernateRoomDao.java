@@ -1,31 +1,26 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.RoomDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.RoomRowMapper;
 import ua.com.foxminded.university.model.lesson.Room;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements RoomDao {
-    public static final String ROOM_ID = "id";
-    public static final String ROOM_NUMBER = "room_number";
-    private static final String UPDATE = "UPDATE rooms SET room_number = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM rooms WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM rooms LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM rooms WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM rooms";
-    private static final String DELETE = "DELETE FROM rooms WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM rooms WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM rooms";
-    private static final String ROOM_BY_ROOM_NUMBER = "SELECT * FROM rooms WHERE room_number = ?";
+    private static final String FIND_ALL = "SELECT r FROM Room r";
+    private static final String FIND_ALL_BY_IDS = "SELECT r FROM Room r WHERE r.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(r) FROM Room r";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Room r WHERE r.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Room r";
+    private static final String ROOM_BY_ROOM_NUMBER = "SELECT r FROM Room r WHERE r.roomNumber = :roomNumber";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,18 +33,16 @@ public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements Roo
 
     @Override
     protected Room update(Room entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Room> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new RoomRowMapper(), id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(entityManager.find(Room.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -58,64 +51,61 @@ public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements Roo
     }
 
     @Override
-    public List<Room> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new RoomRowMapper(), limit);
+    public List<Room> findAll() {
+        TypedQuery<Room> query = entityManager.createQuery(FIND_ALL, Room.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Room> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new RoomRowMapper(),
-                ids.toArray());
+        TypedQuery<Room> query = entityManager.createQuery(FIND_ALL_BY_IDS, Room.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete room entity with id" + id, 1);
+        Room entity = entityManager.find(Room.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Room entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete room entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Room> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(Room::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Room::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public Optional<Room> findByRoomNumber(String roomNumber) {
-        return jdbcTemplate.query(ROOM_BY_ROOM_NUMBER, new RoomRowMapper(), roomNumber)
-                .stream()
-                .findFirst();
+        TypedQuery<Room> query = entityManager.createQuery(ROOM_BY_ROOM_NUMBER, Room.class);
+        try {
+            return Optional.of(query.setParameter("roomNumber", roomNumber).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

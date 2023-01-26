@@ -7,7 +7,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.com.foxminded.university.dao.EducatorDao;
-import ua.com.foxminded.university.model.lesson.Discipline;
 import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
@@ -34,7 +33,7 @@ public class EducatorServiceImpl implements EducatorService {
     public Educator save(Educator entity) {
         try {
             return educatorDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -49,7 +48,7 @@ public class EducatorServiceImpl implements EducatorService {
     public List<Educator> saveAll(List<Educator> entities) {
         try {
             return educatorDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -71,7 +70,7 @@ public class EducatorServiceImpl implements EducatorService {
     @Override
     @Transactional(readOnly = true)
     public List<Educator> findAll() {
-        return educatorDao.findAll(100);
+        return educatorDao.findAll();
     }
 
     @Override
@@ -91,7 +90,7 @@ public class EducatorServiceImpl implements EducatorService {
     public void deleteById(Long id) {
         try {
             educatorDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -102,7 +101,7 @@ public class EducatorServiceImpl implements EducatorService {
     public void delete(Educator entity) {
         try {
             educatorDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -124,7 +123,7 @@ public class EducatorServiceImpl implements EducatorService {
     public void deleteAll(List<Educator> entities) {
         try {
             educatorDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -135,7 +134,7 @@ public class EducatorServiceImpl implements EducatorService {
     public void deleteAll() {
         try {
             educatorDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
@@ -143,13 +142,13 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     public Educator findByUsername(String userName) {
-        return educatorDao.findByLogin(userName).orElseThrow(
+        return educatorDao.findByUserName(userName).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such educator with login " + userName, 1));
     }
 
     @Override
     public Educator findByEmail(String email) {
-        return educatorDao.findByLogin(email).orElseThrow(
+        return educatorDao.findByUserName(email).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such educator with email " + email, 1));
     }
 
@@ -170,8 +169,8 @@ public class EducatorServiceImpl implements EducatorService {
 
     @Override
     public List<Educator> findAllFreeEducators() {
-        List<Long> busyEducatorsIds = disciplineService.findAll().stream().map(Discipline::getEducatorId).collect(Collectors.toList());
-        return educatorDao.findAll(10000)
+        List<Long> busyEducatorsIds = disciplineService.findAll().stream().map(discipline -> discipline.getEducator().getId()).collect(Collectors.toList());
+        return educatorDao.findAll()
                 .stream()
                 .filter(educator -> !busyEducatorsIds.contains(educator.getId()))
                 .collect(Collectors.toList());

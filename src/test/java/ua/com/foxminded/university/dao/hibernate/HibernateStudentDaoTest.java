@@ -187,7 +187,7 @@ class HibernateStudentDaoTest extends BaseDaoTest {
     void shouldVerifyFindByLogin() {
         Student expected = new Student(3L, "johny05", "pass05", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com", 1L, 1L, 1L);
-        Student actual = dao.findByLogin("johny05").get();
+        Student actual = dao.findByUserName("johny05").get();
         assertEquals(expected, actual);
     }
 

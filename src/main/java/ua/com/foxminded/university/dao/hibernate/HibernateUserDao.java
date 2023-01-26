@@ -1,47 +1,32 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.UserDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.UserRowMapper;
 import ua.com.foxminded.university.model.user.User;
 import ua.com.foxminded.university.model.user.UserRole;
-import ua.com.foxminded.university.model.user.UserType;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateUserDao extends AbstractCrudDao<User, Long> implements UserDao {
 
-    public static final Integer USER_TYPE_CODE = UserType.USER.getTypeCode();
-    public static final String USER_ID = "id";
-    public static final String USER_TYPE = "user_type";
-    public static final String USER_LOGIN = "user_name";
-    public static final String USER_PASSWORD = "password_hash";
-    public static final String USER_ROLE = "user_role";
-    public static final String USER_FIRST_NAME = "first_name";
-    public static final String USER_LAST_NAME = "last_name";
-    public static final String USER_BIRTHDAY = "birthday";
-    public static final String USER_EMAIL = "email";
-    private static final String UPDATE = "UPDATE users SET user_name = ?, password_hash = ?, user_role = ?, first_name = ?," +
-            "last_name = ?, birthday = ?, email = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM users WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM users  LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM users WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM users";
-    private static final String DELETE = "DELETE FROM users WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM users WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM users";
-    private static final String USER_BY_LOGIN = "SELECT * FROM users WHERE user_name = ?";
-    private static final String USER_BY_EMAIL = "SELECT * FROM users WHERE email = ?";
-    private static final String USER_BY_USER_ROLE = "SELECT * FROM users WHERE user_role = ?";
-    private static final String USER_BY_BIRTHDAY = "SELECT * FROM users WHERE birthday = ?";
+    private static final String FIND_ALL = "SELECT u FROM User u";
+    private static final String FIND_ALL_BY_IDS = "SELECT u FROM User u WHERE u.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(u) FROM User u";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM User u WHERE u.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM User u";
+    private static final String USER_BY_USER_NAME = "SELECT u FROM User u WHERE u.userName = :userName";
+    private static final String USER_BY_EMAIL = "SELECT u FROM User u WHERE u.email = :email";
+    private static final String USER_BY_USER_ROLE = "SELECT u FROM User u WHERE u.userRole = :userRole";
+    private static final String USER_BY_BIRTHDAY = "SELECT u FROM User u WHERE u.birthday = :birthday";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -54,18 +39,16 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
 
     @Override
     protected User update(User entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new UserRowMapper(), id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(entityManager.find(User.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -74,79 +57,84 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
     }
 
     @Override
-    public List<User> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new UserRowMapper(), limit);
+    public List<User> findAll() {
+        TypedQuery<User> query = entityManager.createQuery(FIND_ALL, User.class);
+        return query.getResultList();
     }
 
     @Override
     public List<User> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+        TypedQuery<User> query = entityManager.createQuery(FIND_ALL_BY_IDS, User.class);
+        return query.setParameter("ids", ids).getResultList();
 
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new UserRowMapper(),
-                ids.toArray());
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete user entity with id" + id, 1);
+        User entity = entityManager.find(User.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(User entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete user entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<User> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(User::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(User::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
-    public Optional<User> findByLogin(String userName) {
-        return jdbcTemplate.query(USER_BY_LOGIN, new UserRowMapper(), userName)
-                .stream().findFirst();
+    public Optional<User> findByUserName(String userName) {
+        TypedQuery<User> query = entityManager.createQuery(USER_BY_USER_NAME, User.class);
+        try {
+            return Optional.of(query.setParameter("userName", userName).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return jdbcTemplate.query(USER_BY_EMAIL, new UserRowMapper(), email)
-                .stream().findFirst();
+        TypedQuery<User> query = entityManager.createQuery(USER_BY_EMAIL, User.class);
+        try {
+            return Optional.of(query.setParameter("email", email).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<User> findAllByUserRole(UserRole userRole) {
-        return jdbcTemplate.query(USER_BY_USER_ROLE, new UserRowMapper(), userRole.getValue());
+        TypedQuery<User> query = entityManager.createQuery(USER_BY_USER_ROLE, User.class);
+        return query.setParameter("userRole", userRole).getResultList();
     }
 
     @Override
     public List<User> findAllByBirthday(LocalDate birthday) {
-        return jdbcTemplate.query(USER_BY_BIRTHDAY, new UserRowMapper(), birthday);
+        TypedQuery<User> query = entityManager.createQuery(USER_BY_BIRTHDAY, User.class);
+        return query.setParameter("birthday", birthday).getResultList();
     }
 }

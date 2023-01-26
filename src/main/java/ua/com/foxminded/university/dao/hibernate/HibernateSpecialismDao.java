@@ -1,31 +1,26 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.SpecialismDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.SpecialismRowMapper;
 import ua.com.foxminded.university.model.lesson.Specialism;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> implements SpecialismDao {
-    public static final String SPECIALISM_ID = "id";
-    public static final String SPECIALISM_NAME = "specialism_name";
-    private static final String UPDATE = "UPDATE specialisms SET specialism_name = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM specialisms WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM specialisms LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM specialisms WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM specialisms";
-    private static final String DELETE = "DELETE FROM specialisms WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM specialisms WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM specialisms";
-    private static final String SPECIALISM_BY_SPECIALISM_NAME = "SELECT * FROM specialisms WHERE specialism_name = ?";
+    private static final String FIND_ALL = "SELECT s FROM Specialism s";
+    private static final String FIND_ALL_BY_IDS = "SELECT s FROM Specialism s WHERE s.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(s) FROM Specialism s";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM Specialism s WHERE s.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM Specialism s";
+    private static final String SPECIALISM_BY_SPECIALISM_NAME = "SELECT s FROM Specialism s WHERE s.specialismName = :specialismName";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,18 +33,16 @@ public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> im
 
     @Override
     protected Specialism update(Specialism entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<Specialism> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new SpecialismRowMapper(), id)
-                .stream()
-                .findFirst();
+        try {
+            return Optional.of(entityManager.find(Specialism.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -58,64 +51,61 @@ public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> im
     }
 
     @Override
-    public List<Specialism> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new SpecialismRowMapper(), limit);
+    public List<Specialism> findAll() {
+        TypedQuery<Specialism> query = entityManager.createQuery(FIND_ALL, Specialism.class);
+        return query.getResultList();
     }
 
     @Override
     public List<Specialism> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new SpecialismRowMapper(),
-                ids.toArray());
+        TypedQuery<Specialism> query = entityManager.createQuery(FIND_ALL_BY_IDS, Specialism.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete specialism entity with id" + id, 1);
+        Specialism entity = entityManager.find(Specialism.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(Specialism entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete specialism entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<Specialism> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(Specialism::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(Specialism::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public Optional<Specialism> findBySpecialismName(String specialismName) {
-        return jdbcTemplate.query(SPECIALISM_BY_SPECIALISM_NAME, new SpecialismRowMapper(), specialismName)
-                .stream()
-                .findFirst();
+        TypedQuery<Specialism> query = entityManager.createQuery(SPECIALISM_BY_SPECIALISM_NAME, Specialism.class);
+        try {
+            return Optional.of(query.setParameter("specialismName", specialismName).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

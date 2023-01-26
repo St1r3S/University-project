@@ -1,35 +1,29 @@
 package ua.com.foxminded.university.dao.hibernate;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.university.dao.AbstractCrudDao;
 import ua.com.foxminded.university.dao.AcademicYearDao;
-import ua.com.foxminded.university.dao.hibernate.mappers.AcademicYearRowMapper;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.Collections;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long> implements AcademicYearDao {
-    public static final String ACADEMIC_YEAR_ID = "id";
-    public static final String ACADEMIC_YEAR_YEAR_NUMBER = "year_number";
-    public static final String ACADEMIC_YEAR_SEMESTER_TYPE = "semester_type";
-    private static final String UPDATE = "UPDATE academic_years SET year_number = ?, semester_type = ? WHERE id = ?";
-    private static final String RETRIEVE = "SELECT * FROM academic_years WHERE id = ?";
-    private static final String FIND_ALL = "SELECT * FROM academic_years LIMIT ?";
-    private static final String FIND_ALL_BY_IDS = "SELECT * FROM academic_years WHERE id IN (%s)";
-    private static final String COUNT = "SELECT count(*) FROM academic_years";
-    private static final String DELETE = "DELETE FROM academic_years WHERE id = ?";
-    private static final String DELETE_ALL_BY_IDS = "DELETE FROM academic_years WHERE id IN (%s)";
-    private static final String DELETE_ALL = "DELETE FROM academic_years";
-    private static final String ACADEMIC_YEAR_BY_YEAR_NUMBER = "SELECT * FROM academic_years WHERE year_number = ?";
-    private static final String ACADEMIC_YEAR_BY_SEMESTER_TYPE = "SELECT * FROM academic_years WHERE semester_type = ?";
-    private static final String ACADEMIC_YEAR_BY_YEAR_NUMBER_AND_SEMESTER_TYPE = "SELECT * FROM academic_years WHERE year_number = ? AND semester_type = ?";
+    private static final String FIND_ALL = "SELECT a FROM AcademicYear a";
+    private static final String FIND_ALL_BY_IDS = "SELECT a FROM AcademicYear a WHERE a.id IN (:ids)";
+    private static final String COUNT = "SELECT COUNT(a) FROM AcademicYear a";
+    private static final String DELETE_ALL_BY_IDS = "DELETE FROM AcademicYear a WHERE a.id IN (:ids)";
+    private static final String DELETE_ALL = "DELETE FROM AcademicYear a";
+    private static final String ACADEMIC_YEAR_BY_YEAR_NUMBER = "SELECT a FROM AcademicYear a WHERE a.yearNumber = :yearNumber";
+    private static final String ACADEMIC_YEAR_BY_SEMESTER_TYPE = "SELECT a FROM AcademicYear a WHERE a.semesterType = :semesterType";
+    private static final String ACADEMIC_YEAR_BY_YEAR_NUMBER_AND_SEMESTER_TYPE = "SELECT a FROM AcademicYear a WHERE a.yearNumber = :yearNumber AND a.semesterType = :semesterType";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,16 +36,16 @@ public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long
 
     @Override
     protected AcademicYear update(AcademicYear entity) {
-        try {
-            return entityManager.merge(entity);
-        } catch (IllegalArgumentException ex) {
-            throw new EmptyResultDataAccessException("Unable to update entity " + entity, 1);
-        }
+        return entityManager.merge(entity);
     }
 
     @Override
     public Optional<AcademicYear> findById(Long id) {
-        return jdbcTemplate.query(RETRIEVE, new AcademicYearRowMapper(), id).stream().findFirst();
+        try {
+            return Optional.of(entityManager.find(AcademicYear.class, id));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -60,72 +54,73 @@ public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long
     }
 
     @Override
-    public List<AcademicYear> findAll(Number limit) {
-        return jdbcTemplate.query(FIND_ALL, new AcademicYearRowMapper(), limit);
+    public List<AcademicYear> findAll() {
+        TypedQuery<AcademicYear> query = entityManager.createQuery(FIND_ALL, AcademicYear.class);
+        return query.getResultList();
     }
 
     @Override
     public List<AcademicYear> findAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        return jdbcTemplate.query(
-                String.format(FIND_ALL_BY_IDS, inSql),
-                new AcademicYearRowMapper(),
-                ids.toArray());
+        TypedQuery<AcademicYear> query = entityManager.createQuery(FIND_ALL_BY_IDS, AcademicYear.class);
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @Override
     public long count() {
-        return jdbcTemplate.queryForObject(COUNT, Long.class);
+        TypedQuery<Long> query = entityManager.createQuery(COUNT, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public void deleteById(Long id) {
-        if (1 != jdbcTemplate.update(DELETE, id))
-            throw new EmptyResultDataAccessException("Unable to delete academic year entity with id" + id, 1);
+        AcademicYear entity = entityManager.find(AcademicYear.class, id);
+        entityManager.remove(entity);
     }
 
     @Override
     public void delete(AcademicYear entity) {
-        if (1 != jdbcTemplate.update(DELETE, entity.getId()))
-            throw new EmptyResultDataAccessException("Unable to delete academic year entity with id" + entity.getId(), 1);
+        entityManager.remove(entity);
     }
 
     @Override
     public void deleteAllById(List<Long> ids) {
-        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                ids.toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", ids)
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll(List<AcademicYear> entities) {
-        String inSql = String.join(",", Collections.nCopies(entities.size(), "?"));
-
-        jdbcTemplate.update(
-                String.format(DELETE_ALL_BY_IDS, inSql),
-                entities.stream().map(AcademicYear::getId).toArray());
+        entityManager.createQuery(DELETE_ALL_BY_IDS)
+                .setParameter("ids", entities.stream().map(AcademicYear::getId).collect(Collectors.toList()))
+                .executeUpdate();
     }
 
     @Override
     public void deleteAll() {
-        jdbcTemplate.update(DELETE_ALL);
+        entityManager.createQuery(DELETE_ALL)
+                .executeUpdate();
     }
 
     @Override
     public List<AcademicYear> findByYearNumber(Integer yearNumber) {
-        return jdbcTemplate.query(ACADEMIC_YEAR_BY_YEAR_NUMBER, new AcademicYearRowMapper(), yearNumber);
+        TypedQuery<AcademicYear> query = entityManager.createQuery(ACADEMIC_YEAR_BY_YEAR_NUMBER, AcademicYear.class);
+        return query.setParameter("yearNumber", yearNumber).getResultList();
     }
 
     @Override
     public List<AcademicYear> findBySemesterType(SemesterType semesterType) {
-        return jdbcTemplate.query(ACADEMIC_YEAR_BY_SEMESTER_TYPE, new AcademicYearRowMapper(), semesterType.getValue());
+        TypedQuery<AcademicYear> query = entityManager.createQuery(ACADEMIC_YEAR_BY_SEMESTER_TYPE, AcademicYear.class);
+        return query.setParameter("semesterType", semesterType).getResultList();
     }
 
     @Override
     public Optional<AcademicYear> findByYearNumberAndSemesterType(Integer yearNumber, SemesterType semesterType) {
-        return jdbcTemplate.query(ACADEMIC_YEAR_BY_YEAR_NUMBER_AND_SEMESTER_TYPE, new AcademicYearRowMapper(), yearNumber, semesterType.getValue()).stream().findFirst();
+        TypedQuery<AcademicYear> query = entityManager.createQuery(ACADEMIC_YEAR_BY_YEAR_NUMBER_AND_SEMESTER_TYPE, AcademicYear.class);
+        try {
+            return Optional.of(query.setParameter("yearNumber", yearNumber).setParameter("semesterType", semesterType).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }
