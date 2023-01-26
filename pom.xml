@@ -15,7 +15,7 @@
     <description>University project for Foxminded courses</description>
     <properties>
         <java.version>11</java.version>
-        <testcontainers.version>1.17.4</testcontainers.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
     <dependencies>
         <dependency>
