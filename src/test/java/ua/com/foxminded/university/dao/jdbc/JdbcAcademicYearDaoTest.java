@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.AcademicYearRowMapper;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class JdbcAcademicYearDaoTest extends BaseDaoTest {
+public class JdbcAcademicYearDaoTest {
     public static final String SELECT_ACADEMIC_YEAR_BY_ID = "SELECT * FROM academic_years WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;

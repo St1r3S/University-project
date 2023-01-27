@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.EducatorRowMapper;
 import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class JdbcEducatorDaoTest extends BaseDaoTest {
+class JdbcEducatorDaoTest {
     public static final Integer EDUCATOR_TYPE_CODE = UserType.EDUCATOR.getTypeCode();
     public static final String SELECT_EDUCATOR_BY_ID = "SELECT * FROM users WHERE id = ? AND user_type = ?";
     @Autowired

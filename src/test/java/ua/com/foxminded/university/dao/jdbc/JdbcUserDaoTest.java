@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.UserRowMapper;
 import ua.com.foxminded.university.model.user.*;
 
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class JdbcUserDaoTest extends BaseDaoTest {
+public class JdbcUserDaoTest {
     public static final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;

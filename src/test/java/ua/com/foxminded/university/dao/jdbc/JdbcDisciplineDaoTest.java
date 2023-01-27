@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.DisciplineRowMapper;
 import ua.com.foxminded.university.model.lesson.Discipline;
 
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class JdbcDisciplineDaoTest extends BaseDaoTest {
+class JdbcDisciplineDaoTest {
     public static final String SELECT_DISCIPLINE_BY_ID = "SELECT * FROM disciplines WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
