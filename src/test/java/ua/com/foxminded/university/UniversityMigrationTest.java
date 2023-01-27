@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @SpringBootTest
-class UniversityMigrationTest {
+class UniversityMigrationTest extends BaseDaoTest {
 
     public static final String SELECT_TABLE_NAMES_QUERY = "select table_name\n" +
             "from information_schema.tables\n" +

@@ -4,32 +4,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringRunner;
-import ua.com.foxminded.university.dao.AcademicYearDao;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {AcademicYearServiceImpl.class})
+@SpringBootTest
 class AcademicYearImplTest {
-    @MockBean
-    AcademicYearDao academicYearDao;
-
     @Autowired
     AcademicYearServiceImpl academicYearService;
 
     @Test
     void shouldThrowNotFindException() {
-        when(academicYearDao.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(EmptyResultDataAccessException.class, () -> academicYearService.findById(1L));
     }
 

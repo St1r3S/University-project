@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
+import ua.com.foxminded.university.BaseDaoTest;
 import ua.com.foxminded.university.dao.jdbc.mappers.ScheduleDayRowMapper;
 import ua.com.foxminded.university.model.schedule.DayOfWeek;
 import ua.com.foxminded.university.model.schedule.ScheduleDay;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class JdbcScheduleDayDaoTest {
+class JdbcScheduleDayDaoTest extends BaseDaoTest {
     public static final String SELECT_DAILY_SCHEDULE_BY_ID = "SELECT * FROM schedule_days WHERE id = ?";
     @Autowired
     JdbcTemplate jdbcTemplate;
