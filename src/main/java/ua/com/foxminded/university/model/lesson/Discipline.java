@@ -24,7 +24,7 @@ public class Discipline extends LongEntity {
     @JoinColumn(name = "specialism_id", nullable = false)
     private Specialism specialism;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialism_id", nullable = false)
+    @JoinColumn(name = "academic_year_id", nullable = false)
     private AcademicYear academicYear;
     @OneToOne
     @JoinColumn(name = "educator_id", nullable = false, referencedColumnName = "id")
