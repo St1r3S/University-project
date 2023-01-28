@@ -15,11 +15,11 @@
                 <p class="my-5" th:switch="${semesterType}">
                     <a class="btn btn-primary"
                        th:case="${T(ua.com.foxminded.university.model.schedule.SemesterType).SPRING_SEMESTER.value}"
-                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleType},id=${id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleType},contextId=${contextId},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                             th:text="${'Switch to fall semester'}"></i></a>
                     <a class="btn btn-primary"
                        th:case="${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value}"
-                       th:href="@{/schedule/{scheduleType}/edit/{id}/{semesterType}(scheduleType=${scheduleType},id=${id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).SPRING_SEMESTER.value})}"><i
+                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleType},contextId=${contextId},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).SPRING_SEMESTER.value})}"><i
                             th:text="${'Switch to spring semester'}"></i></a>
                 </p>
                 <div class="col-md-12">

@@ -52,9 +52,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
 
@@ -86,9 +86,9 @@ public class DisciplineController {
         model.addAttribute("discipline",
                 DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())
                 )
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -100,7 +100,10 @@ public class DisciplineController {
     }
 
     @PostMapping("update/{id}")
-    public String updateDiscipline(@PathVariable("id") long id, DisciplineView disciplineView, BindingResult result, Model model) {
+    public String updateDiscipline(@PathVariable("id") long id,
+                                   DisciplineView disciplineView,
+                                   BindingResult result,
+                                   Model model) {
         Discipline disciplineToSave = disciplineView.disciplineViewToDiscipline(
                 specialismService.findBySpecialismName(disciplineView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(disciplineView.getAcademicYearNumber(), disciplineView.getSemesterType()),
@@ -118,9 +121,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -141,9 +144,9 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialismId()),
-                        academicYearService.findById(discipline.getAcademicYearId()),
-                        educatorService.findById(discipline.getEducatorId())))
+                        specialismService.findById(discipline.getSpecialism().getId()),
+                        academicYearService.findById(discipline.getAcademicYear().getId()),
+                        educatorService.findById(discipline.getEducator().getId())))
                 .collect(Collectors.toList())
         );
 

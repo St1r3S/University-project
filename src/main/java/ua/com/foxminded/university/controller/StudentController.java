@@ -55,9 +55,9 @@ public class StudentController {
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroupId()),
-                        specialismService.findById(student.getSpecialismId()),
-                        academicYearService.findById(student.getAcademicYearId())))
+                        groupService.findById(student.getGroup().getId()),
+                        specialismService.findById(student.getSpecialism().getId()),
+                        academicYearService.findById(student.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "student/students-list";
@@ -85,9 +85,9 @@ public class StudentController {
         model.addAttribute("student",
                 StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroupId()),
-                        specialismService.findById(student.getSpecialismId()),
-                        academicYearService.findById(student.getAcademicYearId())
+                        groupService.findById(student.getGroup().getId()),
+                        specialismService.findById(student.getSpecialism().getId()),
+                        academicYearService.findById(student.getAcademicYear().getId())
                 )
         );
         model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
@@ -119,9 +119,9 @@ public class StudentController {
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroupId()),
-                        specialismService.findById(student.getSpecialismId()),
-                        academicYearService.findById(student.getAcademicYearId())))
+                        groupService.findById(student.getGroup().getId()),
+                        specialismService.findById(student.getSpecialism().getId()),
+                        academicYearService.findById(student.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "student/students-list";
@@ -135,9 +135,9 @@ public class StudentController {
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroupId()),
-                        specialismService.findById(student.getSpecialismId()),
-                        academicYearService.findById(student.getAcademicYearId())))
+                        groupService.findById(student.getGroup().getId()),
+                        specialismService.findById(student.getSpecialism().getId()),
+                        academicYearService.findById(student.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "student/students-list";

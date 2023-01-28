@@ -1,27 +1,47 @@
 package ua.com.foxminded.university.model.user;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.LongEntity;
+import ua.com.foxminded.university.model.lesson.Lesson;
+import ua.com.foxminded.university.model.lesson.Specialism;
+import ua.com.foxminded.university.model.schedule.AcademicYear;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Data
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Entity
+@Table(name = "groupss")
 public class Group extends LongEntity {
 
+    @Column(name = "group_name", unique = true, nullable = false)
     private String groupName;
-    private Long specialismId;
-    private Long academicYearId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialism_id", nullable = false)
+    private Specialism specialism;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "academic_year_id", nullable = false)
+    private AcademicYear academicYear;
 
-    public Group(Long id, String groupName, Long specialismId, Long academicYearId) {
+    @OneToMany(mappedBy = "group")
+    private List<Student> students;
+    @OneToMany(mappedBy = "group")
+    private List<Lesson> lessons;
+
+    public Group(Long id, String groupName, Specialism specialism, AcademicYear academicYear) {
         super(id);
         this.groupName = groupName;
-        this.specialismId = specialismId;
-        this.academicYearId = academicYearId;
+        this.specialism = specialism;
+        this.academicYear = academicYear;
     }
 
-    public Group(String groupName, Long specialismId, Long academicYearId) {
-        this(null, groupName, specialismId, academicYearId);
+    public Group(String groupName, Specialism specialism, AcademicYear academicYear) {
+        this.groupName = groupName;
+        this.specialism = specialism;
+        this.academicYear = academicYear;
     }
 }

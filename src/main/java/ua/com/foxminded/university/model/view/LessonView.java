@@ -46,6 +46,6 @@ public class LessonView {
     }
 
     public Lesson lessonViewToLesson(Discipline discipline, Group group, Room room) {
-        return new Lesson(this.id, discipline.getId(), group.getId(), this.lessonNumber, room.getId(), scheduleDay.getId());
+        return new Lesson(this.id, discipline, group, this.lessonNumber, room, scheduleDay);
     }
 }

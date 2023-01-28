@@ -1,16 +1,29 @@
 package ua.com.foxminded.university.model.lesson;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.LongEntity;
+import ua.com.foxminded.university.model.user.Group;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.List;
+
+@Data
 @EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Entity
+@Table(name = "specialisms")
 public class Specialism extends LongEntity {
-
+    @Column(name = "specialism_name", unique = true, nullable = false)
     private String specialismName;
+
+    @OneToMany(mappedBy = "specialism")
+    private List<Group> groups;
+
 
     public Specialism(Long id, String specialismName) {
         super(id);
@@ -21,3 +34,4 @@ public class Specialism extends LongEntity {
         this(null, specialismName);
     }
 }
+

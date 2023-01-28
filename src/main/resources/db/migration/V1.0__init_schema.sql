@@ -21,8 +21,8 @@ create table rooms
 create table academic_years
 (
     id            bigserial primary key,
-    year_number   bigint not null,
-    semester_type text   not null,
+    year_number   integer not null,
+    semester_type text    not null,
     unique (year_number, semester_type)
 );
 
@@ -38,7 +38,7 @@ create table groupss
 create table users
 (
     id               bigserial primary key,
-    user_type        bigint      not null,
+    user_type        integer     not null,
     user_name        text unique not null,
     password_hash    text        not null,
     user_role        text        not null,
@@ -67,7 +67,7 @@ create table lessons
     id              bigserial primary key,
     discipline_id   bigint references disciplines (id) on update cascade on delete cascade   not null,
     group_id        bigint references groupss (id) on update cascade on delete cascade       not null,
-    lesson_number   bigint                                                                   not null,
+    lesson_number   integer                                                                  not null,
     room_id         bigint references rooms (id) on update cascade on delete cascade         not null,
     schedule_day_id bigint references schedule_days (id) on update cascade on delete cascade not null,
     unique (lesson_number, room_id, schedule_day_id)

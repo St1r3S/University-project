@@ -2,11 +2,15 @@ package ua.com.foxminded.university.model;
 
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.util.Objects;
 
 @NoArgsConstructor
+@MappedSuperclass
 abstract public class LongEntity implements Entity<Long> {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     protected Long id;
 
     public LongEntity(Long id) {

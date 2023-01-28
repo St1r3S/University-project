@@ -15,7 +15,7 @@
             <div class="col-md-10">
                 <th:block th:switch="${scheduleType}">
                     <form action="#" method="post"
-                          th:action="@{/schedule/{scheduleType}/edit/{id}/{semesterType}/add(scheduleType=${scheduleType},id=${id},semesterType=${semesterType})}"
+                          th:action="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType})}"
                           th:object="${lessonView}">
 
                         <th:block

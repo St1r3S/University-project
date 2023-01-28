@@ -28,7 +28,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public ScheduleDay save(ScheduleDay entity) {
         try {
             return scheduleDayDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -43,7 +43,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public List<ScheduleDay> saveAll(List<ScheduleDay> entities) {
         try {
             return scheduleDayDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -65,7 +65,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     @Override
     @Transactional(readOnly = true)
     public List<ScheduleDay> findAll() {
-        return scheduleDayDao.findAll(100);
+        return scheduleDayDao.findAll();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public void deleteById(Long id) {
         try {
             scheduleDayDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -96,7 +96,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public void delete(ScheduleDay entity) {
         try {
             scheduleDayDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -107,7 +107,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public void deleteAllById(List<Long> ids) {
         try {
             scheduleDayDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -118,7 +118,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public void deleteAll(List<ScheduleDay> entities) {
         try {
             scheduleDayDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -129,7 +129,7 @@ public class ScheduleDayServiceImpl implements ScheduleDayService {
     public void deleteAll() {
         try {
             scheduleDayDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }

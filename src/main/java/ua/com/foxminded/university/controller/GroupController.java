@@ -47,8 +47,8 @@ public class GroupController {
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialismId()),
-                        academicYearService.findById(group.getAcademicYearId())))
+                        specialismService.findById(group.getSpecialism().getId()),
+                        academicYearService.findById(group.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";
@@ -75,8 +75,8 @@ public class GroupController {
         model.addAttribute("group",
                 GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialismId()),
-                        academicYearService.findById(group.getAcademicYearId())
+                        specialismService.findById(group.getSpecialism().getId()),
+                        academicYearService.findById(group.getAcademicYear().getId())
                 )
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -105,8 +105,8 @@ public class GroupController {
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialismId()),
-                        academicYearService.findById(group.getAcademicYearId())))
+                        specialismService.findById(group.getSpecialism().getId()),
+                        academicYearService.findById(group.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";
@@ -122,8 +122,8 @@ public class GroupController {
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialismId()),
-                        academicYearService.findById(group.getAcademicYearId())))
+                        specialismService.findById(group.getSpecialism().getId()),
+                        academicYearService.findById(group.getAcademicYear().getId())))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";

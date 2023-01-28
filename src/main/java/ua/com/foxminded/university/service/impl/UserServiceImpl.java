@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public User save(User entity) {
         try {
             return userDao.save(entity);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             if (entity.getId() == null) {
                 logger.error("Unable to create entity {} due {}", entity, ex.getMessage(), ex);
             } else {
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     public List<User> saveAll(List<User> entities) {
         try {
             return userDao.saveAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to update entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to save entities " + entities, 1);
         }
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return userDao.findAll(100);
+        return userDao.findAll();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Long id) {
         try {
             userDao.deleteById(id);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity with id {} due {}", id, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity with id " + id, 1);
         }
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     public void delete(User entity) {
         try {
             userDao.deleteById(entity.getId());
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entity {} due {}", entity, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entity " + entity, 1);
         }
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     public void deleteAllById(List<Long> ids) {
         try {
             userDao.deleteAllById(ids);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities with ids {} due {}", ids, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities with ids " + ids, 1);
         }
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     public void deleteAll(List<User> entities) {
         try {
             userDao.deleteAll(entities);
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete entities {} due {}", entities, ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete entities " + entities, 1);
         }
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
     public void deleteAll() {
         try {
             userDao.deleteAll();
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (Exception ex) {
             logger.error("Unable to delete all entities due {}", ex.getMessage(), ex);
             throw new EmptyResultDataAccessException("Unable to delete all entities ", 1);
         }
@@ -137,14 +137,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User findByUsername(String userName) {
-        return userDao.findByLogin(userName).orElseThrow(
+        return userDao.findByUserName(userName).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such user with login " + userName, 1));
     }
 
     @Override
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
-        return userDao.findByLogin(email).orElseThrow(
+        return userDao.findByUserName(email).orElseThrow(
                 () -> new EmptyResultDataAccessException("There's no such user with email " + email, 1));
     }
 
