@@ -43,7 +43,7 @@ public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long
     public Optional<AcademicYear> findById(Long id) {
         try {
             return Optional.of(entityManager.find(AcademicYear.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -79,7 +79,7 @@ public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long
 
     @Override
     public void delete(AcademicYear entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -119,7 +119,7 @@ public class HibernateAcademicYearDao extends AbstractCrudDao<AcademicYear, Long
         TypedQuery<AcademicYear> query = entityManager.createQuery(ACADEMIC_YEAR_BY_YEAR_NUMBER_AND_SEMESTER_TYPE, AcademicYear.class);
         try {
             return Optional.of(query.setParameter("yearNumber", yearNumber).setParameter("semesterType", semesterType).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

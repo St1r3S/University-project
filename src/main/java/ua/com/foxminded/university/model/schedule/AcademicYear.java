@@ -3,6 +3,7 @@ package ua.com.foxminded.university.model.schedule;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.user.Group;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "academic_years")
@@ -24,6 +26,8 @@ public class AcademicYear extends LongEntity {
     @Column(name = "semester_type", nullable = false)
     private SemesterType semesterType;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "academicYear")
     private List<Group> groups;
 

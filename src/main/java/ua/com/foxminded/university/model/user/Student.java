@@ -3,6 +3,7 @@ package ua.com.foxminded.university.model.user;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @DiscriminatorValue("2")

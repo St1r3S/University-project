@@ -45,7 +45,7 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
     public Optional<Discipline> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Discipline.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -81,7 +81,7 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
 
     @Override
     public void delete(Discipline entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
         TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINE_BY_DISCIPLINE_NAME, Discipline.class);
         try {
             return Optional.of(query.setParameter("disciplineName", disciplineName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -129,7 +129,7 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
     @Override
     public List<Discipline> findAllBySpecialismIdAndAcademicYearId(Long specialismId, Long academicYearId) {
         TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINES_BY_SPECIALISM_ID_AND_ACADEMIC_YEAR_ID, Discipline.class);
-        return query.setParameter("specialismId", specialismId).getResultList();
+        return query.setParameter("specialismId", specialismId).setParameter("academicYearId", academicYearId).getResultList();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class HibernateDisciplineDao extends AbstractCrudDao<Discipline, Long> im
         TypedQuery<Discipline> query = entityManager.createQuery(DISCIPLINE_BY_EDUCATOR_ID, Discipline.class);
         try {
             return Optional.of(query.setParameter("educatorId", educatorId).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

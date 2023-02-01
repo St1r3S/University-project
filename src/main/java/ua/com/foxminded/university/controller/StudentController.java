@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/students/")
+@RequestMapping("/students")
 public class StudentController {
 
     private final StudentService studentService;
@@ -39,7 +39,7 @@ public class StudentController {
         this.academicYearService = academicYearService;
     }
 
-    @GetMapping("showForm")
+    @GetMapping("/showForm")
     public String showStudentForm(StudentView studentView, Model model) {
         model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
         model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
@@ -49,21 +49,22 @@ public class StudentController {
         return "student/add-student";
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public String students(Model model) {
         model.addAttribute("students", this.studentService.findAll()
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroup().getId()),
-                        specialismService.findById(student.getSpecialism().getId()),
-                        academicYearService.findById(student.getAcademicYear().getId())))
+                        student.getGroup(),
+                        student.getSpecialism(),
+                        student.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "student/students-list";
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public String addStudent(StudentView studentView, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "student/add-student";
@@ -78,16 +79,16 @@ public class StudentController {
     }
 
 
-    @GetMapping("edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Student student = this.studentService.findById(id);
 
         model.addAttribute("student",
                 StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroup().getId()),
-                        specialismService.findById(student.getSpecialism().getId()),
-                        academicYearService.findById(student.getAcademicYear().getId())
+                        student.getGroup(),
+                        student.getSpecialism(),
+                        student.getAcademicYear()
                 )
         );
         model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
@@ -98,7 +99,7 @@ public class StudentController {
         return "student/update-student";
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     public String updateStudent(@PathVariable("id") long id, StudentView studentView, BindingResult result, Model model) {
         Student studentToSave = studentView.studentViewToStudent(
                 groupService.findByGroupName(studentView.getGroupName()),
@@ -119,15 +120,16 @@ public class StudentController {
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroup().getId()),
-                        specialismService.findById(student.getSpecialism().getId()),
-                        academicYearService.findById(student.getAcademicYear().getId())))
+                        student.getGroup(),
+                        student.getSpecialism(),
+                        student.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "student/students-list";
     }
 
-    @GetMapping("delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteStudent(@PathVariable("id") long id, Model model) {
 
         this.studentService.deleteById(id);
@@ -135,9 +137,10 @@ public class StudentController {
                 .stream()
                 .map(student -> StudentView.studentToStudentView(
                         student,
-                        groupService.findById(student.getGroup().getId()),
-                        specialismService.findById(student.getSpecialism().getId()),
-                        academicYearService.findById(student.getAcademicYear().getId())))
+                        student.getGroup(),
+                        student.getSpecialism(),
+                        student.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "student/students-list";

@@ -3,6 +3,7 @@ package ua.com.foxminded.university.model.lesson;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.schedule.ScheduleDay;
 import ua.com.foxminded.university.model.user.Group;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "lessons")

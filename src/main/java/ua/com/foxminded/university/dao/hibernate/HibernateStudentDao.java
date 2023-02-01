@@ -49,7 +49,7 @@ public class HibernateStudentDao extends AbstractCrudDao<Student, Long> implemen
     public Optional<Student> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Student.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -85,7 +85,7 @@ public class HibernateStudentDao extends AbstractCrudDao<Student, Long> implemen
 
     @Override
     public void delete(Student entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -113,7 +113,7 @@ public class HibernateStudentDao extends AbstractCrudDao<Student, Long> implemen
         TypedQuery<Student> query = entityManager.createQuery(STUDENT_BY_USER_NAME, Student.class);
         try {
             return Optional.of(query.setParameter("userName", userName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -123,7 +123,7 @@ public class HibernateStudentDao extends AbstractCrudDao<Student, Long> implemen
         TypedQuery<Student> query = entityManager.createQuery(STUDENT_BY_EMAIL, Student.class);
         try {
             return Optional.of(query.setParameter("email", email).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

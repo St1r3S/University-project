@@ -45,7 +45,7 @@ public class HibernateScheduleDayDao extends AbstractCrudDao<ScheduleDay, Long> 
     public Optional<ScheduleDay> findById(Long id) {
         try {
             return Optional.of(entityManager.find(ScheduleDay.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -81,7 +81,7 @@ public class HibernateScheduleDayDao extends AbstractCrudDao<ScheduleDay, Long> 
 
     @Override
     public void delete(ScheduleDay entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class HibernateScheduleDayDao extends AbstractCrudDao<ScheduleDay, Long> 
         TypedQuery<ScheduleDay> query = entityManager.createQuery(SCHEDULE_DAY_BY_DAY_OF_WEEK_AND_SEMESTER_TYPE, ScheduleDay.class);
         try {
             return Optional.of(query.setParameter("dayOfWeek", dayOfWeek).setParameter("semesterType", semesterType).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
