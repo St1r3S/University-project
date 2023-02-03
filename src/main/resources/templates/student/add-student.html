@@ -21,7 +21,7 @@
                             <label class="col-form-label" for="userRole">User Role</label>
                             <select class="custom-select" id="userRole" name="userRole">
                                 <option th:each="localUserRole : ${userRoles}"
-                                        th:selected="${localUserRole.value.equals('Student')}"
+                                        th:selected="${localUserRole.value.equals('STUDENT')}"
                                         th:text="${localUserRole.value}"
                                         th:value="${localUserRole}"></option>
                             </select>

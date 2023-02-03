@@ -3,6 +3,7 @@ package ua.com.foxminded.university.model.user;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.com.foxminded.university.model.LongEntity;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "users")

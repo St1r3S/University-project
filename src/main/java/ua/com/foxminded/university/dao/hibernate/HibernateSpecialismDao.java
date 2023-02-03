@@ -40,7 +40,7 @@ public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> im
     public Optional<Specialism> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Specialism.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -76,7 +76,7 @@ public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> im
 
     @Override
     public void delete(Specialism entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -104,7 +104,7 @@ public class HibernateSpecialismDao extends AbstractCrudDao<Specialism, Long> im
         TypedQuery<Specialism> query = entityManager.createQuery(SPECIALISM_BY_SPECIALISM_NAME, Specialism.class);
         try {
             return Optional.of(query.setParameter("specialismName", specialismName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

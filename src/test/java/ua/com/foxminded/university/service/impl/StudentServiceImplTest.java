@@ -1,22 +1,23 @@
 package ua.com.foxminded.university.service.impl;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.junit4.SpringRunner;
+import ua.com.foxminded.university.dao.StudentDao;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {StudentServiceImpl.class})
 class StudentServiceImplTest {
     @Autowired
     StudentServiceImpl studentService;
+    @MockBean
+    StudentDao studentDao;
 
     @Test
     void shouldThrowNotFindException() {
-        assertThrows(EmptyResultDataAccessException.class, () -> studentService.findById(1L));
+        assertThrows(EmptyResultDataAccessException.class, () -> studentService.findById(3L));
     }
 }

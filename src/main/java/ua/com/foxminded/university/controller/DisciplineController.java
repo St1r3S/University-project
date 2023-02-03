@@ -19,7 +19,7 @@ import ua.com.foxminded.university.service.SpecialismService;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/disciplines/")
+@RequestMapping("/disciplines")
 public class DisciplineController {
 
     private final DisciplineService disciplineService;
@@ -36,7 +36,7 @@ public class DisciplineController {
         this.educatorService = educatorService;
     }
 
-    @GetMapping("showForm")
+    @GetMapping("/showForm")
     public String showDisciplineForm(DisciplineView disciplineView, Model model) {
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
         model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
@@ -46,22 +46,23 @@ public class DisciplineController {
         return "discipline/add-discipline";
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public String disciplines(Model model) {
         model.addAttribute("disciplines", this.disciplineService.findAll()
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialism().getId()),
-                        academicYearService.findById(discipline.getAcademicYear().getId()),
-                        educatorService.findById(discipline.getEducator().getId())))
+                        discipline.getSpecialism(),
+                        discipline.getAcademicYear(),
+                        discipline.getEducator()
+                ))
                 .collect(Collectors.toList())
         );
 
         return "discipline/disciplines-list";
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public String addDiscipline(DisciplineView disciplineView, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "discipline/add-discipline";
@@ -79,16 +80,16 @@ public class DisciplineController {
     }
 
 
-    @GetMapping("edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Discipline discipline = this.disciplineService.findById(id);
 
         model.addAttribute("discipline",
                 DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialism().getId()),
-                        academicYearService.findById(discipline.getAcademicYear().getId()),
-                        educatorService.findById(discipline.getEducator().getId())
+                        discipline.getSpecialism(),
+                        discipline.getAcademicYear(),
+                        discipline.getEducator()
                 )
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -99,7 +100,7 @@ public class DisciplineController {
         return "discipline/update-discipline";
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     public String updateDiscipline(@PathVariable("id") long id,
                                    DisciplineView disciplineView,
                                    BindingResult result,
@@ -121,9 +122,10 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialism().getId()),
-                        academicYearService.findById(discipline.getAcademicYear().getId()),
-                        educatorService.findById(discipline.getEducator().getId())))
+                        discipline.getSpecialism(),
+                        discipline.getAcademicYear(),
+                        discipline.getEducator()
+                ))
                 .collect(Collectors.toList())
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -134,7 +136,7 @@ public class DisciplineController {
         return "discipline/disciplines-list";
     }
 
-    @GetMapping("delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteDiscipline(@PathVariable("id") long id, Model model) {
         Discipline disciplineToDelete = this.disciplineService.findById(id);
 
@@ -144,9 +146,10 @@ public class DisciplineController {
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
-                        specialismService.findById(discipline.getSpecialism().getId()),
-                        academicYearService.findById(discipline.getAcademicYear().getId()),
-                        educatorService.findById(discipline.getEducator().getId())))
+                        discipline.getSpecialism(),
+                        discipline.getAcademicYear(),
+                        discipline.getEducator()
+                ))
                 .collect(Collectors.toList())
         );
 

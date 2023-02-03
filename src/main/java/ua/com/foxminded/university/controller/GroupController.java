@@ -18,7 +18,7 @@ import ua.com.foxminded.university.service.SpecialismService;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/groups/")
+@RequestMapping("/groups")
 public class GroupController {
 
     private final GroupService groupService;
@@ -33,7 +33,7 @@ public class GroupController {
         this.academicYearService = academicYearService;
     }
 
-    @GetMapping("showForm")
+    @GetMapping("/showForm")
     public String showGroupForm(GroupView groupView, Model model) {
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
         model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
@@ -41,21 +41,22 @@ public class GroupController {
         return "group/add-group";
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public String groups(Model model) {
         model.addAttribute("groups", this.groupService.findAll()
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialism().getId()),
-                        academicYearService.findById(group.getAcademicYear().getId())))
+                        group.getSpecialism(),
+                        group.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";
     }
 
-    @PostMapping("add")
-    public String addStudent(GroupView groupView, BindingResult result, Model model) {
+    @PostMapping("/add")
+    public String addGroup(GroupView groupView, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "group/add-group";
         }
@@ -68,15 +69,15 @@ public class GroupController {
     }
 
 
-    @GetMapping("edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Group group = this.groupService.findById(id);
 
         model.addAttribute("group",
                 GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialism().getId()),
-                        academicYearService.findById(group.getAcademicYear().getId())
+                        group.getSpecialism(),
+                        group.getAcademicYear()
                 )
         );
         model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
@@ -85,8 +86,8 @@ public class GroupController {
         return "group/update-group";
     }
 
-    @PostMapping("update/{id}")
-    public String updateStudent(@PathVariable("id") long id, GroupView groupView, BindingResult result, Model model) {
+    @PostMapping("/update/{id}")
+    public String updateGroup(@PathVariable("id") long id, GroupView groupView, BindingResult result, Model model) {
         Group groupToSave = groupView.groupViewToGroup(
                 specialismService.findBySpecialismName(groupView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(groupView.getAcademicYearNumber(), groupView.getSemesterType())
@@ -105,15 +106,16 @@ public class GroupController {
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialism().getId()),
-                        academicYearService.findById(group.getAcademicYear().getId())))
+                        group.getSpecialism(),
+                        group.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";
     }
 
-    @GetMapping("delete/{id}")
-    public String deleteStudent(@PathVariable("id") long id, Model model) {
+    @GetMapping("/delete/{id}")
+    public String deleteGroup(@PathVariable("id") long id, Model model) {
 
         Group groupToDelete = this.groupService.findById(id);
 
@@ -122,8 +124,9 @@ public class GroupController {
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
-                        specialismService.findById(group.getSpecialism().getId()),
-                        academicYearService.findById(group.getAcademicYear().getId())))
+                        group.getSpecialism(),
+                        group.getAcademicYear()
+                ))
                 .collect(Collectors.toList())
         );
         return "group/groups-list";

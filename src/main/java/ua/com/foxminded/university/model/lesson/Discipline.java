@@ -3,6 +3,7 @@ package ua.com.foxminded.university.model.lesson;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.user.Educator;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "disciplines")
@@ -29,7 +31,9 @@ public class Discipline extends LongEntity {
     @OneToOne
     @JoinColumn(name = "educator_id", nullable = false, referencedColumnName = "id")
     private Educator educator;
-    
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "discipline")
     private List<Lesson> lessons;
 

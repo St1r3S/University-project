@@ -46,7 +46,7 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
     public Optional<User> findById(Long id) {
         try {
             return Optional.of(entityManager.find(User.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -83,7 +83,7 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
 
     @Override
     public void delete(User entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -111,7 +111,7 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
         TypedQuery<User> query = entityManager.createQuery(USER_BY_USER_NAME, User.class);
         try {
             return Optional.of(query.setParameter("userName", userName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -121,7 +121,7 @@ public class HibernateUserDao extends AbstractCrudDao<User, Long> implements Use
         TypedQuery<User> query = entityManager.createQuery(USER_BY_EMAIL, User.class);
         try {
             return Optional.of(query.setParameter("email", email).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

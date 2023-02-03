@@ -31,18 +31,16 @@ public class ScheduleController {
     private final RoomService roomService;
     private final ScheduleDayService scheduleDayService;
 
-    private final SpecialismService specialismService;
     private final EducatorService educatorService;
     private final AcademicYearService academicYearService;
 
 
-    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, SpecialismService specialismService, EducatorService educatorService, AcademicYearService academicYearService) {
+    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, EducatorService educatorService, AcademicYearService academicYearService) {
         this.lessonService = lessonService;
         this.disciplineService = disciplineService;
         this.groupService = groupService;
         this.roomService = roomService;
         this.scheduleDayService = scheduleDayService;
-        this.specialismService = specialismService;
         this.educatorService = educatorService;
         this.academicYearService = academicYearService;
     }
@@ -118,8 +116,9 @@ public class ScheduleController {
                         .stream()
                         .map(group -> GroupView.groupToGroupView(
                                 group,
-                                specialismService.findById(group.getSpecialism().getId()),
-                                academicYearService.findById(group.getAcademicYear().getId())))
+                                group.getSpecialism(),
+                                group.getAcademicYear()
+                        ))
                         .collect(Collectors.toList())
                 );
                 break;
@@ -152,11 +151,11 @@ public class ScheduleController {
 
         LessonView lessonView = LessonView.lessonToLessonView(
                 lesson,
-                disciplineService.findById(lesson.getDiscipline().getId()),
-                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
-                groupService.findById(lesson.getGroup().getId()),
-                roomService.findById(lesson.getRoom().getId()),
-                scheduleDayService.findById(lesson.getScheduleDay().getId())
+                lesson.getDiscipline(),
+                lesson.getDiscipline().getEducator(),
+                lesson.getGroup(),
+                lesson.getRoom(),
+                lesson.getScheduleDay()
         );
 
         model.addAttribute("lesson",
@@ -178,6 +177,7 @@ public class ScheduleController {
                                LessonView lessonView,
                                BindingResult result,
                                Model model) {
+
         Lesson lessonToSave = lessonView.lessonViewToLesson(
                 disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                 groupService.findByGroupName(lessonView.getGroupName()),
@@ -225,11 +225,12 @@ public class ScheduleController {
                                 .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDiscipline().getId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
-                                groupService.findById(lesson.getGroup().getId()),
-                                roomService.findById(lesson.getRoom().getId()),
-                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
+                                lesson.getDiscipline(),
+                                lesson.getDiscipline().getEducator(),
+                                lesson.getGroup(),
+                                lesson.getRoom(),
+                                lesson.getScheduleDay()
+                        ))
                         .collect(Collectors.toList());
                 break;
             case "educators":
@@ -242,11 +243,12 @@ public class ScheduleController {
                                 .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDiscipline().getId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
-                                groupService.findById(lesson.getGroup().getId()),
-                                roomService.findById(lesson.getRoom().getId()),
-                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
+                                lesson.getDiscipline(),
+                                lesson.getDiscipline().getEducator(),
+                                lesson.getGroup(),
+                                lesson.getRoom(),
+                                lesson.getScheduleDay()
+                        ))
                         .collect(Collectors.toList());
                 break;
             case "rooms":
@@ -259,11 +261,12 @@ public class ScheduleController {
                                 .contains(lesson.getScheduleDay().getId()))
                         .map(lesson -> LessonView.lessonToLessonView(
                                 lesson,
-                                disciplineService.findById(lesson.getDiscipline().getId()),
-                                educatorService.findById(disciplineService.findById(lesson.getDiscipline().getId()).getEducator().getId()),
-                                groupService.findById(lesson.getGroup().getId()),
-                                roomService.findById(lesson.getRoom().getId()),
-                                scheduleDayService.findById(lesson.getScheduleDay().getId())))
+                                lesson.getDiscipline(),
+                                lesson.getDiscipline().getEducator(),
+                                lesson.getGroup(),
+                                lesson.getRoom(),
+                                lesson.getScheduleDay()
+                        ))
                         .collect(Collectors.toList());
                 break;
             default:

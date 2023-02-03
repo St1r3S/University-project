@@ -47,7 +47,7 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
     public Optional<Educator> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Educator.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -83,7 +83,7 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
 
     @Override
     public void delete(Educator entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -111,7 +111,7 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
         TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_USER_NAME, Educator.class);
         try {
             return Optional.of(query.setParameter("userName", userName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -121,7 +121,7 @@ public class HibernateEducatorDao extends AbstractCrudDao<Educator, Long> implem
         TypedQuery<Educator> query = entityManager.createQuery(EDUCATOR_BY_EMAIL, Educator.class);
         try {
             return Optional.of(query.setParameter("email", email).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

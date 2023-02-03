@@ -15,7 +15,7 @@ import ua.com.foxminded.university.service.EducatorService;
 import java.util.Arrays;
 
 @Controller
-@RequestMapping("/educators/")
+@RequestMapping("/educators")
 public class EducatorController {
 
     private final EducatorService educatorService;
@@ -26,7 +26,7 @@ public class EducatorController {
     }
 
 
-    @GetMapping("showForm")
+    @GetMapping("/showForm")
     public String showEducatorForm(Educator educator, Model model) {
         model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
         model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
@@ -34,14 +34,14 @@ public class EducatorController {
         return "educator/add-educator";
     }
 
-    @GetMapping("list")
+    @GetMapping("/list")
     public String educators(Model model) {
         model.addAttribute("educators", this.educatorService.findAll());
 
         return "educator/educators-list";
     }
 
-    @PostMapping("add")
+    @PostMapping("/add")
     public String addEducator(Educator educator, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "educator/add-educator";
@@ -52,7 +52,7 @@ public class EducatorController {
     }
 
 
-    @GetMapping("edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
         Educator educator = this.educatorService.findById(id);
 
@@ -63,7 +63,7 @@ public class EducatorController {
         return "educator/update-educator";
     }
 
-    @PostMapping("update/{id}")
+    @PostMapping("/update/{id}")
     public String updateEducator(@PathVariable("id") long id, Educator educator, BindingResult result, Model model) {
         if (result.hasErrors()) {
             educator.setId(id);
@@ -79,7 +79,7 @@ public class EducatorController {
         return "educator/educators-list";
     }
 
-    @GetMapping("delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteEducator(@PathVariable("id") long id, Model model) {
         Educator educator = this.educatorService.findById(id);
 

@@ -40,7 +40,7 @@ public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements Roo
     public Optional<Room> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Room.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -76,7 +76,7 @@ public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements Roo
 
     @Override
     public void delete(Room entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -104,7 +104,7 @@ public class HibernateRoomDao extends AbstractCrudDao<Room, Long> implements Roo
         TypedQuery<Room> query = entityManager.createQuery(ROOM_BY_ROOM_NUMBER, Room.class);
         try {
             return Optional.of(query.setParameter("roomNumber", roomNumber).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

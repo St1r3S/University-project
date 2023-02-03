@@ -4,6 +4,7 @@ package ua.com.foxminded.university.model.user;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ua.com.foxminded.university.model.lesson.Discipline;
 
 import javax.persistence.Column;
@@ -14,12 +15,16 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @DiscriminatorValue("3")
 public class Educator extends User {
     @Column(name = "academic_rank")
     private AcademicRank academicRank;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "educator")
     private Discipline discipline;
 

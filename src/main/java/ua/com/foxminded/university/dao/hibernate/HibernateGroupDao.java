@@ -42,7 +42,7 @@ public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements G
     public Optional<Group> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Group.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -78,7 +78,7 @@ public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements G
 
     @Override
     public void delete(Group entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class HibernateGroupDao extends AbstractCrudDao<Group, Long> implements G
         TypedQuery<Group> query = entityManager.createQuery(GROUP_BY_GROUP_NAME, Group.class);
         try {
             return Optional.of(query.setParameter("groupName", groupName).getSingleResult());
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }

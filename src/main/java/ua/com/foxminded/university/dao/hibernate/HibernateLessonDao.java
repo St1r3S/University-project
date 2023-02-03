@@ -47,7 +47,7 @@ public class HibernateLessonDao extends AbstractCrudDao<Lesson, Long> implements
     public Optional<Lesson> findById(Long id) {
         try {
             return Optional.of(entityManager.find(Lesson.class, id));
-        } catch (NoResultException e) {
+        } catch (NoResultException | NullPointerException e) {
             return Optional.empty();
         }
     }
@@ -83,7 +83,7 @@ public class HibernateLessonDao extends AbstractCrudDao<Lesson, Long> implements
 
     @Override
     public void delete(Lesson entity) {
-        entityManager.remove(entity);
+        entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
 
     @Override
