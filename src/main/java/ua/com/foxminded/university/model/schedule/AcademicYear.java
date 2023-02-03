@@ -4,23 +4,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.user.Group;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "academic_years")
-public class AcademicYear extends LongEntity {
-
+public class AcademicYear {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "year_number", nullable = false)
     private Integer yearNumber;
     @Column(name = "semester_type", nullable = false)
@@ -32,7 +29,7 @@ public class AcademicYear extends LongEntity {
     private List<Group> groups;
 
     public AcademicYear(Long id, Integer yearNumber, SemesterType semesterType) {
-        super(id);
+        this.id = id;
         this.yearNumber = yearNumber;
         this.semesterType = semesterType;
     }

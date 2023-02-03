@@ -1,10 +1,8 @@
 package ua.com.foxminded.university.service;
 
-import ua.com.foxminded.university.model.Entity;
-
 import java.util.List;
 
-public interface CrudService<T extends Entity<K>, K extends Number> {
+public interface CrudService<T, K> {
 
     T save(T entity);
 

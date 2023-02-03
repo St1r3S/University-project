@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
-import ua.com.foxminded.university.dao.RoomDao;
 import ua.com.foxminded.university.model.lesson.*;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.DayOfWeek;
@@ -15,6 +14,7 @@ import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.Group;
 import ua.com.foxminded.university.model.user.UserRole;
+import ua.com.foxminded.university.repository.RoomRepository;
 import ua.com.foxminded.university.service.LessonService;
 
 import java.time.LocalDate;
@@ -29,7 +29,7 @@ class RoomServiceImplTest {
     @Autowired
     RoomServiceImpl roomService;
     @MockBean
-    RoomDao roomDao;
+    RoomRepository roomRepository;
     @MockBean
     LessonService lessonService;
 
@@ -69,7 +69,7 @@ class RoomServiceImplTest {
         List<Room> expected = rooms;
 
         when(lessonService.findAll()).thenReturn(lessons);
-        when(roomDao.findAll()).thenReturn(rooms);
+        when(roomRepository.findAll()).thenReturn(rooms);
 
         List<Room> actual = roomService.findAllFreeRooms(LessonNumber.THIRD_LESSON,
                 new ScheduleDay(1L, DayOfWeek.MONDAY, SemesterType.FALL_SEMESTER));

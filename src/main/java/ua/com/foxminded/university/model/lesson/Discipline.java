@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.user.Educator;
 
@@ -12,13 +11,14 @@ import javax.persistence.*;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "disciplines")
-public class Discipline extends LongEntity {
-
+public class Discipline {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "discipline_name", nullable = false)
     private String disciplineName;
 
@@ -38,7 +38,7 @@ public class Discipline extends LongEntity {
     private List<Lesson> lessons;
 
     public Discipline(Long id, String disciplineName, Specialism specialism, AcademicYear academicYear, Educator educator) {
-        super(id);
+        this.id = id;
         this.disciplineName = disciplineName;
         this.specialism = specialism;
         this.academicYear = academicYear;
