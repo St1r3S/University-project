@@ -1,25 +1,24 @@
 package ua.com.foxminded.university.model.user;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-import ua.com.foxminded.university.model.LongEntity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
 @DiscriminatorColumn(name = "user_type",
         discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("1")
-public class User extends LongEntity {
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "user_name", unique = true, nullable = false)
     private String userName;
     @Column(name = "password_hash", nullable = false)
@@ -37,7 +36,7 @@ public class User extends LongEntity {
     private String email;
 
     public User(Long id, String userName, String passwordHash, UserRole userRole, String firstName, String lastName, LocalDate birthday, String email) {
-        super(id);
+        this.id = id;
         this.userName = userName;
         this.passwordHash = passwordHash;
         this.userRole = userRole;

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
-import ua.com.foxminded.university.dao.DisciplineDao;
+import ua.com.foxminded.university.repository.DisciplineRepository;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -15,7 +15,7 @@ class DisciplineServiceImplTest {
     @Autowired
     DisciplineServiceImpl disciplineService;
     @MockBean
-    DisciplineDao disciplineDao;
+    DisciplineRepository disciplineRepository;
 
     @Test
     void shouldThrowNotFindException() {

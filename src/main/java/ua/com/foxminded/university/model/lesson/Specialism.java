@@ -4,25 +4,23 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ua.com.foxminded.university.model.LongEntity;
 import ua.com.foxminded.university.model.user.Group;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "specialisms")
-public class Specialism extends LongEntity {
+public class Specialism {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     @Column(name = "specialism_name", unique = true, nullable = false)
     private String specialismName;
-    
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "specialism")
@@ -30,7 +28,7 @@ public class Specialism extends LongEntity {
 
 
     public Specialism(Long id, String specialismName) {
-        super(id);
+        this.id = id;
         this.specialismName = specialismName;
     }
 

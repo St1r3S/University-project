@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
-import ua.com.foxminded.university.dao.EducatorDao;
 import ua.com.foxminded.university.model.lesson.Discipline;
 import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
@@ -13,6 +12,7 @@ import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.AcademicRank;
 import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
+import ua.com.foxminded.university.repository.EducatorRepository;
 import ua.com.foxminded.university.service.DisciplineService;
 
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ class EducatorServiceImplTest {
     @Autowired
     EducatorServiceImpl educatorService;
     @MockBean
-    EducatorDao educatorDao;
+    EducatorRepository educatorRepository;
     @MockBean
     DisciplineService disciplineService;
 
@@ -65,7 +65,7 @@ class EducatorServiceImplTest {
         );
 
         when(disciplineService.findAll()).thenReturn(disciplines);
-        when(educatorDao.findAll()).thenReturn(educators);
+        when(educatorRepository.findAll()).thenReturn(educators);
         List<Educator> actual = educatorService.findAllFreeEducators();
 
         assertEquals(expected, actual);
