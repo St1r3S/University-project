@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5 w-50">
+    <h2>Sorry, you do not have permission to view this page.</h2>
+    <br>
+    <h4>Click <a href="/schedule/list/rooms">here</a>
+        to go back to the rooms schedule list.</h4>
+    <div class="d-flex justify-content-between w-75">
+        Or try to log out and login from admin account.
+        <form name="logoutForm" action="/auth/logout" method="post">
+            <button class="btn btn-danger" type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

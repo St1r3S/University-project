@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,10 +20,12 @@ import java.util.Arrays;
 public class EducatorController {
 
     private final EducatorService educatorService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public EducatorController(EducatorService educatorService) {
+    public EducatorController(EducatorService educatorService, PasswordEncoder passwordEncoder) {
         this.educatorService = educatorService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -43,9 +46,11 @@ public class EducatorController {
 
     @PostMapping("/add")
     public String addEducator(Educator educator, BindingResult result, Model model) {
+        educator.setPasswordHash(educator.getPasswordHash());
         if (result.hasErrors()) {
             return "educator/add-educator";
         }
+        educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
         this.educatorService.save(educator);
 
         return "redirect:list";
@@ -69,7 +74,7 @@ public class EducatorController {
             educator.setId(id);
             return "educator/update-educator";
         }
-
+        educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
         educatorService.save(educator);
 
         model.addAttribute("educators", this.educatorService.findAll());

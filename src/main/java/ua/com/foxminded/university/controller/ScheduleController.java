@@ -13,10 +13,13 @@ import ua.com.foxminded.university.model.lesson.LessonNumber;
 import ua.com.foxminded.university.model.lesson.Room;
 import ua.com.foxminded.university.model.schedule.*;
 import ua.com.foxminded.university.model.user.Group;
+import ua.com.foxminded.university.model.user.User;
+import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.model.view.GroupView;
 import ua.com.foxminded.university.model.view.LessonView;
 import ua.com.foxminded.university.service.*;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,8 +37,10 @@ public class ScheduleController {
     private final EducatorService educatorService;
     private final AcademicYearService academicYearService;
 
+    private final StudentService studentService;
+    private final UserService userService;
 
-    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, EducatorService educatorService, AcademicYearService academicYearService) {
+    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, EducatorService educatorService, AcademicYearService academicYearService, StudentService studentService, UserService userService) {
         this.lessonService = lessonService;
         this.disciplineService = disciplineService;
         this.groupService = groupService;
@@ -43,6 +48,8 @@ public class ScheduleController {
         this.scheduleDayService = scheduleDayService;
         this.educatorService = educatorService;
         this.academicYearService = academicYearService;
+        this.studentService = studentService;
+        this.userService = userService;
     }
 
     @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/showForm")
@@ -140,6 +147,30 @@ public class ScheduleController {
         makeModelToShowSchedule(scheduleType, contextId, semesterType, model);
         return "schedule/show-schedule";
     }
+
+    @GetMapping("/{semesterType}")
+    public String showScheduleByUser(@PathVariable("semesterType") String semesterType,
+                                     Model model,
+                                     Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        String scheduleType;
+        long contextId;
+        if (user.getUserRole() == UserRole.EDUCATOR) {
+            scheduleType = "educators";
+            contextId = user.getId();
+        } else if (user.getUserRole() == UserRole.STUDENT) {
+            scheduleType = "groups";
+            contextId = studentService.findById(user.getId()).getGroup().getId();
+        } else {
+            throw new IllegalArgumentException("Invalid user type!");
+        }
+        model.addAttribute("scheduleType", scheduleType);
+        model.addAttribute("contextId", contextId);
+
+        makeModelToShowSchedule(scheduleType, contextId, semesterType, model);
+        return "schedule/show-schedule";
+    }
+
 
     @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/edit/{id}")
     public String showUpdateForm(@PathVariable("scheduleType") String scheduleType,

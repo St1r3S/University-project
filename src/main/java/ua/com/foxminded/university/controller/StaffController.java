@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,10 +19,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/staff")
 public class StaffController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public StaffController(UserService userService) {
+    public StaffController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -44,6 +47,7 @@ public class StaffController {
         if (result.hasErrors()) {
             return "staff/add-staff-member";
         }
+        staffMember.setPasswordHash(passwordEncoder.encode(staffMember.getPasswordHash()));
         this.userService.save(staffMember);
 
         return "redirect:list";
@@ -66,7 +70,7 @@ public class StaffController {
             staffMember.setId(id);
             return "staff/update-staff-member";
         }
-
+        staffMember.setPasswordHash(passwordEncoder.encode(staffMember.getPasswordHash()));
         userService.save(staffMember);
 
         model.addAttribute("staff", this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));

@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,14 +27,16 @@ import java.util.stream.Collectors;
 public class StudentController {
 
     private final StudentService studentService;
+    private final PasswordEncoder passwordEncoder;
 
     private final GroupService groupService;
     private final SpecialismService specialismService;
     private final AcademicYearService academicYearService;
 
 
-    public StudentController(StudentService studentService, GroupService groupService, SpecialismService specialismService, AcademicYearService academicYearService) {
+    public StudentController(StudentService studentService, GroupService groupService, SpecialismService specialismService, AcademicYearService academicYearService, PasswordEncoder passwordEncoder) {
         this.studentService = studentService;
+        this.passwordEncoder = passwordEncoder;
         this.groupService = groupService;
         this.specialismService = specialismService;
         this.academicYearService = academicYearService;
@@ -74,6 +77,7 @@ public class StudentController {
                 specialismService.findBySpecialismName(studentView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(studentView.getAcademicYearNumber(), studentView.getSemesterType())
         );
+        student.setPasswordHash(passwordEncoder.encode(student.getPasswordHash()));
         this.studentService.save(student);
         return "redirect:list";
     }
@@ -111,7 +115,7 @@ public class StudentController {
             studentView.setId(id);
             return "student/update-student";
         }
-
+        studentToSave.setPasswordHash(passwordEncoder.encode(studentToSave.getPasswordHash()));
         // update student
         studentService.save(studentToSave);
 

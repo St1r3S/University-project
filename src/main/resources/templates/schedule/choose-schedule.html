@@ -1,27 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Choose schedule</title>
     <th:block th:replace="~{fragments/general/header :: head}">
     </th:block>
 </head>
 <body>
-<div th:replace="~{fragments/general/header :: admin-header}">
+<div th:replace="~{fragments/general/header :: header}" sec:authorize="hasAnyAuthority('Student','Educator')">
+</div>
+<div th:replace="~{fragments/general/header :: staff-header}" sec:authorize="hasAuthority('Staff')">
+</div>
+<div th:replace="~{fragments/general/header :: admin-header}" sec:authorize="hasAuthority('Admin')">
 </div>
 <div class="container my-2">
     <div class="card">
         <div class="card-body">
-            <!--            <div class="custom-control custom-radio custom-control-inline ml-5"-->
-            <!--                 th:each="localType : ${scheduleListTypes}">-->
-            <!--                <label class="custom-control-label" th:text="${localType.value}">-->
-            <!--                    <a th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${localType})}">-->
-            <!--                        <input class="custom-control-input"-->
-            <!--                               th:checked="${localType.value.equals('Group')}"-->
-            <!--                               th:value="${scheduleListType}"-->
-            <!--                               type="radio">-->
-            <!--                    </a>-->
-            <!--                </label>-->
-            <!--            </div>-->
             <div class="container my-5" th:switch="${scheduleListType}">
                 <div class="col-md-12">
                     <h2 th:case="null">Something went wrong!</h2>

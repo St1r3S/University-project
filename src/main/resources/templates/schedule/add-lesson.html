@@ -6,7 +6,7 @@
     </th:block>
 </head>
 <body>
-<div th:replace="~{fragments/general/header :: admin-header}">
+<div th:replace="~{fragments/general/header :: admin-header}" sec:authorize="hasAuthority('Admin')">
 </div>
 <div class="container my-5">
     <h3> Add Lesson</h3>
