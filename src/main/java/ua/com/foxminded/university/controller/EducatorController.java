@@ -13,6 +13,7 @@ import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.EducatorService;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 
 @Controller
@@ -45,9 +46,12 @@ public class EducatorController {
     }
 
     @PostMapping("/add")
-    public String addEducator(Educator educator, BindingResult result, Model model) {
+    public String addEducator(@Valid Educator educator, BindingResult result, Model model) {
         educator.setPasswordHash(educator.getPasswordHash());
         if (result.hasErrors()) {
+            model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
+            model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+
             return "educator/add-educator";
         }
         educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
@@ -69,7 +73,7 @@ public class EducatorController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateEducator(@PathVariable("id") long id, Educator educator, BindingResult result, Model model) {
+    public String updateEducator(@PathVariable("id") long id, @Valid Educator educator, BindingResult result, Model model) {
         if (result.hasErrors()) {
             educator.setId(id);
             return "educator/update-educator";

@@ -9,6 +9,10 @@ import ua.com.foxminded.university.model.user.Group;
 import ua.com.foxminded.university.model.user.Student;
 import ua.com.foxminded.university.model.user.UserRole;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @EqualsAndHashCode
@@ -19,15 +23,28 @@ import java.time.LocalDate;
 public class StudentView {
 
     private Long id;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
+    @Size(min = 5, message = "{Size.User.Username}")
     private String userName;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
+    @Size(min = 5, message = "{Size.User.Password}")
     private String passwordHash;
     private UserRole userRole;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
+    @Size(min = 3, message = "{Size.User.FirstName}")
     private String firstName;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
+    @Size(min = 3, message = "{Size.User.LastName}")
     private String lastName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "{Past.User.Birthday}")
     private LocalDate birthday;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
+    @Email(message = "{Pattern.User.Email}")
     private String email;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String groupName;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String specialismName;
     private Integer academicYearNumber;
     private SemesterType semesterType;

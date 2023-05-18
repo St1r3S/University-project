@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ua.com.foxminded.university.model.user.User;
 import ua.com.foxminded.university.repository.UserRepository;
 
-@Service("userDetailsServiceImpl")
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;

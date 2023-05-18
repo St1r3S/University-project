@@ -12,6 +12,7 @@ import ua.com.foxminded.university.model.user.User;
 import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.UserService;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -43,8 +44,10 @@ public class StaffController {
     }
 
     @PostMapping("/add")
-    public String addStaffMember(User staffMember, BindingResult result, Model model) {
+    public String addStaffMember(@Valid User staffMember, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
+
             return "staff/add-staff-member";
         }
         staffMember.setPasswordHash(passwordEncoder.encode(staffMember.getPasswordHash()));
@@ -65,7 +68,7 @@ public class StaffController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateStaffMember(@PathVariable("id") long id, User staffMember, BindingResult result, Model model) {
+    public String updateStaffMember(@PathVariable("id") long id, @Valid User staffMember, BindingResult result, Model model) {
         if (result.hasErrors()) {
             staffMember.setId(id);
             return "staff/update-staff-member";

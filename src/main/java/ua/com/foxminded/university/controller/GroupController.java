@@ -15,6 +15,7 @@ import ua.com.foxminded.university.service.AcademicYearService;
 import ua.com.foxminded.university.service.GroupService;
 import ua.com.foxminded.university.service.SpecialismService;
 
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,8 +57,12 @@ public class GroupController {
     }
 
     @PostMapping("/add")
-    public String addGroup(GroupView groupView, BindingResult result, Model model) {
+    public String addGroup(@Valid GroupView groupView, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+            model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+            model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+
             return "group/add-group";
         }
         Group group = groupView.groupViewToGroup(
@@ -87,7 +92,7 @@ public class GroupController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateGroup(@PathVariable("id") long id, GroupView groupView, BindingResult result, Model model) {
+    public String updateGroup(@PathVariable("id") long id, @Valid GroupView groupView, BindingResult result, Model model) {
         Group groupToSave = groupView.groupViewToGroup(
                 specialismService.findBySpecialismName(groupView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(groupView.getAcademicYearNumber(), groupView.getSemesterType())

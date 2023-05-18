@@ -16,6 +16,7 @@ import ua.com.foxminded.university.service.DisciplineService;
 import ua.com.foxminded.university.service.EducatorService;
 import ua.com.foxminded.university.service.SpecialismService;
 
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @Controller
@@ -63,8 +64,13 @@ public class DisciplineController {
     }
 
     @PostMapping("/add")
-    public String addDiscipline(DisciplineView disciplineView, BindingResult result, Model model) {
+    public String addDiscipline(@Valid DisciplineView disciplineView, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+            model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+            model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+            model.addAttribute("educators", this.educatorService.findAllFreeEducators());
+
             return "discipline/add-discipline";
         }
 
@@ -102,7 +108,7 @@ public class DisciplineController {
 
     @PostMapping("/update/{id}")
     public String updateDiscipline(@PathVariable("id") long id,
-                                   DisciplineView disciplineView,
+                                   @Valid DisciplineView disciplineView,
                                    BindingResult result,
                                    Model model) {
         Discipline disciplineToSave = disciplineView.disciplineViewToDiscipline(

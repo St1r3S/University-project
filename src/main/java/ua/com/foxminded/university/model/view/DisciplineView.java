@@ -7,6 +7,8 @@ import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.Educator;
 
+import javax.validation.constraints.NotEmpty;
+
 @EqualsAndHashCode
 @Getter
 @Setter
@@ -14,7 +16,9 @@ import ua.com.foxminded.university.model.user.Educator;
 @NoArgsConstructor
 public class DisciplineView {
     private Long id;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String disciplineName;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String specialismName;
     private Integer academicYearNumber;
     private SemesterType semesterType;

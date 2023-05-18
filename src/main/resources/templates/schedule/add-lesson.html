@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Add Schedule Cell</title>
     <th:block th:replace="~{fragments/general/header :: head}">
@@ -15,7 +15,7 @@
             <div class="col-md-10">
                 <th:block th:switch="${scheduleType}">
                     <form action="#" method="post"
-                          th:action="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType})}"
+                          th:action="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},lessonNumber=${lessonNumber}, dayOfWeek=${dayOfWeek})}"
                           th:object="${lessonView}">
 
                         <th:block

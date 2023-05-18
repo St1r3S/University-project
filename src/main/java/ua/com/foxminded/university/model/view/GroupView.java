@@ -6,6 +6,8 @@ import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.Group;
 
+import javax.validation.constraints.NotEmpty;
+
 @EqualsAndHashCode
 @Getter
 @Setter
@@ -13,7 +15,9 @@ import ua.com.foxminded.university.model.user.Group;
 @NoArgsConstructor
 public class GroupView {
     private Long id;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String groupName;
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String specialismName;
     private Integer academicYearNumber;
     private SemesterType semesterType;

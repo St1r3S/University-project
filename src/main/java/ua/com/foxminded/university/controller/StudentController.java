@@ -19,6 +19,7 @@ import ua.com.foxminded.university.service.GroupService;
 import ua.com.foxminded.university.service.SpecialismService;
 import ua.com.foxminded.university.service.StudentService;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -68,8 +69,13 @@ public class StudentController {
     }
 
     @PostMapping("/add")
-    public String addStudent(StudentView studentView, BindingResult result, Model model) {
+    public String addStudent(@Valid StudentView studentView, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
+            model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
+            model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+            model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+            model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
             return "student/add-student";
         }
         Student student = studentView.studentViewToStudent(
@@ -104,7 +110,7 @@ public class StudentController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateStudent(@PathVariable("id") long id, StudentView studentView, BindingResult result, Model model) {
+    public String updateStudent(@PathVariable("id") long id, @Valid StudentView studentView, BindingResult result, Model model) {
         Student studentToSave = studentView.studentViewToStudent(
                 groupService.findByGroupName(studentView.getGroupName()),
                 specialismService.findBySpecialismName(studentView.getSpecialismName()),

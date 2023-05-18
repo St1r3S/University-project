@@ -19,6 +19,7 @@ import ua.com.foxminded.university.model.view.GroupView;
 import ua.com.foxminded.university.model.view.LessonView;
 import ua.com.foxminded.university.service.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,6 +66,7 @@ public class ScheduleController {
         model.addAttribute("lessonNumber", lessonNumber);
         model.addAttribute("scheduleDay", scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
         model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+        model.addAttribute("dayOfWeek", dayOfWeek);
 
         return "schedule/add-lesson";
     }
@@ -73,11 +75,20 @@ public class ScheduleController {
     public String addLesson(@PathVariable("scheduleType") String scheduleType,
                             @PathVariable("contextId") long contextId,
                             @PathVariable("semesterType") String semesterType,
-                            LessonView lessonView,
+                            @Valid LessonView lessonView,
+                            LessonNumber lessonNumber,
+                            DayOfWeek dayOfWeek,
                             BindingResult result,
                             Model model) {
         if (result.hasErrors()) {
-            return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
+            model.addAttribute("disciplineNames", this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
+            model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
+            model.addAttribute("lessonNumber", lessonNumber);
+            model.addAttribute("scheduleDay", scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
+            model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+            model.addAttribute("dayOfWeek", dayOfWeek);
+
+            return "/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType + "/add";
         }
         Lesson lessonToSave;
         switch (scheduleType) {
@@ -205,7 +216,7 @@ public class ScheduleController {
                                @PathVariable("contextId") long contextId,
                                @PathVariable("semesterType") String semesterType,
                                @PathVariable("id") long idToUpdate,
-                               LessonView lessonView,
+                               @Valid LessonView lessonView,
                                BindingResult result,
                                Model model) {
 

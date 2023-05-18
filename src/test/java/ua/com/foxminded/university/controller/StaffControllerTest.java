@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.foxminded.university.model.user.User;
 import ua.com.foxminded.university.model.user.UserRole;
@@ -27,7 +30,13 @@ public class StaffControllerTest {
     @MockBean
     UserService userService;
 
+    @MockBean
+    UserDetailsService userDetailsService;
+    @MockBean
+    PasswordEncoder passwordEncoder;
+
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStaffForm() throws Exception {
         mockMvc.perform(get("/staff/showForm")
                         .contentType("application/json"))
@@ -36,10 +45,11 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStaffsList() throws Exception {
-        User userId1 = new User(1L, "maccas82", "pass82", UserRole.ADMIN, "Michael",
+        User userId1 = new User(1L, "maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
-        User userId2 = new User(2L, "sobs85", "pass85", UserRole.STAFF, "Jack",
+        User userId2 = new User(2L, "sobs85", "$2a$12$Ine2DS.L6N026UvCItB8GuIIBIL1Z1/3fhFZq/UANsRsGGsdbxZ/O", UserRole.STAFF, "Jack",
                 "Sobs", LocalDate.parse("1985-04-17"), "sobs85@gmail.com");
         List<User> users = List.of(userId1, userId2);
 
@@ -54,10 +64,13 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddStaff() throws Exception {
-        User userId1 = new User("maccas82", "pass82", UserRole.ADMIN, "Michael",
+        User userId1 = new User("maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
-
+        when(passwordEncoder.encode(userId1.getPasswordHash())).thenReturn(
+                userId1.getPasswordHash()
+        );
         mockMvc.perform(post("/staff/add")
                         .param("userRole", String.valueOf(userId1.getUserRole()))
                         .param("userName", String.valueOf(userId1.getUserName()))
@@ -72,8 +85,9 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowUpdateForm() throws Exception {
-        User userId1 = new User(1L, "maccas82", "pass82", UserRole.ADMIN, "Michael",
+        User userId1 = new User(1L, "maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
 
         when(userService.findById(userId1.getId())).thenReturn(
@@ -88,17 +102,20 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyUpdateStaff() throws Exception {
-        User userId1 = new User(1L, "maccas82", "pass82", UserRole.ADMIN, "Michael",
+        User userId1 = new User(1L, "maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
-        User userId2 = new User(2L, "sobs85", "pass85", UserRole.STAFF, "Jack",
+        User userId2 = new User(2L, "sobs85", "$2a$12$Ine2DS.L6N026UvCItB8GuIIBIL1Z1/3fhFZq/UANsRsGGsdbxZ/O", UserRole.STAFF, "Jack",
                 "Sobs", LocalDate.parse("1985-04-17"), "sobs85@gmail.com");
         List<User> users = List.of(userId1, userId2);
 
         when(userService.findAll()).thenReturn(
                 users
         );
-
+        when(passwordEncoder.encode(userId1.getPasswordHash())).thenReturn(
+                userId1.getPasswordHash()
+        );
         mockMvc.perform(post("/staff/update/{id}", userId1.getId())
                         .param("userRole", String.valueOf(userId1.getUserRole()))
                         .param("userName", String.valueOf(userId1.getUserName()))
@@ -114,10 +131,11 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyDelete() throws Exception {
-        User userId1 = new User(1L, "maccas82", "pass82", UserRole.ADMIN, "Michael",
+        User userId1 = new User(1L, "maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
                 "Maccas", LocalDate.parse("1982-06-22"), "maccas82@gmail.com");
-        User userId2 = new User(2L, "sobs85", "pass85", UserRole.STAFF, "Jack",
+        User userId2 = new User(2L, "sobs85", "$2a$12$Ine2DS.L6N026UvCItB8GuIIBIL1Z1/3fhFZq/UANsRsGGsdbxZ/O", UserRole.STAFF, "Jack",
                 "Sobs", LocalDate.parse("1985-04-17"), "sobs85@gmail.com");
         List<User> users = List.of(userId1, userId2);
 

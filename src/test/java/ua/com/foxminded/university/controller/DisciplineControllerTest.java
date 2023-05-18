@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.foxminded.university.model.lesson.Discipline;
 import ua.com.foxminded.university.model.lesson.Specialism;
@@ -42,7 +44,11 @@ public class DisciplineControllerTest {
     @MockBean
     EducatorService educatorService;
 
+    @MockBean
+    UserDetailsService userDetailsService;
+
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowDisciplineForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -72,6 +78,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowDisciplinesList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -99,6 +106,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddDiscipline() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -128,6 +136,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowUpdateForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -159,6 +168,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyUpdateDiscipline() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -201,6 +211,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyDelete() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);

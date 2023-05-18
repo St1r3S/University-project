@@ -9,6 +9,7 @@ import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
@@ -21,6 +22,7 @@ public class Group {
     @Column(name = "id")
     private Long id;
     @Column(name = "group_name", unique = true, nullable = false)
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String groupName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialism_id", nullable = false)

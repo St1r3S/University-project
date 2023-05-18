@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
@@ -43,7 +46,13 @@ public class StudentControllerTest {
     @MockBean
     AcademicYearService academicYearService;
 
+    @MockBean
+    UserDetailsService userDetailsService;
+    @MockBean
+    PasswordEncoder passwordEncoder;
+
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStudentForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -70,15 +79,16 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStudentsList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
         Group groupId1 = new Group(1L, "AI-193", specialismId1, academicYearId1);
         Group groupId2 = new Group(2L, "AI-194", specialismId1, academicYearId1);
-        Student studentId3 = new Student(3L, "johny05", "pass05", UserRole.STUDENT, "Alex",
+        Student studentId3 = new Student(3L, "johny05", "$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com",
                 groupId1, specialismId1, academicYearId1);
-        Student studentId4 = new Student(4L, "finn25", "pass25", UserRole.STUDENT, "Finn",
+        Student studentId4 = new Student(4L, "finn25", "$2a$12$5qWSAljsACYml5KqBkalV.1U6DxC0VDTY9EcV4z4sOY0AS9/Fzqwq", UserRole.STUDENT, "Finn",
                 "Chikson", LocalDate.parse("2002-04-25"), "finn@gmail.com",
                 groupId2, specialismId1, academicYearId1);
 
@@ -105,11 +115,12 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddStudent() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
         Group groupId1 = new Group(1L, "AI-193", specialismId1, academicYearId1);
-        Student studentId3 = new Student("johny05", "pass05", UserRole.STUDENT, "Alex",
+        Student studentId3 = new Student("johny05", "$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com",
                 groupId1, specialismId1, academicYearId1);
 
@@ -121,6 +132,9 @@ public class StudentControllerTest {
         );
         when(academicYearService.findByYearNumberAndSemesterType(academicYearId1.getYearNumber(), academicYearId1.getSemesterType())).thenReturn(
                 academicYearId1
+        );
+        when(passwordEncoder.encode(studentId3.getPasswordHash())).thenReturn(
+                studentId3.getPasswordHash()
         );
 
         mockMvc.perform(post("/students/add")
@@ -141,11 +155,12 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowUpdateForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
         Group groupId1 = new Group(1L, "AI-193", specialismId1, academicYearId1);
-        Student studentId3 = new Student(3L, "johny05", "pass05", UserRole.STUDENT, "Alex",
+        Student studentId3 = new Student(3L, "johny05", "$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com",
                 groupId1, specialismId1, academicYearId1);
 
@@ -174,15 +189,16 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyUpdateStudent() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
         Group groupId1 = new Group(1L, "AI-193", specialismId1, academicYearId1);
         Group groupId2 = new Group(2L, "AI-194", specialismId1, academicYearId1);
-        Student studentId3 = new Student(3L, "johny05", "pass05", UserRole.STUDENT, "Alex",
+        Student studentId3 = new Student(3L, "johny05", "$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com",
                 groupId1, specialismId1, academicYearId1);
-        Student studentId4 = new Student(4L, "finn25", "pass25", UserRole.STUDENT, "Finn",
+        Student studentId4 = new Student(4L, "finn25", "$2a$12$5qWSAljsACYml5KqBkalV.1U6DxC0VDTY9EcV4z4sOY0AS9/Fzqwq", UserRole.STUDENT, "Finn",
                 "Chikson", LocalDate.parse("2002-04-25"), "finn@gmail.com",
                 groupId2, specialismId1, academicYearId1);
 
@@ -210,6 +226,9 @@ public class StudentControllerTest {
         when(studentService.findAll()).thenReturn(
                 students
         );
+        when(passwordEncoder.encode(studentId3.getPasswordHash())).thenReturn(
+                studentId3.getPasswordHash()
+        );
 
         mockMvc.perform(post("/students/update/{id}", studentId3.getId())
                         .param("userRole", String.valueOf(studentId3.getUserRole()))
@@ -230,15 +249,16 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyDelete() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
         Group groupId1 = new Group(1L, "AI-193", specialismId1, academicYearId1);
         Group groupId2 = new Group(2L, "AI-194", specialismId1, academicYearId1);
-        Student studentId3 = new Student(3L, "johny05", "pass05", UserRole.STUDENT, "Alex",
+        Student studentId3 = new Student(3L, "johny05", "$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.", UserRole.STUDENT, "Alex",
                 "Johnson", LocalDate.parse("2002-05-05"), "a.johny@gmail.com",
                 groupId1, specialismId1, academicYearId1);
-        Student studentId4 = new Student(4L, "finn25", "pass25", UserRole.STUDENT, "Finn",
+        Student studentId4 = new Student(4L, "finn25", "$2a$12$5qWSAljsACYml5KqBkalV.1U6DxC0VDTY9EcV4z4sOY0AS9/Fzqwq", UserRole.STUDENT, "Finn",
                 "Chikson", LocalDate.parse("2002-04-25"), "finn@gmail.com",
                 groupId2, specialismId1, academicYearId1);
 
