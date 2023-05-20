@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ua.com.foxminded.university.model.lesson.Discipline;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 
 @Data

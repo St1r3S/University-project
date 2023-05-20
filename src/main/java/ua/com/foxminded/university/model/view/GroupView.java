@@ -6,7 +6,7 @@ import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.Group;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @EqualsAndHashCode
 @Getter

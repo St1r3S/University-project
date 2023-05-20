@@ -2,8 +2,8 @@ package ua.com.foxminded.university.repository.converters;
 
 import ua.com.foxminded.university.model.user.AcademicRank;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class AcademicRankConverter implements AttributeConverter<AcademicRank, String> {

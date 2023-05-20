@@ -12,7 +12,7 @@ import ua.com.foxminded.university.model.user.User;
 import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.UserService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

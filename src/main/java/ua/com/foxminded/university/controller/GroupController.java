@@ -15,7 +15,7 @@ import ua.com.foxminded.university.service.AcademicYearService;
 import ua.com.foxminded.university.service.GroupService;
 import ua.com.foxminded.university.service.SpecialismService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.stream.Collectors;
 
 @Controller

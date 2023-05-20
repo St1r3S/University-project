@@ -2,8 +2,8 @@ package ua.com.foxminded.university.repository.converters;
 
 import ua.com.foxminded.university.model.schedule.SemesterType;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class SemesterTypeConverter implements AttributeConverter<SemesterType, String> {

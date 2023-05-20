@@ -13,7 +13,7 @@ import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.EducatorService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Arrays;
 
 @Controller

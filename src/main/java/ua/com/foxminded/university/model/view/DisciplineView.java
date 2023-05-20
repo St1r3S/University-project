@@ -7,7 +7,7 @@ import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.Educator;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 @EqualsAndHashCode
 @Getter

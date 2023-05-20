@@ -16,7 +16,7 @@ import ua.com.foxminded.university.service.DisciplineService;
 import ua.com.foxminded.university.service.EducatorService;
 import ua.com.foxminded.university.service.SpecialismService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.stream.Collectors;
 
 @Controller

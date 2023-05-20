@@ -4,21 +4,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ua.com.foxminded.university.model.user.UserRole;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
@@ -26,24 +25,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
+    @Bean
+    protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        return http
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/disciplines/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers("/educators/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers("/groups/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers(HttpMethod.GET, "/schedule/**/delete/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers(HttpMethod.GET, "/schedule/**").hasAnyAuthority(
+                .requestMatchers("/").permitAll()
+                .requestMatchers("/disciplines/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers("/educators/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers("/groups/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers(HttpMethod.GET, "/schedule/*/delete/*").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers(HttpMethod.GET, "/schedule/**").hasAnyAuthority(
                         UserRole.ADMIN.getValue(),
                         UserRole.STUDENT.getValue(),
                         UserRole.STAFF.getValue(),
                         UserRole.EDUCATOR.getValue()
                 )
-                .antMatchers(HttpMethod.POST, "/schedule/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers("/staff/**").hasAuthority(UserRole.ADMIN.getValue())
-                .antMatchers("/students/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers(HttpMethod.POST, "/schedule/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers("/staff/**").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers("/students/**").hasAuthority(UserRole.ADMIN.getValue())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -58,13 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
                 .and()
-                .exceptionHandling().accessDeniedPage("/auth/forbidden");
+                .exceptionHandling().accessDeniedPage("/auth/forbidden")
+                .and().build();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(daoAuthenticationProvider());
-    }
 
     @Bean
     protected PasswordEncoder passwordEncoder() {

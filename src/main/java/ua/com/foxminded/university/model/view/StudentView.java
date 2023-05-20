@@ -9,10 +9,10 @@ import ua.com.foxminded.university.model.user.Group;
 import ua.com.foxminded.university.model.user.Student;
 import ua.com.foxminded.university.model.user.UserRole;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 @EqualsAndHashCode

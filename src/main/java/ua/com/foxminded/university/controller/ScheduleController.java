@@ -19,7 +19,7 @@ import ua.com.foxminded.university.model.view.GroupView;
 import ua.com.foxminded.university.model.view.LessonView;
 import ua.com.foxminded.university.service.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;

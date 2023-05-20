@@ -7,8 +7,8 @@ import lombok.ToString;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.user.Educator;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
