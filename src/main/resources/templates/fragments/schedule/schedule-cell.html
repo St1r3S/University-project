@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Schedule Cell Fragment</title>
     <th:block th:replace="~{fragments/general/header :: head}">
@@ -9,7 +9,7 @@
 <th:block th:fragment="show-lesson-cell(lesson)">
     <td class="align-middle p-3">
         <table class="table table-borderless table-sm">
-            <tr class="row ">
+            <tr class="row" sec:authorize="hasAuthority('Admin')">
                 <td class="col col-md-5" th:text="${'RN' + lesson.roomNumber}"></td>
                 <td><a class="btn btn-primary btn-sm col-md-auto"
                        th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/edit/{id}(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},id=${lesson.id})}"><i
@@ -17,6 +17,9 @@
                 <td><a class="btn btn-primary btn-sm col-md-auto"
                        th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/delete/{id}(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},id=${lesson.id})}"><i
                         class="fas fa-solid fa-trash"></i></a></td>
+            </tr>
+            <tr class="row justify-content-center" sec:authorize="hasAnyAuthority('Student','Educator','Staff')">
+                <td th:text="${'RN' + lesson.roomNumber}"></td>
             </tr>
             <tr class="row justify-content-center">
                 <td th:text="${lesson.disciplineName}"></td>
@@ -31,9 +34,13 @@
     </td>
 </th:block>
 <th:block th:fragment="add-lesson-cell(lesson)">
-    <td class="align-middle"><a class="btn btn-primary"
-                                th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/showForm(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},lessonNumber=${lesson.lessonNumber}, dayOfWeek=${lesson.scheduleDay.dayOfWeek})}"><i
-            class="fas fa-solid fa-plus"> Add Lesson</i></a></td>
+    <td class="align-middle" sec:authorize="hasAuthority('Admin')">
+        <a class="btn btn-primary"
+           th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}/showForm(scheduleType=${scheduleType},contextId=${contextId},semesterType=${semesterType},lessonNumber=${lesson.lessonNumber}, dayOfWeek=${lesson.scheduleDay.dayOfWeek})}">
+            <i class="fas fa-solid fa-plus"> Add Lesson</i></a>
+    </td>
+    <td class="align-middle" sec:authorize="hasAnyAuthority('Student','Educator','Staff')">
+    </td>
 </th:block>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/disciplines")
 public class DisciplineController {
 
+    public static final String SPECIALISM_NAMES = "specialismNames";
+    public static final String ACADEMIC_YEARS = "academicYears";
+    public static final String SEMESTER_TYPES = "semesterTypes";
+    public static final String EDUCATORS = "educators";
+    public static final String DISCIPLINES = "disciplines";
+    public static final String DISCIPLINE_DISCIPLINES_LIST = "discipline/disciplines-list";
     private final DisciplineService disciplineService;
 
     private final SpecialismService specialismService;
@@ -38,17 +45,17 @@ public class DisciplineController {
 
     @GetMapping("/showForm")
     public String showDisciplineForm(DisciplineView disciplineView, Model model) {
-        model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
-        model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
-        model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
-        model.addAttribute("educators", this.educatorService.findAllFreeEducators());
+        model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+        model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+        model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+        model.addAttribute(EDUCATORS, this.educatorService.findAllFreeEducators());
 
         return "discipline/add-discipline";
     }
 
     @GetMapping("/list")
     public String disciplines(Model model) {
-        model.addAttribute("disciplines", this.disciplineService.findAll()
+        model.addAttribute(DISCIPLINES, this.disciplineService.findAll()
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
@@ -59,12 +66,17 @@ public class DisciplineController {
                 .collect(Collectors.toList())
         );
 
-        return "discipline/disciplines-list";
+        return DISCIPLINE_DISCIPLINES_LIST;
     }
 
     @PostMapping("/add")
-    public String addDiscipline(DisciplineView disciplineView, BindingResult result, Model model) {
+    public String addDiscipline(@Valid DisciplineView disciplineView, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+            model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+            model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+            model.addAttribute(EDUCATORS, this.educatorService.findAllFreeEducators());
+
             return "discipline/add-discipline";
         }
 
@@ -92,17 +104,17 @@ public class DisciplineController {
                         discipline.getEducator()
                 )
         );
-        model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
-        model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
-        model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
-        model.addAttribute("educators", this.educatorService.findAllFreeEducators());
+        model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+        model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+        model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+        model.addAttribute(EDUCATORS, this.educatorService.findAllFreeEducators());
 
         return "discipline/update-discipline";
     }
 
     @PostMapping("/update/{id}")
     public String updateDiscipline(@PathVariable("id") long id,
-                                   DisciplineView disciplineView,
+                                   @Valid DisciplineView disciplineView,
                                    BindingResult result,
                                    Model model) {
         Discipline disciplineToSave = disciplineView.disciplineViewToDiscipline(
@@ -118,7 +130,7 @@ public class DisciplineController {
 
         this.disciplineService.save(disciplineToSave);
 
-        model.addAttribute("disciplines", this.disciplineService.findAll()
+        model.addAttribute(DISCIPLINES, this.disciplineService.findAll()
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
@@ -128,12 +140,12 @@ public class DisciplineController {
                 ))
                 .collect(Collectors.toList())
         );
-        model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
-        model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
-        model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
-        model.addAttribute("educators", this.educatorService.findAllFreeEducators());
+        model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+        model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+        model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+        model.addAttribute(EDUCATORS, this.educatorService.findAllFreeEducators());
 
-        return "discipline/disciplines-list";
+        return DISCIPLINE_DISCIPLINES_LIST;
     }
 
     @GetMapping("/delete/{id}")
@@ -142,7 +154,7 @@ public class DisciplineController {
 
         this.disciplineService.delete(disciplineToDelete);
 
-        model.addAttribute("disciplines", this.disciplineService.findAll()
+        model.addAttribute(DISCIPLINES, this.disciplineService.findAll()
                 .stream()
                 .map(discipline -> DisciplineView.disciplineToDisciplineView(
                         discipline,
@@ -153,7 +165,7 @@ public class DisciplineController {
                 .collect(Collectors.toList())
         );
 
-        return "discipline/disciplines-list";
+        return DISCIPLINE_DISCIPLINES_LIST;
 
     }
 }

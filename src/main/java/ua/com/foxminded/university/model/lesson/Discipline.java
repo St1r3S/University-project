@@ -7,7 +7,8 @@ import lombok.ToString;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.user.Educator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
@@ -20,6 +21,7 @@ public class Discipline {
     @Column(name = "id")
     private Long id;
     @Column(name = "discipline_name", nullable = false)
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String disciplineName;
 
     @ManyToOne(fetch = FetchType.LAZY)

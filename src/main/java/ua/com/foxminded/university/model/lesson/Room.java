@@ -5,7 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
@@ -18,6 +19,7 @@ public class Room {
     @Column(name = "id")
     private Long id;
     @Column(name = "room_number", unique = true, nullable = false)
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String roomNumber;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

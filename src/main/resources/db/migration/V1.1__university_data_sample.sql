@@ -94,25 +94,33 @@ VALUES ('AI-185', 5, 3);
 
 
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email)
-VALUES (1, 'maccas82', 'pass82', 'Admin', 'Michael', 'Maccas', '1982-06-22', 'maccas82@gmail.com');
+VALUES (1, 'maccas82', '$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly', 'Admin', 'Michael', 'Maccas',
+        '1982-06-22', 'maccas82@gmail.com');
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email)
-VALUES (1, 'sobs85', 'pass85', 'Staff', 'Jack', 'Sobs', '1985-04-17', 'sobs85@gmail.com');
+VALUES (1, 'sobs85', '$2a$12$Ine2DS.L6N026UvCItB8GuIIBIL1Z1/3fhFZq/UANsRsGGsdbxZ/O', 'Staff', 'Jack', 'Sobs',
+        '1985-04-17', 'sobs85@gmail.com');
 
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, group_id,
                   specialism_id, academic_year_id)
-VALUES (2, 'johny05', 'pass05', 'Student', 'Alex', 'Johnson', '2002-05-05', 'a.johny@gmail.com', 1, 1, 1);
+VALUES (2, 'johny05', '$2a$12$9w3TyJIX5elVb0UL9Yw9beHx/IAAyNwPSpeXg31bUMi7e9vtGRKI.', 'Student', 'Alex', 'Johnson',
+        '2002-05-05', 'a.johny@gmail.com', 1, 1, 1);
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, group_id,
                   specialism_id, academic_year_id)
-VALUES (2, 'finn25', 'pass25', 'Student', 'Finn', 'Chikson', '2002-04-25', 'finn@gmail.com', 2, 1, 1);
+VALUES (2, 'finn25', '$2a$12$5qWSAljsACYml5KqBkalV.1U6DxC0VDTY9EcV4z4sOY0AS9/Fzqwq', 'Student', 'Finn', 'Chikson',
+        '2002-04-25', 'finn@gmail.com', 2, 1, 1);
 
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, academic_rank)
-VALUES (3, 'grant78', 'pass78', 'Educator', 'John', 'Grant', '1978-03-28', 'grant@gmail.com', 'Professor');
+VALUES (3, 'grant78', '$2a$12$bDYcmC4EYJb4uB.NLclvD.i0VFCFoJZgHphomz0A5QzTLegGcyzau', 'Educator', 'John', 'Grant',
+        '1978-03-28', 'grant@gmail.com', 'Professor');
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, academic_rank)
-VALUES (3, 'jimm80', 'pass80', 'Educator', 'Alex', 'Jimson', '1980-03-24', 'alex@gmail.com', 'Docent');
+VALUES (3, 'jimm80', '$2a$12$dd6IoxDwQceT.3iigUvwmOnNunAIfZBzqis4rccCs8X2uz8oDJbtK', 'Educator', 'Alex', 'Jimson',
+        '1980-03-24', 'alex@gmail.com', 'Docent');
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, academic_rank)
-VALUES (3, 'spy74', 'pass74', 'Educator', 'Feder', 'Lops', '1974-05-25', 'spy@gmail.com', 'Docent');
+VALUES (3, 'spy74', '$2a$12$EqBjT/9wyeVYpGf4Ivc2lucETz8WzMSq6Yo3ULplp2UtJB9UFk/gW', 'Educator', 'Feder', 'Lops',
+        '1974-05-25', 'spy@gmail.com', 'Docent');
 INSERT INTO users(user_type, user_name, password_hash, user_role, first_name, last_name, birthday, email, academic_rank)
-VALUES (3, 'kox55', 'pass55', 'Educator', 'Semen', 'Dowson', '1955-06-22', 'dowson@gmail.com', 'Docent');
+VALUES (3, 'kox55', '$2a$12$J/8dWaqxsm6dOfuUv.pFNOH90W5rg5mPj5djbJuyCWBmtIIQ93psa', 'Educator', 'Semen', 'Dowson',
+        '1955-06-22', 'dowson@gmail.com', 'Docent');
 
 INSERT INTO disciplines(discipline_name, specialism_id, academic_year_id, educator_id)
 VALUES ('Math', 1, 1, 5);

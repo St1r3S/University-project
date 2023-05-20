@@ -1,5 +1,7 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,33 +19,41 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/staff")
 public class StaffController {
+    public static final String USER_ROLES = "userRoles";
+    public static final String STAFF = "staff";
+    public static final String STAFF_STAFF_LIST = "staff/staff-list";
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public StaffController(UserService userService) {
+    public StaffController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @GetMapping("/showForm")
     public String showStaffMemberForm(User staffMember, Model model) {
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
 
         return "staff/add-staff-member";
     }
 
     @GetMapping("/list")
     public String staff(Model model) {
-        model.addAttribute("staff", this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
+        model.addAttribute(STAFF, this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
 
-        return "staff/staff-list";
+        return STAFF_STAFF_LIST;
     }
 
     @PostMapping("/add")
-    public String addStaffMember(User staffMember, BindingResult result, Model model) {
+    public String addStaffMember(@Valid User staffMember, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+
             return "staff/add-staff-member";
         }
+        staffMember.setPasswordHash(passwordEncoder.encode(staffMember.getPasswordHash()));
         this.userService.save(staffMember);
 
         return "redirect:list";
@@ -55,23 +65,23 @@ public class StaffController {
         User staffMember = this.userService.findById(id);
 
         model.addAttribute("staffMember", staffMember);
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
 
         return "staff/update-staff-member";
     }
 
     @PostMapping("/update/{id}")
-    public String updateStaffMember(@PathVariable("id") long id, User staffMember, BindingResult result, Model model) {
+    public String updateStaffMember(@PathVariable("id") long id, @Valid User staffMember, BindingResult result, Model model) {
         if (result.hasErrors()) {
             staffMember.setId(id);
             return "staff/update-staff-member";
         }
-
+        staffMember.setPasswordHash(passwordEncoder.encode(staffMember.getPasswordHash()));
         userService.save(staffMember);
 
-        model.addAttribute("staff", this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
+        model.addAttribute(STAFF, this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
 
-        return "staff/staff-list";
+        return STAFF_STAFF_LIST;
     }
 
     @GetMapping("/delete/{id}")
@@ -79,8 +89,8 @@ public class StaffController {
         User staffMember = this.userService.findById(id);
 
         userService.delete(staffMember);
-        model.addAttribute("staff", this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
+        model.addAttribute(STAFF, this.userService.findAll().stream().filter(s -> s.getUserRole() == UserRole.STAFF || s.getUserRole() == UserRole.ADMIN).collect(Collectors.toList()));
 
-        return "staff/staff-list";
+        return STAFF_STAFF_LIST;
     }
 }

@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,10 +14,13 @@ import ua.com.foxminded.university.model.lesson.LessonNumber;
 import ua.com.foxminded.university.model.lesson.Room;
 import ua.com.foxminded.university.model.schedule.*;
 import ua.com.foxminded.university.model.user.Group;
+import ua.com.foxminded.university.model.user.User;
+import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.model.view.GroupView;
 import ua.com.foxminded.university.model.view.LessonView;
 import ua.com.foxminded.university.service.*;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,17 @@ import java.util.stream.Collectors;
 @RequestMapping("/schedule")
 public class ScheduleController {
 
+    public static final String DISCIPLINE_NAMES = "disciplineNames";
+    public static final String GROUP_NAMES = "groupNames";
+    public static final String LESSON_NUMBER = "lessonNumber";
+    public static final String SCHEDULE_DAY = "scheduleDay";
+    public static final String ROOM_NUMBERS = "roomNumbers";
+    public static final String DAY_OF_WEEK = "dayOfWeek";
+    public static final String EDIT = "/edit/";
+    public static final String GROUPS = "groups";
+    public static final String EDUCATORS = "educators";
+    public static final String ROOMS = "rooms";
+    public static final String REDIRECT_SCHEDULE = "redirect:/schedule/";
     private final LessonService lessonService;
 
     private final DisciplineService disciplineService;
@@ -34,8 +49,10 @@ public class ScheduleController {
     private final EducatorService educatorService;
     private final AcademicYearService academicYearService;
 
+    private final StudentService studentService;
+    private final UserService userService;
 
-    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, EducatorService educatorService, AcademicYearService academicYearService) {
+    public ScheduleController(LessonService lessonService, DisciplineService disciplineService, GroupService groupService, RoomService roomService, ScheduleDayService scheduleDayService, EducatorService educatorService, AcademicYearService academicYearService, StudentService studentService, UserService userService) {
         this.lessonService = lessonService;
         this.disciplineService = disciplineService;
         this.groupService = groupService;
@@ -43,6 +60,8 @@ public class ScheduleController {
         this.scheduleDayService = scheduleDayService;
         this.educatorService = educatorService;
         this.academicYearService = academicYearService;
+        this.studentService = studentService;
+        this.userService = userService;
     }
 
     @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/showForm")
@@ -53,11 +72,12 @@ public class ScheduleController {
                                  DayOfWeek dayOfWeek,
                                  LessonView lessonView,
                                  Model model) {
-        model.addAttribute("disciplineNames", this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
-        model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
-        model.addAttribute("lessonNumber", lessonNumber);
-        model.addAttribute("scheduleDay", scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
-        model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+        model.addAttribute(DISCIPLINE_NAMES, this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
+        model.addAttribute(GROUP_NAMES, this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
+        model.addAttribute(LESSON_NUMBER, lessonNumber);
+        model.addAttribute(SCHEDULE_DAY, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
+        model.addAttribute(ROOM_NUMBERS, this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+        model.addAttribute(DAY_OF_WEEK, dayOfWeek);
 
         return "schedule/add-lesson";
     }
@@ -66,29 +86,38 @@ public class ScheduleController {
     public String addLesson(@PathVariable("scheduleType") String scheduleType,
                             @PathVariable("contextId") long contextId,
                             @PathVariable("semesterType") String semesterType,
-                            LessonView lessonView,
+                            @Valid LessonView lessonView,
+                            LessonNumber lessonNumber,
+                            DayOfWeek dayOfWeek,
                             BindingResult result,
                             Model model) {
         if (result.hasErrors()) {
-            return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
+            model.addAttribute(DISCIPLINE_NAMES, this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
+            model.addAttribute(GROUP_NAMES, this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
+            model.addAttribute(LESSON_NUMBER, lessonNumber);
+            model.addAttribute(SCHEDULE_DAY, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType)));
+            model.addAttribute(ROOM_NUMBERS, this.roomService.findAllFreeRooms(lessonNumber, scheduleDayService.findByDayOfWeekAndSemesterType(dayOfWeek, SemesterType.get(semesterType))).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+            model.addAttribute(DAY_OF_WEEK, dayOfWeek);
+
+            return "/schedule/" + scheduleType + EDIT + contextId + "/" + semesterType + "/add";
         }
         Lesson lessonToSave;
         switch (scheduleType) {
-            case "groups":
+            case GROUPS:
                 lessonToSave = lessonView.lessonViewToLesson(
                         disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                         groupService.findById(contextId),
                         roomService.findByRoomNumber(lessonView.getRoomNumber())
                 );
                 break;
-            case "educators":
+            case EDUCATORS:
                 lessonToSave = lessonView.lessonViewToLesson(
                         disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                         groupService.findByGroupName(lessonView.getGroupName()),
                         roomService.findByRoomNumber(lessonView.getRoomNumber())
                 );
                 break;
-            case "rooms":
+            case ROOMS:
                 lessonToSave = lessonView.lessonViewToLesson(
                         disciplineService.findByDisciplineName(lessonView.getDisciplineName()),
                         groupService.findByGroupName(lessonView.getGroupName()),
@@ -102,7 +131,7 @@ public class ScheduleController {
 
         this.lessonService.save(lessonToSave);
 
-        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
+        return REDIRECT_SCHEDULE + scheduleType + EDIT + contextId + "/" + semesterType;
     }
 
 
@@ -111,8 +140,8 @@ public class ScheduleController {
         model.addAttribute("scheduleListTypes", Arrays.asList(ScheduleListType.values()));
 
         switch (scheduleListType) {
-            case "groups":
-                model.addAttribute("groups", this.groupService.findAll()
+            case GROUPS:
+                model.addAttribute(GROUPS, this.groupService.findAll()
                         .stream()
                         .map(group -> GroupView.groupToGroupView(
                                 group,
@@ -122,11 +151,11 @@ public class ScheduleController {
                         .collect(Collectors.toList())
                 );
                 break;
-            case "educators":
-                model.addAttribute("educators", this.educatorService.findAll());
+            case EDUCATORS:
+                model.addAttribute(EDUCATORS, this.educatorService.findAll());
                 break;
-            case "rooms":
-                model.addAttribute("rooms", this.roomService.findAll());
+            case ROOMS:
+                model.addAttribute(ROOMS, this.roomService.findAll());
                 break;
         }
         return "schedule/choose-schedule";
@@ -140,6 +169,30 @@ public class ScheduleController {
         makeModelToShowSchedule(scheduleType, contextId, semesterType, model);
         return "schedule/show-schedule";
     }
+
+    @GetMapping("/{semesterType}")
+    public String showScheduleByUser(@PathVariable("semesterType") String semesterType,
+                                     Model model,
+                                     Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        String scheduleType;
+        long contextId;
+        if (user.getUserRole() == UserRole.EDUCATOR) {
+            scheduleType = EDUCATORS;
+            contextId = user.getId();
+        } else if (user.getUserRole() == UserRole.STUDENT) {
+            scheduleType = GROUPS;
+            contextId = studentService.findById(user.getId()).getGroup().getId();
+        } else {
+            throw new IllegalArgumentException("Invalid user type!");
+        }
+        model.addAttribute("scheduleType", scheduleType);
+        model.addAttribute("contextId", contextId);
+
+        makeModelToShowSchedule(scheduleType, contextId, semesterType, model);
+        return "schedule/show-schedule";
+    }
+
 
     @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/edit/{id}")
     public String showUpdateForm(@PathVariable("scheduleType") String scheduleType,
@@ -161,10 +214,10 @@ public class ScheduleController {
         model.addAttribute("lesson",
                 lessonView
         );
-        model.addAttribute("disciplineNames", this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
-        model.addAttribute("groupNames", this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
+        model.addAttribute(DISCIPLINE_NAMES, this.disciplineService.findAll().stream().map(Discipline::getDisciplineName).collect(Collectors.toList()));
+        model.addAttribute(GROUP_NAMES, this.groupService.findAll().stream().map(Group::getGroupName).collect(Collectors.toList()));
         model.addAttribute("lessonNumbers", Arrays.asList(LessonNumber.values()));
-        model.addAttribute("roomNumbers", this.roomService.findAllFreeRooms(lessonView.getLessonNumber(), lessonView.getScheduleDay()).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
+        model.addAttribute(ROOM_NUMBERS, this.roomService.findAllFreeRooms(lessonView.getLessonNumber(), lessonView.getScheduleDay()).stream().map(Room::getRoomNumber).collect(Collectors.toList()));
 
         return "schedule/update-lesson";
     }
@@ -174,7 +227,7 @@ public class ScheduleController {
                                @PathVariable("contextId") long contextId,
                                @PathVariable("semesterType") String semesterType,
                                @PathVariable("id") long idToUpdate,
-                               LessonView lessonView,
+                               @Valid LessonView lessonView,
                                BindingResult result,
                                Model model) {
 
@@ -191,7 +244,7 @@ public class ScheduleController {
 
         this.lessonService.save(lessonToSave);
 
-        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
+        return REDIRECT_SCHEDULE + scheduleType + EDIT + contextId + "/" + semesterType;
     }
 
     @GetMapping("/{scheduleType}/edit/{contextId}/{semesterType}/delete/{id}")
@@ -202,7 +255,7 @@ public class ScheduleController {
                                Model model) {
         Lesson lessonToDelete = lessonService.findById(idToDelete);
         lessonService.delete(lessonToDelete);
-        return "redirect:/schedule/" + scheduleType + "/edit/" + contextId + "/" + semesterType;
+        return REDIRECT_SCHEDULE + scheduleType + EDIT + contextId + "/" + semesterType;
     }
 
 
@@ -215,7 +268,7 @@ public class ScheduleController {
         List<LessonView> lessons;
         Map<LessonNumber, List<LessonView>> mappedLessons = new LinkedHashMap<>();
         switch (scheduleType) {
-            case "groups":
+            case GROUPS:
                 lessons = lessonService.findAllByGroupId(contextId)
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))
@@ -233,7 +286,7 @@ public class ScheduleController {
                         ))
                         .collect(Collectors.toList());
                 break;
-            case "educators":
+            case EDUCATORS:
                 lessons = lessonService.findAllByDisciplineId(disciplineService.findByEducatorId(contextId).getId())
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))
@@ -251,7 +304,7 @@ public class ScheduleController {
                         ))
                         .collect(Collectors.toList());
                 break;
-            case "rooms":
+            case ROOMS:
                 lessons = lessonService.findAllByRoomId(contextId)
                         .stream()
                         .filter(lesson -> scheduleDayService.findBySemesterType(SemesterType.get(semesterType))

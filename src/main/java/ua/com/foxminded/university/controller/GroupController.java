@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/groups")
 public class GroupController {
 
+    public static final String SPECIALISM_NAMES = "specialismNames";
+    public static final String ACADEMIC_YEARS = "academicYears";
+    public static final String SEMESTER_TYPES = "semesterTypes";
+    public static final String GROUPS = "groups";
+    public static final String GROUP_GROUPS_LIST = "group/groups-list";
     private final GroupService groupService;
 
     private final SpecialismService specialismService;
@@ -35,15 +41,15 @@ public class GroupController {
 
     @GetMapping("/showForm")
     public String showGroupForm(GroupView groupView, Model model) {
-        model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
-        model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
-        model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+        model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+        model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+        model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
         return "group/add-group";
     }
 
     @GetMapping("/list")
     public String groups(Model model) {
-        model.addAttribute("groups", this.groupService.findAll()
+        model.addAttribute(GROUPS, this.groupService.findAll()
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
@@ -52,12 +58,16 @@ public class GroupController {
                 ))
                 .collect(Collectors.toList())
         );
-        return "group/groups-list";
+        return GROUP_GROUPS_LIST;
     }
 
     @PostMapping("/add")
-    public String addGroup(GroupView groupView, BindingResult result, Model model) {
+    public String addGroup(@Valid GroupView groupView, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+            model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+            model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+
             return "group/add-group";
         }
         Group group = groupView.groupViewToGroup(
@@ -80,14 +90,14 @@ public class GroupController {
                         group.getAcademicYear()
                 )
         );
-        model.addAttribute("specialismNames", this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
-        model.addAttribute("academicYears", this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
-        model.addAttribute("semesterTypes", this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
+        model.addAttribute(SPECIALISM_NAMES, this.specialismService.findAll().stream().map(Specialism::getSpecialismName).collect(Collectors.toList()));
+        model.addAttribute(ACADEMIC_YEARS, this.academicYearService.findAll().stream().map(AcademicYear::getYearNumber).distinct().collect(Collectors.toList()));
+        model.addAttribute(SEMESTER_TYPES, this.academicYearService.findAll().stream().map(AcademicYear::getSemesterType).distinct().collect(Collectors.toList()));
         return "group/update-group";
     }
 
     @PostMapping("/update/{id}")
-    public String updateGroup(@PathVariable("id") long id, GroupView groupView, BindingResult result, Model model) {
+    public String updateGroup(@PathVariable("id") long id, @Valid GroupView groupView, BindingResult result, Model model) {
         Group groupToSave = groupView.groupViewToGroup(
                 specialismService.findBySpecialismName(groupView.getSpecialismName()),
                 academicYearService.findByYearNumberAndSemesterType(groupView.getAcademicYearNumber(), groupView.getSemesterType())
@@ -102,7 +112,7 @@ public class GroupController {
         this.groupService.save(groupToSave);
 
         // get all students ( with update)
-        model.addAttribute("groups", this.groupService.findAll()
+        model.addAttribute(GROUPS, this.groupService.findAll()
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
@@ -111,7 +121,7 @@ public class GroupController {
                 ))
                 .collect(Collectors.toList())
         );
-        return "group/groups-list";
+        return GROUP_GROUPS_LIST;
     }
 
     @GetMapping("/delete/{id}")
@@ -120,7 +130,7 @@ public class GroupController {
         Group groupToDelete = this.groupService.findById(id);
 
         this.groupService.delete(groupToDelete);
-        model.addAttribute("groups", this.groupService.findAll()
+        model.addAttribute(GROUPS, this.groupService.findAll()
                 .stream()
                 .map(group -> GroupView.groupToGroupView(
                         group,
@@ -129,7 +139,7 @@ public class GroupController {
                 ))
                 .collect(Collectors.toList())
         );
-        return "group/groups-list";
+        return GROUP_GROUPS_LIST;
 
     }
 }

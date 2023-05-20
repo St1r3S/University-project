@@ -1,5 +1,7 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,34 +20,45 @@ import java.util.Arrays;
 @RequestMapping("/educators")
 public class EducatorController {
 
+    public static final String USER_ROLES = "userRoles";
+    public static final String ACADEMIC_RANKS = "academicRanks";
+    public static final String EDUCATORS = "educators";
+    public static final String EDUCATOR_EDUCATORS_LIST = "educator/educators-list";
     private final EducatorService educatorService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public EducatorController(EducatorService educatorService) {
+    public EducatorController(EducatorService educatorService, PasswordEncoder passwordEncoder) {
         this.educatorService = educatorService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @GetMapping("/showForm")
     public String showEducatorForm(Educator educator, Model model) {
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
         return "educator/add-educator";
     }
 
     @GetMapping("/list")
-    public String educators(Model model) {
-        model.addAttribute("educators", this.educatorService.findAll());
+    public String educatorsList(Model model) {
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
     }
 
     @PostMapping("/add")
-    public String addEducator(Educator educator, BindingResult result, Model model) {
+    public String addEducator(@Valid Educator educator, BindingResult result, Model model) {
+        educator.setPasswordHash(educator.getPasswordHash());
         if (result.hasErrors()) {
+            model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+            model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
+
             return "educator/add-educator";
         }
+        educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
         this.educatorService.save(educator);
 
         return "redirect:list";
@@ -57,26 +70,26 @@ public class EducatorController {
         Educator educator = this.educatorService.findById(id);
 
         model.addAttribute("educator", educator);
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
         return "educator/update-educator";
     }
 
     @PostMapping("/update/{id}")
-    public String updateEducator(@PathVariable("id") long id, Educator educator, BindingResult result, Model model) {
+    public String updateEducator(@PathVariable("id") long id, @Valid Educator educator, BindingResult result, Model model) {
         if (result.hasErrors()) {
             educator.setId(id);
             return "educator/update-educator";
         }
-
+        educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
         educatorService.save(educator);
 
-        model.addAttribute("educators", this.educatorService.findAll());
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
     }
 
     @GetMapping("/delete/{id}")
@@ -84,9 +97,9 @@ public class EducatorController {
         Educator educator = this.educatorService.findById(id);
 
         educatorService.delete(educator);
-        model.addAttribute("educators", this.educatorService.findAll());
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
 
     }
 }

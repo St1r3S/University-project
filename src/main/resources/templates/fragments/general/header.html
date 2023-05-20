@@ -17,6 +17,7 @@
     </th:block>
 </head>
 <body>
+
 <div th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -37,15 +38,32 @@
                             Schedule
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/students/showForm">General schedule</a></li>
+                            <h5 class="dropdown-header">Schedule Lists</h5>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).GROUPS_LIST.value})}">Groups</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).EDUCATORS_LIST.value})}">Educators</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).ROOMS_LIST.value})}">Rooms</a>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/students/list">My schedule</a></li>
+                            <li><a class="dropdown-item"
+                                   th:href="@{/schedule/{semesterType}(semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}">My
+                                schedule</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
+            <form name="logoutForm" action="/auth/logout" method="post">
+                <button class="btn btn-danger" type="submit">Logout</button>
+            </form>
         </div>
     </nav>
 </div>
@@ -69,15 +87,26 @@
                             Schedule
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/students/showForm">General schedule</a></li>
+                            <h5 class="dropdown-header">Schedule Lists</h5>
                             <li>
-                                <hr class="dropdown-divider">
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).GROUPS_LIST.value})}">Groups</a>
                             </li>
-                            <li><a class="dropdown-item" href="/students/list">My schedule</a></li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).EDUCATORS_LIST.value})}">Educators</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${T(ua.com.foxminded.university.model.schedule.ScheduleListType).ROOMS_LIST.value})}">Rooms</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
             </div>
+            <form name="logoutForm" action="/auth/logout" method="post">
+                <button class="btn btn-danger" type="submit">Logout</button>
+            </form>
         </div>
     </nav>
 </div>
@@ -183,6 +212,9 @@
                     </li>
                 </ul>
             </div>
+            <form name="logoutForm" action="/auth/logout" method="post">
+                <button class="btn btn-danger" type="submit">Logout</button>
+            </form>
         </div>
     </nav>
 </div>

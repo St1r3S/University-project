@@ -4,7 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ua.com.foxminded.university.config.SecurityConfig;
 import ua.com.foxminded.university.model.lesson.Discipline;
 import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
@@ -23,12 +27,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {DisciplineController.class})
+@Import(SecurityConfig.class)
 public class DisciplineControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -42,7 +48,11 @@ public class DisciplineControllerTest {
     @MockBean
     EducatorService educatorService;
 
+    @MockBean
+    UserDetailsService userDetailsService;
+
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowDisciplineForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -72,6 +82,15 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowDisciplineFormBan() throws Exception {
+        mockMvc.perform(get("/disciplines/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowDisciplinesList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -99,6 +118,15 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowDisciplinesListBan() throws Exception {
+        mockMvc.perform(get("/disciplines/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddDiscipline() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -117,6 +145,7 @@ public class DisciplineControllerTest {
         );
 
         mockMvc.perform(post("/disciplines/add")
+                        .with(csrf())
                         .param("disciplineName", disciplineId1.getDisciplineName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -128,6 +157,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowUpdateForm() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -159,6 +189,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyUpdateDiscipline() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -186,6 +217,7 @@ public class DisciplineControllerTest {
         );
 
         mockMvc.perform(post("/disciplines/update/{id}", disciplineId1.getId())
+                        .with(csrf())
                         .param("disciplineName", disciplineId1.getDisciplineName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -201,6 +233,7 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Admin")
     public void shouldVerifyDelete() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
         AcademicYear academicYearId1 = new AcademicYear(1L, 1, SemesterType.FALL_SEMESTER);
@@ -217,5 +250,13 @@ public class DisciplineControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("disciplines", Collections.EMPTY_LIST));
         verify(disciplineService, times(1)).delete(disciplineId1);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Student")
+    void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/disciplines/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

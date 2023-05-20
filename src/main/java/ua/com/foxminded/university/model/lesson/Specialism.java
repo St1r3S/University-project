@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ua.com.foxminded.university.model.user.Group;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
@@ -19,6 +20,7 @@ public class Specialism {
     @Column(name = "id")
     private Long id;
     @Column(name = "specialism_name", unique = true, nullable = false)
+    @NotEmpty(message = "{NotEmpty.Entity.Field}")
     private String specialismName;
 
     @ToString.Exclude

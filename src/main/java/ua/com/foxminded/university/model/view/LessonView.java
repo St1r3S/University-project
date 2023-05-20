@@ -41,7 +41,7 @@ public class LessonView {
         this.isBlank = true;
     }
 
-    static public LessonView lessonToLessonView(Lesson lesson, Discipline discipline, Educator educator, Group group, Room room, ScheduleDay scheduleDay) {
+    public static LessonView lessonToLessonView(Lesson lesson, Discipline discipline, Educator educator, Group group, Room room, ScheduleDay scheduleDay) {
         return new LessonView(lesson.getId(), discipline.getDisciplineName(), educator, group.getGroupName(), lesson.getLessonNumber(), room.getRoomNumber(), scheduleDay);
     }
 

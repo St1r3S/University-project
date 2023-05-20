@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Show Schedule</title>
     <th:block th:replace="~{fragments/general/header :: head}">
     </th:block>
 </head>
 <body>
-<div th:replace="~{fragments/general/header :: admin-header}">
+<div th:replace="~{fragments/general/header :: header}" sec:authorize="hasAnyAuthority('Student','Educator')">
+</div>
+<div th:replace="~{fragments/general/header :: staff-header}" sec:authorize="hasAuthority('Staff')">
+</div>
+<div th:replace="~{fragments/general/header :: admin-header}" sec:authorize="hasAuthority('Admin')">
 </div>
 <div class="container my-2">
     <div class="card">

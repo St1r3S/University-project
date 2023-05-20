@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import ua.com.foxminded.university.model.schedule.ScheduleDay;
 import ua.com.foxminded.university.model.user.Group;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor

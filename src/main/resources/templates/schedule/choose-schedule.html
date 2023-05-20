@@ -1,27 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Choose schedule</title>
     <th:block th:replace="~{fragments/general/header :: head}">
     </th:block>
 </head>
 <body>
-<div th:replace="~{fragments/general/header :: admin-header}">
+<div th:replace="~{fragments/general/header :: header}" sec:authorize="hasAnyAuthority('Student','Educator')">
+</div>
+<div th:replace="~{fragments/general/header :: staff-header}" sec:authorize="hasAuthority('Staff')">
+</div>
+<div th:replace="~{fragments/general/header :: admin-header}" sec:authorize="hasAuthority('Admin')">
 </div>
 <div class="container my-2">
     <div class="card">
         <div class="card-body">
-            <!--            <div class="custom-control custom-radio custom-control-inline ml-5"-->
-            <!--                 th:each="localType : ${scheduleListTypes}">-->
-            <!--                <label class="custom-control-label" th:text="${localType.value}">-->
-            <!--                    <a th:href="@{/schedule/list/{scheduleListType}(scheduleListType=${localType})}">-->
-            <!--                        <input class="custom-control-input"-->
-            <!--                               th:checked="${localType.value.equals('Group')}"-->
-            <!--                               th:value="${scheduleListType}"-->
-            <!--                               type="radio">-->
-            <!--                    </a>-->
-            <!--                </label>-->
-            <!--            </div>-->
             <div class="container my-5" th:switch="${scheduleListType}">
                 <div class="col-md-12">
                     <h2 th:case="null">Something went wrong!</h2>
@@ -40,9 +33,14 @@
                                 <td th:text="${group.groupName}"></td>
                                 <td th:text="${group.specialismName}"></td>
                                 <td th:text="${group.academicYearNumber + ', ' + group.semesterType}"></td>
-                                <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                <td sec:authorize="hasAuthority('Admin')"><a class="btn btn-primary"
+                                                                             th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-user-edit"> Schedule</i></a></td>
+                                <td sec:authorize="hasAnyAuthority('Student','Educator','Staff')"><a
+                                        class="btn btn-primary"
+
+                                        th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${group.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-search"> Schedule</i></a></td>
                             </tr>
                             </tbody>
                         </table>
@@ -64,9 +62,13 @@
                                 <td th:text="${educator.birthday}"></td>
                                 <td th:text="${educator.email}"></td>
                                 <td th:text="${educator.academicRank.key}"></td>
-                                <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                <td sec:authorize="hasAuthority('Admin')"><a class="btn btn-primary"
+                                                                             th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-user-edit"> Schedule</i></a></td>
+                                <td sec:authorize="hasAnyAuthority('Student','Educator','Staff')"><a
+                                        class="btn btn-primary"
+                                        th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${educator.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-search"> Schedule</i></a></td>
                             </tr>
                             </tbody>
                         </table>
@@ -83,9 +85,13 @@
                             <tbody>
                             <tr th:each="room : ${rooms}">
                                 <td th:text="${room.roomNumber}"></td>
-                                <td><a class="btn btn-primary"
-                                       th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                <td sec:authorize="hasAuthority('Admin')"><a class="btn btn-primary"
+                                                                             th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
                                         class="fas fa-pen"> Schedule</i></a></td>
+                                <td sec:authorize="hasAnyAuthority('Student','Educator','Staff')"><a
+                                        class="btn btn-primary"
+                                        th:href="@{/schedule/{scheduleType}/edit/{contextId}/{semesterType}(scheduleType=${scheduleListType},contextId=${room.id},semesterType=${T(ua.com.foxminded.university.model.schedule.SemesterType).FALL_SEMESTER.value})}"><i
+                                        class="fas fa-search"> Schedule</i></a></td>
                             </tr>
                             </tbody>
                         </table>
