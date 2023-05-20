@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -78,6 +79,14 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowDisciplineFormBan() throws Exception {
+        mockMvc.perform(get("/disciplines/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowDisciplinesList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -106,6 +115,14 @@ public class DisciplineControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowDisciplinesListBan() throws Exception {
+        mockMvc.perform(get("/disciplines/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddDiscipline() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -125,6 +142,7 @@ public class DisciplineControllerTest {
         );
 
         mockMvc.perform(post("/disciplines/add")
+                        .with(csrf())
                         .param("disciplineName", disciplineId1.getDisciplineName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -196,6 +214,7 @@ public class DisciplineControllerTest {
         );
 
         mockMvc.perform(post("/disciplines/update/{id}", disciplineId1.getId())
+                        .with(csrf())
                         .param("disciplineName", disciplineId1.getDisciplineName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -228,5 +247,13 @@ public class DisciplineControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("disciplines", Collections.EMPTY_LIST));
         verify(disciplineService, times(1)).delete(disciplineId1);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/disciplines/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

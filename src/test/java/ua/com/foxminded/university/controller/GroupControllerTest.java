@@ -19,6 +19,7 @@ import ua.com.foxminded.university.service.SpecialismService;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -62,6 +63,14 @@ public class GroupControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowDisciplineFormBan() throws Exception {
+        mockMvc.perform(get("/groups/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowGroupsList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -84,6 +93,14 @@ public class GroupControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Educator")
+    public void shouldVerifyShowGroupsListBan() throws Exception {
+        mockMvc.perform(get("/groups/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddGroup() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -98,6 +115,7 @@ public class GroupControllerTest {
         );
 
         mockMvc.perform(post("/groups/add")
+                        .with(csrf())
                         .param("groupName", groupId1.getGroupName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -154,6 +172,7 @@ public class GroupControllerTest {
                 groups
         );
         mockMvc.perform(post("/groups/update/{id}", groupId1.getId())
+                        .with(csrf())
                         .param("groupName", groupId1.getGroupName())
                         .param("specialismName", specialismId1.getSpecialismName())
                         .param("academicYearNumber", String.valueOf(academicYearId1.getYearNumber()))
@@ -188,5 +207,13 @@ public class GroupControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groups", groupViews));
         verify(groupService, times(1)).delete(groupId1);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Staff")
+    public void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/groups/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

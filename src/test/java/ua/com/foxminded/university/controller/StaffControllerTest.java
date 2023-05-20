@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -45,6 +46,14 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowStaffFormBan() throws Exception {
+        mockMvc.perform(get("/staff/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStaffsList() throws Exception {
         User userId1 = new User(1L, "maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
@@ -64,6 +73,14 @@ public class StaffControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Staff")
+    public void shouldVerifyShowStaffsListBan() throws Exception {
+        mockMvc.perform(get("/staff/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddStaff() throws Exception {
         User userId1 = new User("maccas82", "$2a$12$aWPsk16Ub7M15nZOH7sDgeMhP/WjqWXPQBSw8uo7tZpTuiUQVEFly", UserRole.ADMIN, "Michael",
@@ -72,6 +89,7 @@ public class StaffControllerTest {
                 userId1.getPasswordHash()
         );
         mockMvc.perform(post("/staff/add")
+                        .with(csrf())
                         .param("userRole", String.valueOf(userId1.getUserRole()))
                         .param("userName", String.valueOf(userId1.getUserName()))
                         .param("passwordHash", String.valueOf(userId1.getPasswordHash()))
@@ -117,6 +135,7 @@ public class StaffControllerTest {
                 userId1.getPasswordHash()
         );
         mockMvc.perform(post("/staff/update/{id}", userId1.getId())
+                        .with(csrf())
                         .param("userRole", String.valueOf(userId1.getUserRole()))
                         .param("userName", String.valueOf(userId1.getUserName()))
                         .param("passwordHash", String.valueOf(userId1.getPasswordHash()))
@@ -152,5 +171,13 @@ public class StaffControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("staff", users));
         verify(userService, times(1)).delete(userId1);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Staff")
+    public void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/staff/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

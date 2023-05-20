@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -110,8 +111,21 @@ public class ScheduleControllerTest {
         when(groupService.findById(contextId)).thenReturn(groupId1);
         when(roomService.findByRoomNumber(roomId1.getRoomNumber())).thenReturn(roomId1);
 
-        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType).with(csrf()).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
         verify(lessonService, times(1)).save(lesson);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyAddLessonToGroupBan() throws Exception {
+        String scheduleType = "groups";
+        Long contextId = 1L;
+        String semesterType = "fall";
+
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType)
+                        .with(csrf())
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -135,8 +149,29 @@ public class ScheduleControllerTest {
         when(groupService.findByGroupName(groupId1.getGroupName())).thenReturn(groupId1);
         when(roomService.findByRoomNumber(roomId1.getRoomNumber())).thenReturn(roomId1);
 
-        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType)
+                        .with(csrf())
+                        .param("groupName", groupId1.getGroupName())
+                        .param("disciplineName", disciplineId1.getDisciplineName())
+                        .param("lessonNumber", String.valueOf(lessonNumber))
+                        .param("scheduleDay.id", String.valueOf(scheduleDayId1.getId()))
+                        .param("roomNumber", roomId1.getRoomNumber())
+                        .contentType("application/json"))
+                .andExpect(status().is3xxRedirection());
         verify(lessonService, times(1)).save(lesson);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Educator")
+    public void shouldVerifyAddLessonToEducatorBan() throws Exception {
+        String scheduleType = "educators";
+        Long contextId = 1L;
+        String semesterType = "fall";
+
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType)
+                        .with(csrf())
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -159,8 +194,21 @@ public class ScheduleControllerTest {
         when(groupService.findByGroupName(groupId1.getGroupName())).thenReturn(groupId1);
         when(roomService.findById(contextId)).thenReturn(roomId1);
 
-        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType).with(csrf()).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
         verify(lessonService, times(1)).save(lesson);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Staff")
+    public void shouldVerifyAddLessonToRoomBan() throws Exception {
+        String scheduleType = "rooms";
+        Long contextId = 1L;
+        String semesterType = "fall";
+
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/add", scheduleType, contextId, semesterType)
+                        .with(csrf())
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -249,7 +297,15 @@ public class ScheduleControllerTest {
         when(groupService.findByGroupName(groupId1.getGroupName())).thenReturn(groupId1);
         when(roomService.findByRoomNumber(roomId1.getRoomNumber())).thenReturn(roomId1);
 
-        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/update/{id}", scheduleType, contextId, semesterType, idToUpdate).param("groupName", groupId1.getGroupName()).param("disciplineName", disciplineId1.getDisciplineName()).param("lessonNumber", String.valueOf(lessonNumber)).param("scheduleDay.id", String.valueOf(scheduleDayId1.getId())).param("roomNumber", roomId1.getRoomNumber()).contentType("application/json")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/update/{id}", scheduleType, contextId, semesterType, idToUpdate)
+                        .with(csrf())
+                        .param("groupName", groupId1.getGroupName())
+                        .param("disciplineName", disciplineId1.getDisciplineName())
+                        .param("lessonNumber", String.valueOf(lessonNumber))
+                        .param("scheduleDay.id", String.valueOf(scheduleDayId1.getId()))
+                        .param("roomNumber", roomId1.getRoomNumber())
+                        .contentType("application/json"))
+                .andExpect(status().is3xxRedirection());
         verify(lessonService, times(1)).save(lesson);
     }
 
@@ -274,5 +330,18 @@ public class ScheduleControllerTest {
         doNothing().when(lessonService).delete(lesson);
         mockMvc.perform(get("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/delete/{id}", scheduleType, contextId, semesterType, idToDelete).contentType("application/json")).andExpect(status().is3xxRedirection());
         verify(lessonService, times(1)).delete(lesson);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyDeleteBan() throws Exception {
+        String scheduleType = "rooms";
+        Long contextId = 1L;
+        String semesterType = "fall";
+        Long idToDelete = 1L;
+        
+        mockMvc.perform(get("/schedule/{scheduleType}/edit/{contextId}/{semesterType}/delete/{id}", scheduleType, contextId, semesterType, idToDelete)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -47,6 +48,14 @@ public class EducatorControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowEducatorFormBan() throws Exception {
+        mockMvc.perform(get("/educators/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowEducatorsList() throws Exception {
         Educator educatorId5 = new Educator(5L, "grant78", "$2a$12$bDYcmC4EYJb4uB.NLclvD.i0VFCFoJZgHphomz0A5QzTLegGcyzau.NLclvD.i0VFCFoJZgHphomz0A5QzTLegGcyzau", UserRole.EDUCATOR, "John",
@@ -66,6 +75,14 @@ public class EducatorControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowEducatorsListBan() throws Exception {
+        mockMvc.perform(get("/educators/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddEducator() throws Exception {
         Educator educatorId5 = new Educator("grant78", "$2a$12$bDYcmC4EYJb4uB.NLclvD.i0VFCFoJZgHphomz0A5QzTLegGcyzau.NLclvD.i0VFCFoJZgHphomz0A5QzTLegGcyzau", UserRole.EDUCATOR, "John",
@@ -76,6 +93,7 @@ public class EducatorControllerTest {
         );
 
         mockMvc.perform(post("/educators/add")
+                        .with(csrf())
                         .param("userRole", String.valueOf(educatorId5.getUserRole()))
                         .param("userName", String.valueOf(educatorId5.getUserName()))
                         .param("passwordHash", String.valueOf(educatorId5.getPasswordHash()))
@@ -121,6 +139,7 @@ public class EducatorControllerTest {
         );
 
         mockMvc.perform(post("/educators/update/{id}", educatorId5.getId())
+                        .with(csrf())
                         .param("userRole", String.valueOf(educatorId5.getUserRole()))
                         .param("userName", String.valueOf(educatorId5.getUserName()))
                         .param("passwordHash", String.valueOf(educatorId5.getPasswordHash()))
@@ -152,5 +171,13 @@ public class EducatorControllerTest {
                         .contentType("application/json"))
                 .andExpect(status().isOk());
         verify(educatorService, times(1)).delete(educatorId5);
+    }
+
+    @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/educators/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }

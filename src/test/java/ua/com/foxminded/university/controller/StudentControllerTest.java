@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -79,6 +80,14 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Staff")
+    public void shouldVerifyShowStudentFormBan() throws Exception {
+        mockMvc.perform(get("/students/showForm")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyShowStudentsList() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -115,6 +124,14 @@ public class StudentControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "Student")
+    public void shouldVerifyShowStudentsListBan() throws Exception {
+        mockMvc.perform(get("/students/list")
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(authorities = "Admin")
     public void shouldVerifyAddStudent() throws Exception {
         Specialism specialismId1 = new Specialism(1L, "122");
@@ -138,6 +155,7 @@ public class StudentControllerTest {
         );
 
         mockMvc.perform(post("/students/add")
+                        .with(csrf())
                         .param("userRole", String.valueOf(studentId3.getUserRole()))
                         .param("userName", String.valueOf(studentId3.getUserName()))
                         .param("passwordHash", String.valueOf(studentId3.getPasswordHash()))
@@ -231,6 +249,7 @@ public class StudentControllerTest {
         );
 
         mockMvc.perform(post("/students/update/{id}", studentId3.getId())
+                        .with(csrf())
                         .param("userRole", String.valueOf(studentId3.getUserRole()))
                         .param("userName", String.valueOf(studentId3.getUserName()))
                         .param("passwordHash", String.valueOf(studentId3.getPasswordHash()))
@@ -284,5 +303,13 @@ public class StudentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("students", studentViews));
         verify(studentService, times(1)).deleteById(studentId3.getId());
+    }
+
+    @Test
+    @WithMockUser(authorities = "Educator")
+    public void shouldVerifyDeleteBan() throws Exception {
+        mockMvc.perform(get("/students/delete/{id}", 1L)
+                        .contentType("application/json"))
+                .andExpect(status().isForbidden());
     }
 }
