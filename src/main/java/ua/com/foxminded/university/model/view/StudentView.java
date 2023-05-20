@@ -1,5 +1,9 @@
 package ua.com.foxminded.university.model.view;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.com.foxminded.university.model.lesson.Specialism;
@@ -9,10 +13,6 @@ import ua.com.foxminded.university.model.user.Group;
 import ua.com.foxminded.university.model.user.Student;
 import ua.com.foxminded.university.model.user.UserRole;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 @EqualsAndHashCode
@@ -65,7 +65,7 @@ public class StudentView {
         this.semesterType = semesterType;
     }
 
-    static public StudentView studentToStudentView(Student student, Group group, Specialism specialism, AcademicYear academicYear) {
+    public static StudentView studentToStudentView(Student student, Group group, Specialism specialism, AcademicYear academicYear) {
         return new StudentView(student.getId(), student.getUserName(), student.getPasswordHash(), student.getUserRole(),
                 student.getFirstName(), student.getLastName(), student.getBirthday(), student.getEmail(),
                 group.getGroupName(), specialism.getSpecialismName(), academicYear.getYearNumber(),

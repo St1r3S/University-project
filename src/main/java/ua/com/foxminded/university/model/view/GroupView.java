@@ -1,12 +1,11 @@
 package ua.com.foxminded.university.model.view;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import ua.com.foxminded.university.model.lesson.Specialism;
 import ua.com.foxminded.university.model.schedule.AcademicYear;
 import ua.com.foxminded.university.model.schedule.SemesterType;
 import ua.com.foxminded.university.model.user.Group;
-
-import jakarta.validation.constraints.NotEmpty;
 
 @EqualsAndHashCode
 @Getter
@@ -30,7 +29,7 @@ public class GroupView {
         this.semesterType = semesterType;
     }
 
-    static public GroupView groupToGroupView(Group group, Specialism specialism, AcademicYear academicYear) {
+    public static GroupView groupToGroupView(Group group, Specialism specialism, AcademicYear academicYear) {
         return new GroupView(group.getId(), group.getGroupName(), specialism.getSpecialismName(), academicYear.getYearNumber(), academicYear.getSemesterType());
     }
 

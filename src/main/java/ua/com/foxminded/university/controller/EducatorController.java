@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,13 +14,16 @@ import ua.com.foxminded.university.model.user.Educator;
 import ua.com.foxminded.university.model.user.UserRole;
 import ua.com.foxminded.university.service.EducatorService;
 
-import jakarta.validation.Valid;
 import java.util.Arrays;
 
 @Controller
 @RequestMapping("/educators")
 public class EducatorController {
 
+    public static final String USER_ROLES = "userRoles";
+    public static final String ACADEMIC_RANKS = "academicRanks";
+    public static final String EDUCATORS = "educators";
+    public static final String EDUCATOR_EDUCATORS_LIST = "educator/educators-list";
     private final EducatorService educatorService;
     private final PasswordEncoder passwordEncoder;
 
@@ -32,25 +36,25 @@ public class EducatorController {
 
     @GetMapping("/showForm")
     public String showEducatorForm(Educator educator, Model model) {
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
         return "educator/add-educator";
     }
 
     @GetMapping("/list")
-    public String educators(Model model) {
-        model.addAttribute("educators", this.educatorService.findAll());
+    public String educatorsList(Model model) {
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
     }
 
     @PostMapping("/add")
     public String addEducator(@Valid Educator educator, BindingResult result, Model model) {
         educator.setPasswordHash(educator.getPasswordHash());
         if (result.hasErrors()) {
-            model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-            model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+            model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+            model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
             return "educator/add-educator";
         }
@@ -66,8 +70,8 @@ public class EducatorController {
         Educator educator = this.educatorService.findById(id);
 
         model.addAttribute("educator", educator);
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
         return "educator/update-educator";
     }
@@ -81,11 +85,11 @@ public class EducatorController {
         educator.setPasswordHash(passwordEncoder.encode(educator.getPasswordHash()));
         educatorService.save(educator);
 
-        model.addAttribute("educators", this.educatorService.findAll());
-        model.addAttribute("userRoles", Arrays.asList(UserRole.values()));
-        model.addAttribute("academicRanks", Arrays.asList(AcademicRank.values()));
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
+        model.addAttribute(USER_ROLES, Arrays.asList(UserRole.values()));
+        model.addAttribute(ACADEMIC_RANKS, Arrays.asList(AcademicRank.values()));
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
     }
 
     @GetMapping("/delete/{id}")
@@ -93,9 +97,9 @@ public class EducatorController {
         Educator educator = this.educatorService.findById(id);
 
         educatorService.delete(educator);
-        model.addAttribute("educators", this.educatorService.findAll());
+        model.addAttribute(EDUCATORS, this.educatorService.findAll());
 
-        return "educator/educators-list";
+        return EDUCATOR_EDUCATORS_LIST;
 
     }
 }

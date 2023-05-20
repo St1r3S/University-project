@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {EducatorController.class})
+@Import(SecurityConfig.class)
 public class EducatorControllerTest {
     @Autowired
     private MockMvc mockMvc;

@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .requestMatchers("/disciplines/**").hasAuthority(UserRole.ADMIN.getValue())
                 .requestMatchers("/educators/**").hasAuthority(UserRole.ADMIN.getValue())
                 .requestMatchers("/groups/**").hasAuthority(UserRole.ADMIN.getValue())
-                .requestMatchers(HttpMethod.GET, "/schedule/*/delete/*").hasAuthority(UserRole.ADMIN.getValue())
+                .requestMatchers(HttpMethod.GET, "/schedule/*/delete/**", "/schedule/*/edit/*/*/delete/**").hasAuthority(UserRole.ADMIN.getValue())
                 .requestMatchers(HttpMethod.GET, "/schedule/**").hasAnyAuthority(
                         UserRole.ADMIN.getValue(),
                         UserRole.STUDENT.getValue(),
