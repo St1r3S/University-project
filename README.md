@@ -1,40 +1,41 @@
 # University_project
 Task 9 Decompose university
-Задача - построение CRM по управлению расписания университета
+Task - building a CRM for university schedule management.
 
-Общее
-В университете проводится 6 пар в день ПН-ВС, Воскресенье обычно выходной
-Студенты разделены на группы
-Пары привязаны к группам
-Для простоты считаем что объединённых лекций для нескольких групп не бывает
-Аудитории не имеют специализации и все одинаковы
-Преподаватели имеют специализацию
+General
+- The university has 6 classes per day Mon-Sat, Sunday is usually a day off
+- Students are divided into groups.
+- Classes are linked to groups.
+- For simplicity we assume that there are no combined lectures for several groups.
+- Auditoriums have no specialisation and are all the same.
+- Teachers are specialised.
 
-Тип расписания
-Простое расписание (easy)
 
-Простое расписание
-Расписание задается один раз в начале учебного периода(семестра) его изменение имеет немедленный эффект, любые дополнительные изменения происходят в частном порядке и к нашей системе отношения не имеют
+Schedule type
+- Simple schedule
 
-Пользователи
-Любой посетитель может посмотреть общее для всех групп(или по выбору) расписание (шаблон) на неделю, день (сегодня или на дату)
+Simple schedule
+- The schedule is set once at the beginning of the academic period (semester), any additional changes are private and have no relation to our system.
 
-???По ссылке полученной из деканата пользователь может быть зарегистрирован в системе и получить набор ролей. Далее эти роли могут быть отредактированы пользователем с ролью Admin
+Users
+- Any visitor can view a common for all groups (or by choice) schedule (template) for a week.
+- Using the link received from the dean's office a user can be registered in the system and get a set of roles. Then these roles can be edited by a user with Admin role.
+- A user can have only one role.
 
-пользователь может обладать только одной ролью
 
-Роли
+Roles
 
-Сотрудник(stuff)
-Кто угодно не связанный с процессом - уборщица, техник и тд)
-может посмотреть расписание аудиторий
+1. Employee(stuff)
+- Anyone not related to  ed. process - cleaner, janitor, etc.
+- Can view the class schedule.
 
-Студент (student)
-по умолчанию видит расписание для своей группы, но может посмотреть общее
+2. Student
+- By default sees the schedule for his/her group, but can see the general schedule.
 
-Преподаватель (teacher)
-может посмотреть свое расписание
+2. Teacher
+- Can see his/her schedule.
 
-Администратор/Деканат (admin)
-может редактировать шаблон
-может редактировать роли пользователя
+4. Administrator/Dean (admin)
+- Can edit the schedule.
+- Can edit user roles.
+
