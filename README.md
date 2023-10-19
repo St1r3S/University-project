@@ -3,6 +3,7 @@ Task 9 Decompose university
 Task - building a CRM for university schedule management.
 
 **General**
+
     - The university has 6 classes per day Mon-Sat, Sunday is usually a day off.
     - Students are divided into groups.
     - Classes are linked to groups.
@@ -13,12 +14,15 @@ Task - building a CRM for university schedule management.
 
 
 **Schedule type**
+
     - Simple schedule
 
 **Simple schedule**
+
     - The schedule is set once at the beginning of the academic period (semester), any additional changes are private and have no relation to our system.
 
 **Users**
+
     - Any visitor can view a common for all groups (or by choice) schedule (template) for a week.
     - Using the link received from the dean's office a user can be registered in the system and get a set of roles. Then these roles can be edited by a user with Admin role.
     - A user can have only one role.
